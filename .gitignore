@@ -1,0 +1,6 @@
+
+## This is the global gitignore, each part of TASauria has its own gitignore tuned to the language.
+## Here we are only ignoring stuff that tends to creep out of the individual silos, like occasional build artifacts.
+
+# Python stuff
+*.egg-info/
