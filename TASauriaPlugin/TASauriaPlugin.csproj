@@ -11,7 +11,10 @@
         <BIZHAWK_DATA_HOME>$(BIZHAWK_HOME)</BIZHAWK_DATA_HOME>
     </PropertyGroup>
     <ItemGroup>
+        <PackageReference Include="Lib.Harmony" Version="2.3.3" PrivateAssets="all" />
         <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.3" PrivateAssets="all" />
+        <PackageReference Include="Nancy" Version="2.0.0" />
+        <PackageReference Include="Nancy.Hosting.Self" Version="2.0.0" />
         <Reference Include="System.Windows.Forms" />
         <Reference Include="BizHawk.Bizware.Graphics" HintPath="$(BIZHAWK_HOME)dll/BizHawk.Bizware.Graphics.dll" />
         <Reference Include="BizHawk.Client.Common" HintPath="$(BIZHAWK_HOME)dll/BizHawk.Client.Common.dll" />

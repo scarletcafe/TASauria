@@ -1,0 +1,16 @@
+{
+  "profiles": {
+    "BizHawk Debug (with tool window)": {
+      "commandName": "Executable",
+      "executablePath": "..\\output\\EmuHawk.exe",
+      "commandLineArgs": "--open-ext-tool-dll=TASauriaPlugin",
+      "workingDirectory": "..\\BizHawk\\output"
+    },
+    "BizHawk Debug (no tool window)": {
+      "commandName": "Executable",
+      "executablePath": "..\\output\\EmuHawk.exe",
+      "commandLineArgs": "",
+      "workingDirectory": "..\\BizHawk\\output"
+    }
+  }
+}
