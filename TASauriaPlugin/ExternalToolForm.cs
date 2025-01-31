@@ -8,7 +8,20 @@ public sealed partial class ExternalToolForm : ToolFormBase, IExternalToolForm {
     protected override string WindowTitleStatic
         => "TASauria";
 
-#region APIs
+    #region APIs
+    // Requesting these three APIs specifically somehow invokes some black magic that makes
+    // EmuHawk index the assembly on launch, allowing the server to be booted without user
+    // interaction in the Background Hook build of TASauria.
+    // Removing any of these seems to stop the assembly from being loaded at launch, I'm honestly
+    // not totally sure why.
+    [OptionalApi]
+    public IEmuClientApi? EmuClientAPI { get; set; }
+    [OptionalApi]
+    public IEmulationApi? EmulationAPI { get; set; }
+    [OptionalApi]
+    public IGuiApi? GuiAPI { get; set; }
+
+    // API container - this is what we will actually use.
     public ApiContainer? _maybeAPIContainer { get; set; }
 
     private ApiContainer APIs
