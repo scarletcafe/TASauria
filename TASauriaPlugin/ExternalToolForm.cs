@@ -9,51 +9,10 @@ public sealed partial class ExternalToolForm : ToolFormBase, IExternalToolForm {
         => "TASauria";
 
 #region APIs
-    // All APIs from ApiContainer are separately defined here.
-    // This allows TASauria to load even if some of them are not available.
-    // https://github.com/TASEmulators/BizHawk/blob/2.10/src/BizHawk.Client.Common/Api/ApiContainer.cs#L7
+    public ApiContainer? _maybeAPIContainer { get; set; }
 
-    [OptionalApi]
-    public ICommApi? CommAPI { get; set; }
-
-    [OptionalApi]
-    public IEmuClientApi? EmuClientAPI { get; set; }
-
-    [OptionalApi]
-    public IEmulationApi? EmulationAPI { get; set; }
-
-    [OptionalApi]
-    public IGuiApi? GuiAPI { get; set; }
-
-    [OptionalApi]
-    public IInputApi? InputAPI { get; set; }
-
-    [OptionalApi]
-    public IJoypadApi? JoypadAPI { get; set; }
-
-    [OptionalApi]
-    public IMemoryApi? MemoryAPI { get; set; }
-
-    [OptionalApi]
-    public IMemoryEventsApi? MemoryEventsAPI { get; set; }
-
-    [OptionalApi]
-    public IMemorySaveStateApi? MemorySaveStateAPI { get; set; }
-
-    [OptionalApi]
-    public IMovieApi? MovieAPI { get; set; }
-
-    [OptionalApi]
-    public ISaveStateApi? SaveStateAPI { get; set; }
-
-    [OptionalApi]
-    public ISQLiteApi? SQLiteAPI { get; set; }
-
-    [OptionalApi]
-    public IUserDataApi? UserDataAPI { get; set; }
-
-    [OptionalApi]
-    public IToolApi? ToolAPI { get; set; }
+    private ApiContainer APIs
+        => _maybeAPIContainer!;
 #endregion
 
 #region Lifecycle
@@ -134,8 +93,11 @@ public sealed partial class ExternalToolForm : ToolFormBase, IExternalToolForm {
 
 #region EmuHawk events
 
-    public override void UpdateValues(ToolFormUpdateType type) {
-        Logging.Log("UpdateValues of type {0}", type);
+    protected override void GeneralUpdate() {
+        if (!GlobalState.IsBackgroundHooked)
+        {
+            GlobalState.GeneralUpdate(APIs, false);
+        }
     }
 
 #endregion
