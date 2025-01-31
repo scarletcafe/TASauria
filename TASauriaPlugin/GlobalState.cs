@@ -1,16 +1,28 @@
 namespace ScarletCafe.TASauriaPlugin;
 
 using System;
+using System.IO;
 using System.Runtime.CompilerServices;
 using System.Threading;
+using System.Windows.Forms;
 using BizHawk.Client.Common;
 using BizHawk.Client.EmuHawk;
+using BizHawk.Common.PathExtensions;
 
 #if TASAURIA_BACKGROUND_EXECUTION
 using HarmonyLib;
 #endif
 
 public static class GlobalState {
+    public static Configuration configuration;
+    public static Server? server;
+
+    public static string ConfigLocation {
+        get {
+            return Path.Combine(PathUtils.ExeDirectoryPath, "tasauria.ini");
+        }
+    }
+
     static GlobalState() {
         // This initialisation should always occur on the main thread (thread ID 1)
         Logging.Log(
@@ -21,6 +33,9 @@ public static class GlobalState {
         if (Thread.CurrentThread.ManagedThreadId != 1) {
             Logging.Log("Warning: Initialization was not done on the main thread. This may cause unexpected behaviour.");
         }
+
+        // Load config
+        configuration = ConfigService.Load<Configuration>(ConfigLocation);
 
 #if TASAURIA_BACKGROUND_EXECUTION
         // In usual cases, external tools would be run by overriding UpdateValues or one of its called methods:
@@ -43,6 +58,7 @@ public static class GlobalState {
         // `GeneralUpdateActiveExtTools`. It is this call that is responsible for deciding what tools are active in the
         // first place, so hooking into it guarantees our code runs always, on the main thread, around the same point
         // a tool would usually receive its general update anyway.
+        Logging.Log("Applying background update loop patch");
         var harmony = new Harmony("ScarletCafe.TASauriaPlugin.Harmony");
 
         var originalMethod = AccessTools.Method(
@@ -60,9 +76,32 @@ public static class GlobalState {
             prefix: new HarmonyMethod(methodPrefix)
         );
 
-        Logging.Log("Applied background update patch");
-#endif
+        Logging.Log("Starting server in background");
+        StartServer();
 
+#endif
+    }
+
+    public static void SaveConfig() {
+        ConfigService.Save(ConfigLocation, configuration);
+    }
+
+    public static void StartServer()
+    {
+        try
+        {
+            server = new Server(configuration);
+        } catch (Exception exception)
+        {
+            MessageBox.Show($"The server could not start because an exception occurred:\n{exception}", "TASauria server failed to start", MessageBoxButtons.OK);
+        }
+
+    }
+
+    public static void StopServer()
+    {
+        server?.Stop();
+        server = null;
     }
 
     [ModuleInitializer]

@@ -1,7 +1,10 @@
 namespace ScarletCafe.TASauriaPlugin;
 
+using System;
+using System.Windows.Forms;
 using BizHawk.Client.Common;
 using BizHawk.Client.EmuHawk;
+
 
 [ExternalTool("TASauria", Description = "")]
 public sealed partial class ExternalToolForm : ToolFormBase, IExternalToolForm {
@@ -26,25 +29,6 @@ public sealed partial class ExternalToolForm : ToolFormBase, IExternalToolForm {
 
     private ApiContainer APIs
         => _maybeAPIContainer!;
-#endregion
-
-#region Lifecycle
-    private Server? _server;
-
-    public Server? Server {
-        get {
-            if (_server == null) {
-                return null;
-            }
-
-            var server = _server!;
-
-            // There are other reasons we might want to return null here, such as if the server is dead.
-            // TODO
-
-            return server;
-        }
-    }
 #endregion
 
 #region Convenience
@@ -92,6 +76,24 @@ public sealed partial class ExternalToolForm : ToolFormBase, IExternalToolForm {
             }
         }
     }
+
+    private void WriteConfiguration()
+    {
+        GlobalState.configuration.ServerHost = ServerHostSetting;
+        GlobalState.configuration.ServerPort = (int)portNumericUpDown.Value;
+    }
+
+    private void UpdateServerHostVisibility()
+    {
+        bool serverisRunning = GlobalState.server != null;
+
+        hostSelectorComboBox.Enabled = !serverisRunning;
+        customHostTextBox.Enabled = !serverisRunning;
+        portNumericUpDown.Enabled = !serverisRunning;
+        serverStartButton.Enabled = !serverisRunning;
+        serverStopButton.Enabled = serverisRunning;
+    }
+
 #endregion
 
     public ExternalToolForm() {
@@ -99,7 +101,10 @@ public sealed partial class ExternalToolForm : ToolFormBase, IExternalToolForm {
 
         InitializeComponent();  // defined in ExternalToolForm.Designer.cs
 
-        hostSelectorComboBox.SelectedIndex = 0;
+        ServerHostSetting = GlobalState.configuration.ServerHost;
+        portNumericUpDown.Value = GlobalState.configuration.ServerPort;
+
+        UpdateServerHostVisibility();
 
         Logging.Log("Form initialized");
     }
@@ -116,26 +121,46 @@ public sealed partial class ExternalToolForm : ToolFormBase, IExternalToolForm {
 #endregion
 
 #region WinForms
-    private void hostSelectorComboBox_SelectedIndexChanged(object sender, System.EventArgs e)
+    private void hostSelectorComboBox_SelectedIndexChanged(object sender, EventArgs e)
     {
         // The custom host text box should only be visible if the user has selected to provide a custom host value.
         customHostTextBox.Visible = hostSelectorComboBox.SelectedIndex == 4;
     }
 
-    private void saveHostSettingsButton_Click(object sender, System.EventArgs e)
+    private void saveHostSettingsButton_Click(object sender, EventArgs e)
     {
-        // TODO
+        WriteConfiguration();
+        GlobalState.SaveConfig();
     }
 
-    private void serverStartButton_Click(object sender, System.EventArgs e)
+    private void serverStartButton_Click(object sender, EventArgs e)
     {
-
+        WriteConfiguration();
+        GlobalState.StartServer();
+        UpdateServerHostVisibility();
     }
 
-    private void serverStopButton_Click(object sender, System.EventArgs e)
+    private void serverStopButton_Click(object sender, EventArgs e)
     {
-
+        GlobalState.StopServer();
+        UpdateServerHostVisibility();
     }
-#endregion
+    #endregion
 
+    private void ExternalToolForm_FormClosing(object sender, FormClosingEventArgs e)
+    {
+#if !TASAURIA_BACKGROUND_EXECUTION
+        DialogResult result = MessageBox.Show(
+            "If the server is running, it will no longer be able to interact with the emulator until the external tool window is reopened.",
+            "Are you sure you want to exit TASauria?",
+            MessageBoxButtons.YesNo
+        );
+
+        if (result == DialogResult.No) {
+            e.Cancel = true;
+        } else {
+            GlobalState.StopServer();
+        }
+#endif
+    }
 }
