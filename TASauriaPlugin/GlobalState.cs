@@ -1,6 +1,7 @@
 namespace ScarletCafe.TASauriaPlugin;
 
 using System;
+using System.Collections.Concurrent;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Threading;
@@ -115,10 +116,26 @@ public static class GlobalState {
         Logging.Log("Module initialized");
     }
 
+    /// <summary>
+    /// This is a queue of events that should be run in GeneralUpdate.
+    /// These get executed on the main thread between frames, making it safe to access the GUI and core.
+    /// As many updates as possible will be executed before allowing execution to continue, so it's important
+    /// that actions pushed to this queue do not take too long else it will lock up the emulator.
+    /// </summary>
+    public static ConcurrentQueue<Action<ApiContainer>> generalUpdateQueue = new();
+
     public static void GeneralUpdate(ApiContainer container, bool background)
     {
         // Fetch frame number
         Logging.Log("GeneralUpdate (background: {1}) on frame {0}", container.Emulation.FrameCount(), background);
+
+        while (generalUpdateQueue.TryDequeue(out Action<ApiContainer> action)) {
+            try {
+                action.Invoke(container);
+            } catch (Exception exception) {
+                Logging.Log($"Action in general update queue caused exception: {exception}");
+            }
+        }
     }
 
     public static bool IsBackgroundHooked {

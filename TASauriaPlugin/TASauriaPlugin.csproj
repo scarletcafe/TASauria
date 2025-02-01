@@ -25,6 +25,9 @@
         <!-- Required to provide WebSocket and HTTP server -->
         <PackageReference Include="WebSocketSharp" Version="1.0.3-rc11" />
 
+        <!-- Required for JSON deserialization -->
+        <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+
         <!-- Required to do code injection to load the server in the background -->
         <PackageReference Include="Lib.Harmony" Version="2.3.3" PrivateAssets="all" Condition="$(TASauriaBackgroundExecution) == 'true'" />
 
