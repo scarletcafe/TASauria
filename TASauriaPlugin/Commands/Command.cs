@@ -32,7 +32,9 @@ public abstract class Command<Input, Output>: ICommand {
         {
             NamingStrategy = new CamelCaseNamingStrategy(),
         },
-        Formatting = Formatting.None
+        Formatting = Formatting.None,
+        DateFormatHandling = DateFormatHandling.IsoDateFormat,
+        DateParseHandling = DateParseHandling.DateTime,
     });
 
     private readonly Regex pattern;
@@ -94,3 +96,5 @@ public abstract class Command<Input, Output>: ICommand {
         }
     }
 }
+
+public class NoArguments {}

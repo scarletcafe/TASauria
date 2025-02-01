@@ -22,6 +22,26 @@ export default defineConfig({
           { text: 'Getting started', link: '/getting-started' },
           { text: 'Building manually', link: '/building-manually' }
         ]
+      },
+      {
+        text: 'Cookbook',
+        items: [
+
+        ]
+      },
+      {
+        text: 'Using the Python API',
+        items: [
+
+        ]
+      },
+      {
+        text: 'Using the HTTP/WS API',
+        items: [
+          { text: 'General conventions', link: '/http-ws-api/general' },
+          { text: 'Client commands', link: '/http-ws-api/client-commands' },
+          { text: 'Test commands', link: '/http-ws-api/test-commands' },
+        ]
       }
     ],
 

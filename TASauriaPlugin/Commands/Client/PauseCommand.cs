@@ -1,7 +1,8 @@
-namespace ScarletCafe.TASauriaPlugin.Commands.Emulation;
+namespace ScarletCafe.TASauriaPlugin.Commands.Client;
 
 using System.Collections.Generic;
 using BizHawk.Client.Common;
+
 
 public class PauseInput {
     public bool? Set { get; set; } = null;
@@ -15,7 +16,7 @@ public class PauseCommand : EmulatorCommand<PauseInput, PauseOutput>
 {
     public PauseCommand():
         base(
-            @"/emulation/pause"
+            @"/client/pause"
         )
     {}
 

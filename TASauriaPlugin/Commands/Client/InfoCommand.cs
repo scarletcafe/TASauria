@@ -1,0 +1,36 @@
+namespace ScarletCafe.TASauriaPlugin.Commands.Client;
+
+using System.Collections.Generic;
+using BizHawk.Common;
+
+public class InfoOutput {
+    public string StableVersion { get; set; } = "";
+    public string ReleaseDate { get; set; } = "";
+    public string GitBranch { get; set; } = "";
+    public string GitHash { get; set; } = "";
+    public string GitRevision { get; set; } = "";
+    public bool IsDevelopmentVersion { get; set; }
+    public string? CustomBuildString { get; set; } = "";
+}
+
+public class InfoCommand : Command<NoArguments, InfoOutput>
+{
+    public InfoCommand():
+        base(
+            @"/client/info"
+        )
+    {}
+
+    public override InfoOutput Run(Dictionary<string, string> arguments, NoArguments payload)
+    {
+        return new InfoOutput {
+            StableVersion = VersionInfo.MainVersion,
+            ReleaseDate = VersionInfo.ReleaseDate,
+            GitBranch = VersionInfo.GIT_BRANCH,
+            GitHash = VersionInfo.GIT_HASH,
+            GitRevision = VersionInfo.SVN_REV,
+            IsDevelopmentVersion = VersionInfo.DeveloperBuild,
+            CustomBuildString = VersionInfo.CustomBuildString ?? null,
+        };
+    }
+}

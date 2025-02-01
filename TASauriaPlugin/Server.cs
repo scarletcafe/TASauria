@@ -5,6 +5,7 @@ using Newtonsoft.Json.Linq;
 using System.IO;
 using System.Net;
 using System.Text;
+using System.Threading.Tasks;
 using WebSocketSharp;
 using WebSocketSharp.Server;
 
@@ -53,14 +54,18 @@ public class Server {
             string value = reader.ReadToEnd();
 
             JObject input;
-            try {
-                input = JObject.Parse(value);
-            } catch (JsonReaderException exception) {
-                WriteObjectToResponse(response, new JObject() {
-                    {"status", 400},
-                    {"error", $"Invalid JSON in payload:\n{exception}"}
-                });
-                return;
+            if (value.Length > 0) {
+                try {
+                    input = JObject.Parse(value);
+                } catch (JsonReaderException exception) {
+                    WriteObjectToResponse(response, new JObject() {
+                        {"status", 400},
+                        {"error", $"Invalid JSON in payload:\n{exception}"}
+                    });
+                    return;
+                }
+            } else {
+                input = [];
             }
 
             Handle(response, request.RawUrl, input);
@@ -121,9 +126,12 @@ public class Server {
                 return;
             }
 
-            JObject output = Commands.Registry.Resolve(path, input);
+            // Push command execution to thread pool
+            Task.Run(() => {
+                JObject output = Commands.Registry.Resolve(path, input);
 
-            Send(output.ToString(Formatting.None));
+                Send(output.ToString(Formatting.None));
+            });
         }
     }
 }
