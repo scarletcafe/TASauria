@@ -5,6 +5,7 @@ using Newtonsoft.Json.Linq;
 using System.IO;
 using System.Net;
 using System.Text;
+using WebSocketSharp;
 using WebSocketSharp.Server;
 
 public class Server {
@@ -65,6 +66,8 @@ public class Server {
             Handle(response, request.RawUrl, input);
         };
 
+        httpServer.AddWebSocketService<WebsocketHandler>("/websocket");
+
         httpServer.Start();
     }
 
@@ -91,5 +94,36 @@ public class Server {
     public void Stop()
     {
         httpServer.Stop();
+    }
+
+    private class WebsocketHandler : WebSocketBehavior {
+        protected override void OnMessage(MessageEventArgs e)
+        {
+            JObject input;
+            try {
+                input = JObject.Parse(e.Data);
+            } catch (JsonReaderException exception) {
+                Send(new JObject() {
+                    {"status", 400},
+                    {"error", $"Invalid JSON sent over socket:\n{exception}"},
+                }.ToString(Formatting.None));
+                return;
+            }
+
+            string? path = input.GetValue("command")?.ToObject<string>();
+
+            if (path == null) {
+                Send(new JObject() {
+                    {"status", 400},
+                    {"error", $"No command field was included in the payload"},
+                    {"messageIdentifier", input.GetValue("messageIdentifier")},
+                }.ToString(Formatting.None));
+                return;
+            }
+
+            JObject output = Commands.Registry.Resolve(path, input);
+
+            Send(output.ToString(Formatting.None));
+        }
     }
 }
