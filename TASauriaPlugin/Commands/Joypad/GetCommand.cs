@@ -1,0 +1,41 @@
+namespace ScarletCafe.TASauriaPlugin.Commands.Joypad;
+
+using System.Collections.Generic;
+using System.Linq;
+using BizHawk.Client.Common;
+using Newtonsoft.Json.Linq;
+
+public class GetInput {
+    public int? Controller { get; set; }
+}
+
+public class GetOutput {
+    public Dictionary<string, JToken> State { get; set; } = [];
+}
+
+public class GetCommand : EmulatorCommand<GetInput, GetOutput>
+{
+    public GetCommand():
+        base(
+            @"/joypad/get"
+        )
+    {}
+
+    public override GetOutput RunSync(ApiContainer api, Dictionary<string, string> arguments, GetInput payload)
+    {
+        var dictionary = api.Joypad.Get(payload.Controller);
+
+        return new GetOutput {
+            State = dictionary.ToDictionary(
+                x => x.Key,
+                x => {
+                    if (x.Value is int v1)
+                        return JToken.FromObject(v1);
+                    else if (x.Value is bool v2)
+                        return JToken.FromObject(v2);
+                    return JValue.CreateNull();
+                }
+            )
+        };
+    }
+}

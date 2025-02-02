@@ -40,6 +40,7 @@ export default defineConfig({
         items: [
           { text: 'General conventions', link: '/http-ws-api/general' },
           { text: 'Client commands', link: '/http-ws-api/client-commands' },
+          { text: 'Joypad commands', link: '/http-ws-api/joypad-commands' },
           { text: 'Memory commands', link: '/http-ws-api/memory-commands' },
           { text: 'Test commands', link: '/http-ws-api/test-commands' },
         ]

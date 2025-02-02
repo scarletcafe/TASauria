@@ -13,7 +13,7 @@ public class PauseAVCommand : EmulatorCommand<PauseInput, PauseOutput>
     {}
 
     public override bool SecurityCheck(Dictionary<string, string> arguments, JObject input) {
-        return GlobalState.configuration.SecurityAllowClientControl || input?.GetValue("set")?.ToObject<bool?>() == null;
+        return GlobalState.configuration.SecurityAllowClientControl || input?.GetValue("set")?.Type == JTokenType.None;
     }
 
     public override string SecurityRemarks { get; } = "To set pause state, this command requires 'Allow client control' to be enabled in the TASauria plugin security settings.";

@@ -22,7 +22,7 @@ public class SpeedCommand : EmulatorCommand<SpeedInput, SpeedOutput>
     {}
 
     public override bool SecurityCheck(Dictionary<string, string> arguments, JObject input) {
-        return GlobalState.configuration.SecurityAllowClientControl || input?.GetValue("percentage")?.ToObject<int?>() == null;
+        return GlobalState.configuration.SecurityAllowClientControl || input?.GetValue("percentage")?.Type == JTokenType.None;
     }
 
     public override string SecurityRemarks { get; } = "To set the speed, this command requires 'Allow client control' to be enabled in the TASauria plugin security settings.";
