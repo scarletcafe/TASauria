@@ -106,6 +106,13 @@ public sealed partial class ExternalToolForm : ToolFormBase, IExternalToolForm {
 #region EmuHawk events
     protected override void GeneralUpdate() {
         GlobalState.GeneralUpdate(APIs);
+
+        if (GlobalState.server != null) {
+            Server server = GlobalState.server!;
+            statusLabel.Text = $"Server running on {server.Host}:{server.Port} since {server.Started} ({Commands.Registry.commandsExecuted} commands processed)";
+        } else {
+            statusLabel.Text = "Server stopped.";
+        }
     }
 #endregion
 

@@ -2,6 +2,7 @@ namespace ScarletCafe.TASauriaPlugin;
 
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using System;
 using System.IO;
 using System.Net;
 using System.Text;
@@ -10,14 +11,18 @@ using WebSocketSharp;
 using WebSocketSharp.Server;
 
 public class Server {
+    public IPAddress Host { get; private set; }
+    public int Port { get; private set; }
+    public DateTime Started { get; private set; }
 
-    private HttpServer httpServer;
+    private readonly HttpServer httpServer;
 
     public Server(Configuration config) {
 
-        IPAddress address = IPAddress.Parse(config.ServerHost);
+        Host = IPAddress.Parse(config.ServerHost);
+        Port = config.ServerPort;
 
-        httpServer = new HttpServer(address, config.ServerPort, false);
+        httpServer = new HttpServer(Host, Port, false);
 
         // HTTP GET handler
         httpServer.OnGet += (sender, e) => {
@@ -73,6 +78,7 @@ public class Server {
 
         httpServer.AddWebSocketService<WebsocketHandler>("/websocket");
 
+        Started = DateTime.UtcNow;
         httpServer.Start();
     }
 

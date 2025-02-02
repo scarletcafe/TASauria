@@ -40,6 +40,7 @@ public static class GlobalState {
 
     public static void StartServer()
     {
+        Commands.Registry.commandsExecuted = 0;
         try
         {
             server = new Server(configuration);

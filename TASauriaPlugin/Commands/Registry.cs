@@ -18,6 +18,8 @@ public static class Registry {
         .Where(constructor => constructor != null)
         .Select(constructor => (ICommand)constructor.Invoke([]))];
 
+    public static ulong commandsExecuted = 0;
+
     public static JObject Resolve(string path, JObject input) {
         // Try to find a command that matches the path.
         var (command, arguments) = commands
@@ -29,6 +31,7 @@ public static class Registry {
         if (command != null) {
             if (command.SecurityCheck(arguments!, input)) {
                 output = command.Execute(arguments!, input);
+                commandsExecuted++;
             } else {
                 output = new JObject {
                     { "status", 403 },

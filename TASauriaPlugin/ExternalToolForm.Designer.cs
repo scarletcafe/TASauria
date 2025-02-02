@@ -49,7 +49,7 @@ partial class ExternalToolForm
             this.mainTabSelector.Location = new System.Drawing.Point(12, 92);
             this.mainTabSelector.Name = "mainTabSelector";
             this.mainTabSelector.SelectedIndex = 0;
-            this.mainTabSelector.Size = new System.Drawing.Size(558, 203);
+            this.mainTabSelector.Size = new System.Drawing.Size(658, 203);
             this.mainTabSelector.TabIndex = 0;
             // 
             // tabServer
@@ -64,7 +64,7 @@ partial class ExternalToolForm
             this.tabServer.Location = new System.Drawing.Point(4, 25);
             this.tabServer.Name = "tabServer";
             this.tabServer.Padding = new System.Windows.Forms.Padding(3);
-            this.tabServer.Size = new System.Drawing.Size(550, 174);
+            this.tabServer.Size = new System.Drawing.Size(650, 174);
             this.tabServer.TabIndex = 0;
             this.tabServer.Text = "Server";
             this.tabServer.UseVisualStyleBackColor = true;
@@ -86,7 +86,7 @@ partial class ExternalToolForm
             | System.Windows.Forms.AnchorStyles.Right)));
             this.customHostTextBox.Location = new System.Drawing.Point(7, 47);
             this.customHostTextBox.Name = "customHostTextBox";
-            this.customHostTextBox.Size = new System.Drawing.Size(406, 22);
+            this.customHostTextBox.Size = new System.Drawing.Size(506, 22);
             this.customHostTextBox.TabIndex = 5;
             this.customHostTextBox.Text = "127.0.0.1";
             this.customHostTextBox.Visible = false;
@@ -95,7 +95,7 @@ partial class ExternalToolForm
             // 
             this.portInfoLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.portInfoLabel.AutoSize = true;
-            this.portInfoLabel.Location = new System.Drawing.Point(417, 6);
+            this.portInfoLabel.Location = new System.Drawing.Point(517, 6);
             this.portInfoLabel.Name = "portInfoLabel";
             this.portInfoLabel.Size = new System.Drawing.Size(34, 15);
             this.portInfoLabel.TabIndex = 4;
@@ -104,7 +104,7 @@ partial class ExternalToolForm
             // portNumericUpDown
             // 
             this.portNumericUpDown.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.portNumericUpDown.Location = new System.Drawing.Point(419, 21);
+            this.portNumericUpDown.Location = new System.Drawing.Point(519, 21);
             this.portNumericUpDown.Maximum = new decimal(new int[] {
             65535,
             0,
@@ -146,7 +146,7 @@ partial class ExternalToolForm
             "Custom..."});
             this.hostSelectorComboBox.Location = new System.Drawing.Point(6, 21);
             this.hostSelectorComboBox.Name = "hostSelectorComboBox";
-            this.hostSelectorComboBox.Size = new System.Drawing.Size(407, 23);
+            this.hostSelectorComboBox.Size = new System.Drawing.Size(507, 23);
             this.hostSelectorComboBox.TabIndex = 1;
             this.hostSelectorComboBox.SelectedIndexChanged += new System.EventHandler(this.hostSelectorComboBox_SelectedIndexChanged);
             // 
@@ -164,7 +164,7 @@ partial class ExternalToolForm
             this.serverLifecycleButtonPanel.RowCount = 1;
             this.serverLifecycleButtonPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.serverLifecycleButtonPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.serverLifecycleButtonPanel.Size = new System.Drawing.Size(549, 33);
+            this.serverLifecycleButtonPanel.Size = new System.Drawing.Size(649, 33);
             this.serverLifecycleButtonPanel.TabIndex = 0;
             // 
             // serverStartButton
@@ -174,7 +174,7 @@ partial class ExternalToolForm
             | System.Windows.Forms.AnchorStyles.Right)));
             this.serverStartButton.Location = new System.Drawing.Point(3, 3);
             this.serverStartButton.Name = "serverStartButton";
-            this.serverStartButton.Size = new System.Drawing.Size(268, 27);
+            this.serverStartButton.Size = new System.Drawing.Size(318, 27);
             this.serverStartButton.TabIndex = 0;
             this.serverStartButton.Text = "Start";
             this.serverStartButton.UseVisualStyleBackColor = true;
@@ -186,9 +186,9 @@ partial class ExternalToolForm
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.serverStopButton.Enabled = false;
-            this.serverStopButton.Location = new System.Drawing.Point(277, 3);
+            this.serverStopButton.Location = new System.Drawing.Point(327, 3);
             this.serverStopButton.Name = "serverStopButton";
-            this.serverStopButton.Size = new System.Drawing.Size(269, 27);
+            this.serverStopButton.Size = new System.Drawing.Size(319, 27);
             this.serverStopButton.TabIndex = 1;
             this.serverStopButton.Text = "Stop";
             this.serverStopButton.UseVisualStyleBackColor = true;
@@ -205,7 +205,7 @@ partial class ExternalToolForm
             this.tabSecurity.Location = new System.Drawing.Point(4, 25);
             this.tabSecurity.Name = "tabSecurity";
             this.tabSecurity.Padding = new System.Windows.Forms.Padding(3);
-            this.tabSecurity.Size = new System.Drawing.Size(550, 174);
+            this.tabSecurity.Size = new System.Drawing.Size(750, 174);
             this.tabSecurity.TabIndex = 1;
             this.tabSecurity.Text = "Security";
             this.tabSecurity.UseVisualStyleBackColor = true;
@@ -288,7 +288,7 @@ partial class ExternalToolForm
             | System.Windows.Forms.AnchorStyles.Right)));
             this.saveSettingsButton.Location = new System.Drawing.Point(12, 296);
             this.saveSettingsButton.Name = "saveSettingsButton";
-            this.saveSettingsButton.Size = new System.Drawing.Size(558, 24);
+            this.saveSettingsButton.Size = new System.Drawing.Size(658, 24);
             this.saveSettingsButton.TabIndex = 6;
             this.saveSettingsButton.Text = "Save current settings as default";
             this.saveSettingsButton.UseVisualStyleBackColor = true;
@@ -300,7 +300,7 @@ partial class ExternalToolForm
             | System.Windows.Forms.AnchorStyles.Right)));
             this.panelHeader.Location = new System.Drawing.Point(12, 12);
             this.panelHeader.Name = "panelHeader";
-            this.panelHeader.Size = new System.Drawing.Size(558, 74);
+            this.panelHeader.Size = new System.Drawing.Size(658, 74);
             this.panelHeader.TabIndex = 1;
             // 
             // statusLabel
@@ -309,13 +309,13 @@ partial class ExternalToolForm
             | System.Windows.Forms.AnchorStyles.Right)));
             this.statusLabel.Location = new System.Drawing.Point(12, 327);
             this.statusLabel.Name = "statusLabel";
-            this.statusLabel.Size = new System.Drawing.Size(558, 17);
+            this.statusLabel.Size = new System.Drawing.Size(658, 17);
             this.statusLabel.TabIndex = 2;
             this.statusLabel.Text = "No status available";
             // 
             // ExternalToolForm
             // 
-            this.ClientSize = new System.Drawing.Size(582, 353);
+            this.ClientSize = new System.Drawing.Size(682, 353);
             this.Controls.Add(this.saveSettingsButton);
             this.Controls.Add(this.statusLabel);
             this.Controls.Add(this.panelHeader);
