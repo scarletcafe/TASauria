@@ -440,6 +440,43 @@ Consider doing this another way.
 This is equivalent to the Lua `client.pause_av()` and `client.unpause_av()`.
 
 
+## Reboot core
+::: warning SECURITY
+This command requires '**Allow client control**' to be enabled in the TASauria plugin security settings.
+This permission is usually enabled by default.
+:::
+```ansi
+[0;34mPOST[0m   [0;30mhttp://127.0.0.1:20251[0m/client/rebootcore
+```
+::: code-group
+```typescript [Argument schema]
+{
+    /* none */
+}
+```
+```typescript [Response schema]
+{
+    /* Whether the command succeeded. This should always be true. */
+    success: boolean,
+}
+```
+```json [Example arguments]
+{}
+```
+```json [Example response]
+{
+    "success": true,
+    "status": 200,
+    "messageIdentifier": null
+}
+```
+:::
+
+Reboots the current core.
+
+This is equivalent to the Lua `client.reboot_core()`.
+
+
 ## Seek
 ::: warning SECURITY
 Setting a seek target requires '**Allow client control**' to be enabled in the TASauria plugin security settings.
@@ -480,6 +517,58 @@ This permission is usually enabled by default.
 Returns the current seek state, and optionally sets a new seek target.
 
 This is equivalent to the Lua `client.isseeking()` and `client.seekframe()`.
+
+
+## Speed
+::: warning SECURITY
+Setting a speed requires '**Allow client control**' to be enabled in the TASauria plugin security settings.
+This permission is usually enabled by default.
+:::
+```ansi
+[0;34mPOST[0m   [0;30mhttp://127.0.0.1:20251[0m/client/speed
+```
+::: code-group
+```typescript [Argument schema]
+{
+    /* Optionally sets a speed for the emulator to change to. */
+    /* This is a percentage, so 100 is normal speed. */
+    percentage: number?
+}
+```
+```typescript [Response schema]
+{
+    /* The speed the emulator was running at before this action. */
+    percentage: number,
+}
+```
+```json [Example arguments]
+{
+    "percentage": 50,
+}
+```
+```json [Example response]
+{
+    "percentage": 100,
+    "status": 200,
+    "messageIdentifier": null
+}
+```
+:::
+
+Returns the current emulation speed, and optionally sets a new target speed.
+
+The `percentage` provided is merely a target, i.e., this sets the frame limiter.
+
+If BizHawk completes its frame faster than required for the target speed, it will lock the main thread in order to slow down.
+This means that if a low target speed is set, commands will take longer to execute and the client will be less responsive for the user.
+
+In order to avoid scripts accidentally enforcing painfully slow target speeds, TASauria will clamp the provided percentage between 5% and 5000%.
+
+If you need speeds slower than this, you should consider pausing the emulator instead and advancing frames manually at the desired pace.
+
+It's still possible for the user to inadvertently slow TASauria down by manually setting a lower speed.
+
+This is equivalent to the Lua `client.speedmode()`.
 
 
 ## System ID
