@@ -11,6 +11,7 @@ public class ReadRangeInput {
 
 public class ReadRangeOutput {
     public byte[] Data { get; set; } = [];
+    public string Domain { get; set; } = "";
 }
 
 public class ReadRangeCommand : EmulatorCommand<ReadRangeInput, ReadRangeOutput>
@@ -23,12 +24,16 @@ public class ReadRangeCommand : EmulatorCommand<ReadRangeInput, ReadRangeOutput>
 
     public override ReadRangeOutput RunSync(ApiContainer api, Dictionary<string, string> arguments, ReadRangeInput payload)
     {
-        var bytes = api.Memory.ReadByteRange(
-            payload.Address, payload.Size, payload.Domain ?? api.Memory.GetCurrentMemoryDomain()
-        );
+        string domain = payload.Domain ?? api.Memory.GetCurrentMemoryDomain();
+
+        // Probably not necessary, but for good measure and consistency
+        api.Memory.SetBigEndian(true);
+
+        var bytes = api.Memory.ReadByteRange(payload.Address, payload.Size, domain);
 
         return new ReadRangeOutput {
-            Data = [.. bytes]
+            Data = [.. bytes],
+            Domain = domain,
         };
     }
 }

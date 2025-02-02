@@ -3,7 +3,7 @@ namespace ScarletCafe.TASauriaPlugin.Commands.Client;
 using System.Collections.Generic;
 using BizHawk.Common;
 
-public class InfoOutput {
+public class VersionOutput {
     public string StableVersion { get; set; } = "";
     public string ReleaseDate { get; set; } = "";
     public string GitBranch { get; set; } = "";
@@ -13,17 +13,17 @@ public class InfoOutput {
     public string? CustomBuildString { get; set; } = "";
 }
 
-public class InfoCommand : Command<NoArguments, InfoOutput>
+public class VersionCommand : Command<NoArguments, VersionOutput>
 {
-    public InfoCommand():
+    public VersionCommand():
         base(
-            @"/client/info"
+            @"/client/version"
         )
     {}
 
-    public override InfoOutput Run(Dictionary<string, string> arguments, NoArguments payload)
+    public override VersionOutput Run(Dictionary<string, string> arguments, NoArguments payload)
     {
-        return new InfoOutput {
+        return new VersionOutput {
             StableVersion = VersionInfo.MainVersion,
             ReleaseDate = VersionInfo.ReleaseDate,
             GitBranch = VersionInfo.GIT_BRANCH,

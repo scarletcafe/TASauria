@@ -8,11 +8,13 @@ public class ReadIntegerInput {
     public int Address { get; set; }
     public int Size { get; set; }
     public bool Signed { get; set; }
+    public bool Little { get; set; } = false;
     public string? Domain { get; set; }
 }
 
 public class ReadIntegerOutput {
     public long Data { get; set; }
+    public string Domain { get; set; } = "";
 }
 
 public class ReadIntegerCommand : EmulatorCommand<ReadIntegerInput, ReadIntegerOutput>
@@ -27,6 +29,8 @@ public class ReadIntegerCommand : EmulatorCommand<ReadIntegerInput, ReadIntegerO
     {
         long value = 0;
         string domain = payload.Domain ?? api.Memory.GetCurrentMemoryDomain();
+
+        api.Memory.SetBigEndian(!payload.Little);
 
         switch (payload.Size) {
             case 0:
@@ -57,6 +61,7 @@ public class ReadIntegerCommand : EmulatorCommand<ReadIntegerInput, ReadIntegerO
 
         return new ReadIntegerOutput {
             Data = value,
+            Domain = domain,
         };
     }
 }

@@ -180,9 +180,9 @@ If no core is loaded, `frameCount` will be `0`.
 This is equivalent to the Lua `emu.framecount()`.
 
 
-## Info
+## Game info
 ```ansi
-[0;34mPOST[0m   [0;30mhttp://127.0.0.1:20251[0m/client/info
+[0;34mPOST[0m   [0;30mhttp://127.0.0.1:20251[0m/client/game
 ```
 ::: code-group
 ```typescript [Argument schema]
@@ -192,21 +192,42 @@ This is equivalent to the Lua `emu.framecount()`.
 ```
 ```typescript [Response schema]
 {
-    /* The stable version number associated with this build. */
-    /* If this is a development build, this is the last release version before it. */
-    stableVersion: string,
-    /* The release date of the last stable build in natural English. */
-    releaseDate: string,
-    /* The git branch used for this build. */
-    gitBranch: string,
-    /* The git hash from which this build was made. */
-    gitHash: string,
-    /* The git revision (commit number) from which this build was made. */
-    gitRevision: string,
-    /* Whether this is a development version or not. */
-    isDevelopmentVersion: boolean,
-    /* A custom build string, if applicable. */
-    customBuildString: string?
+    /* Whether a game is currently loaded or not. */
+    loaded: boolean,
+    /* The name of the game that is loaded. */
+    name: string,
+    /* The system the game is for. */
+    system: string,
+    /* The region the game is for. */
+    region: string,
+    /* The board type the game uses. */
+    boardType: string,
+    /* The unique game hash */
+    hash: string,
+    /* Whether this ROM itself is in the database or not */
+    inDatabase: boolean,
+    /* The status of this ROM in the BizHawk database */
+    /* Can be any of:          */
+    /* - "GoodDump"            */
+    /* - "BadDump"             */
+    /* - "Homebrew"            */
+    /* - "TranslatedRom"       */
+    /* - "Hack"                */
+    /* - "Unknown"             */
+    /* - "Bios"                */
+    /* - "Overdump"            */
+    /* - "NotInDatabase"       */
+    /* - "Imperfect"           */
+    /* - "Unimplemented"       */
+    /* - "NotWorking"          */
+    databaseStatus: string,
+    /* Whether this game dump is considered 'bad' or not in the database */
+    databaseStatusBad: boolean,
+    /* The options associated with the current game. */
+    /* These are highly-core specific and you will need to test with your own game if you need to pull something from this. */
+    gameOptions: {
+        [name: string]: string
+    }
 }
 ```
 ```json [Example arguments]
@@ -214,24 +235,34 @@ This is equivalent to the Lua `emu.framecount()`.
 ```
 ```json [Example response]
 {
-    "stableVersion": "2.10",
-    "releaseDate": "January 7, 2025",
-    "gitBranch": "HEAD",
-    "gitHash": "dd232820493c05296c304b64bf09c57ff1e4812f",
-    "gitRevision": "22067",
-    "isDevelopmentVersion": false,
-    "customBuildString": null,
+    "loaded": true,
+    "name": "Super Mario Bros.",
+    "system": "NES",
+    "region": "",
+    "boardType": "NROM",
+    "hash": "EA343F4E445A9050D4B4FBAC2C77D0693B1D0922",
+    "inDatabase": true,
+    "databaseStatus": "GoodDump",
+    "databaseStatusBad": false,
+    "gameOptions": {},
     "status": 200,
     "messageIdentifier": null
 }
 ```
 :::
 
-Returns information about the version of BizHawk the plugin is running in.
+Returns information about the currently loaded game.
 
-This command reads the information from the assembly, and so it does not interrupt the main thread at all, and will still function even if the emulator is locked up.
+If no game or core is loaded, `loaded` will be `false` and most of the fields will be either `null` or some default value.
 
-This is equivalent to the Lua `client.getversion()`.
+This is equivalent to these Lua functions:
+- `gameinfo.getboardtype()`,
+- `gameinfo.getoptions()`,
+- `gameinfo.getromhash()`,
+- `gameinfo.getromname()`,
+- `gameinfo.getstatus()`,
+- `gameinfo.indatabase()`,
+- `gameinfo.isstatusbad()`
 
 
 ## Lag count
@@ -500,3 +531,57 @@ This is equivalent to the Lua `emu.getdisplaytype()`.
 Returns the current turbo state.
 
 This is equivalent to the Lua `client.isturbo()`.
+
+
+## Version
+```ansi
+[0;34mPOST[0m   [0;30mhttp://127.0.0.1:20251[0m/client/version
+```
+::: code-group
+```typescript [Argument schema]
+{
+    /* none */
+}
+```
+```typescript [Response schema]
+{
+    /* The stable version number associated with this build. */
+    /* If this is a development build, this is the last release version before it. */
+    stableVersion: string,
+    /* The release date of the last stable build in natural English. */
+    releaseDate: string,
+    /* The git branch used for this build. */
+    gitBranch: string,
+    /* The git hash from which this build was made. */
+    gitHash: string,
+    /* The git revision (commit number) from which this build was made. */
+    gitRevision: string,
+    /* Whether this is a development version or not. */
+    isDevelopmentVersion: boolean,
+    /* A custom build string, if applicable. */
+    customBuildString: string?
+}
+```
+```json [Example arguments]
+{}
+```
+```json [Example response]
+{
+    "stableVersion": "2.10",
+    "releaseDate": "January 7, 2025",
+    "gitBranch": "HEAD",
+    "gitHash": "dd232820493c05296c304b64bf09c57ff1e4812f",
+    "gitRevision": "22067",
+    "isDevelopmentVersion": false,
+    "customBuildString": null,
+    "status": 200,
+    "messageIdentifier": null
+}
+```
+:::
+
+Returns information about the version of BizHawk the plugin is running in.
+
+This command reads the information from the assembly, and so it does not interrupt the main thread at all, and will still function even if the emulator is locked up.
+
+This is equivalent to the Lua `client.getversion()`.
