@@ -122,7 +122,7 @@ This permission is usually enabled by default.
     /* If this is false, then the emulator will be paused after this frame, regardless of whether it was paused or not before. */
     /* If this is true, then the emulator will be unpaused after this frame, regardless of whether it was paused or not before. */
     /* If this is null, then it will leave the emulator in whatever pause state it was previously in. */
-    unpause: boolean?
+    unpause?: boolean
 }
 ```
 ```typescript [Response schema]
@@ -352,7 +352,7 @@ This permission is usually enabled by default.
     /* If this is true, the emulator will pause. */
     /* If this is false, the emulator will unpause. */
     /* If this is null, the pause state will not change (e.g. if you only want to check the pause state) */
-    set: boolean?
+    set?: boolean
 }
 ```
 ```typescript [Response schema]
@@ -402,7 +402,7 @@ This permission is usually enabled by default.
     /* If this is true, the A/V will pause. */
     /* If this is false, the A/V will unpause. */
     /* If this is null, the A/V pause state will not change (e.g. if you only want to check the pause state) */
-    set: boolean?
+    set?: boolean
 }
 ```
 ```typescript [Response schema]
@@ -491,7 +491,7 @@ This permission is usually enabled by default.
     /* Optionally sets a frame to seek to. */
     /* If this is present, the emulator will begin seeking to this frame. */
     /* If this is null, the seek state will not change (e.g. if you only want to check the seek state) */
-    frame: boolean?
+    frame?: boolean
 }
 ```
 ```typescript [Response schema]
@@ -532,7 +532,7 @@ This permission is usually enabled by default.
 {
     /* Optionally sets a speed for the emulator to change to. */
     /* This is a percentage, so 100 is normal speed. */
-    percentage: number?
+    percentage?: number
 }
 ```
 ```typescript [Response schema]
@@ -664,7 +664,7 @@ This is equivalent to the Lua `client.isturbo()`.
     /* Whether this is a development version or not. */
     isDevelopmentVersion: boolean,
     /* A custom build string, if applicable. */
-    customBuildString: string?
+    customBuildString?: string
 }
 ```
 ```json [Example arguments]

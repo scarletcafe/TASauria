@@ -46,7 +46,6 @@ The path argument can either be present or not present, i.e. `/test/echo` and `/
 If the path argument is provided, it's included in the response as `pathMessage`.
 
 
-
 ## Wait
 ```ansi
 [0;34mPOST[0m   [0;30mhttp://127.0.0.1:20251[0m/test/wait

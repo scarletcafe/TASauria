@@ -102,11 +102,11 @@ This permission is usually enabled by default.
     /* If this is true, then the integer is read as little-endian. */
     /* If this is false, then the integer is read as big-endian. */
     /* If this is null or not provided, the integer is read as big-endian. */
-    little: boolean?,
+    little?: boolean,
     /* Which memory domain to read from. */
     /* If this is null, the default memory domain set by the core is used. */
-    /* If the domain specified does not exist it will read the default memory domain set by the core instead. */
-    domain: string?,
+    /* If the domain specified does not exist it will read from the default memory domain set by the core instead. */
+    domain?: string,
 }
 ```
 ```typescript [Response schema]
@@ -174,11 +174,11 @@ This permission is usually enabled by default.
     /* If this is true, then the float is read as little-endian. */
     /* If this is false, then the float is read as big-endian. */
     /* If this is null or not provided, the float is read as big-endian. */
-    little: boolean?,
+    little?: boolean,
     /* Which memory domain to read from. */
     /* If this is null, the default memory domain set by the core is used. */
-    /* If the domain specified does not exist it will read the default memory domain set by the core instead. */
-    domain: string?,
+    /* If the domain specified does not exist it will read from the default memory domain set by the core instead. */
+    domain?: string,
 }
 ```
 ```typescript [Response schema]
@@ -230,8 +230,8 @@ This permission is usually enabled by default.
     size: number,
     /* Which memory domain to read from. */
     /* If this is null, the default memory domain set by the core is used. */
-    /* If the domain specified does not exist it will read the default memory domain set by the core instead. */
-    domain: string?,
+    /* If the domain specified does not exist it will read from the default memory domain set by the core instead. */
+    domain?: string,
 }
 ```
 ```typescript [Response schema]
@@ -283,7 +283,7 @@ This permission is usually enabled by default.
     /* Which memory domain to read from. */
     /* If this is null, the default memory domain set by the core is used. */
     /* If the domain specified does not exist it will read the default memory domain set by the core instead. */
-    domain: string?,
+    domain?: string,
 }
 ```
 ```typescript [Response schema]
@@ -318,3 +318,204 @@ If no core is loaded or the core does not support memory reading this command wi
 
 There is no direct Lua equivalent for this, but this can be used to achieve similar means as `comm.mmfCopyFromMemory()`.
 
+
+## Write integer
+::: danger SECURITY
+This command requires '**Allow writing memory**' to be enabled in the TASauria plugin security settings.
+This permission is usually **DISABLED** by default, and must be enabled by the user to be accessible.
+:::
+```ansi
+[0;34mPOST[0m   [0;30mhttp://127.0.0.1:20251[0m/memory/writeinteger
+```
+::: code-group
+```typescript [Argument schema]
+{
+    /* The address to write to as a zero-indexed offset. */
+    address: number,
+    /* The size of the integer to write in *bytes* */
+    /* This can be a value from 1 (8-bit) to 4 (32-bit). */
+    size: number,
+    /* Whether the value should be written as signed or not. */
+    /* If this is true, it will write a s8/s16/s24/s32. */
+    /* If this is false it will write a u8/u16/u24/u32. */
+    signed: boolean,
+    /* Determines the endianness of this write. */
+    /* If this is true, then the integer is written as little-endian. */
+    /* If this is false, then the integer is written as big-endian. */
+    /* If this is null or not provided, the integer is written as big-endian. */
+    little?: boolean,
+    /* The integer to write to this address. */
+    data: number,
+    /* Which memory domain to write to. */
+    /* If this is null, the default memory domain set by the core is used. */
+    /* If the domain specified does not exist it will write to the default memory domain set by the core instead. */
+    domain?: string,
+}
+```
+```typescript [Response schema]
+{
+    /* The value of the integer that was at the memory address before the write occurred. */
+    data: number,
+    /* The memory domain to which the value was written. */
+    domain: string,
+}
+```
+```json [Example arguments]
+{
+    "address": 8192,
+    "size": 4,
+    "signed": true,
+    "little": false,
+    "data": 50000,
+    "domain": "RDRAM",
+}
+```
+```json [Example response]
+{
+    "data": 324,
+    "domain": "RDRAM",
+    "status": 200,
+    "messageIdentifier": null
+}
+```
+:::
+
+Writes a signed or unsigned integer of the requested size to the specified memory address with the specified endianness.
+
+If no core is loaded or the core does not support memory writing this command will return an error.
+
+This is equivalent to these Lua functions:
+- `mainmemory.write_u8()` and `memory.write_u8()` (when `size: 1` and `signed: false`),
+- `mainmemory.write_s8()` and `memory.write_s8()` (when `size: 1` and `signed: true`),
+- `mainmemory.write_u16_be()` and `memory.write_u16_be()` (when `size: 2`, `signed: false` and `little: false`),
+- `mainmemory.write_u16_le()` and `memory.write_u16_le()` (when `size: 2`, `signed: false` and `little: true`),
+- `mainmemory.write_s16_be()` and `memory.write_s16_be()` (when `size: 2`, `signed: true` and `little: false`),
+- `mainmemory.write_s16_le()` and `memory.write_s16_le()` (when `size: 2`, `signed: true` and `little: true`),
+- `mainmemory.write_u24_be()` and `memory.write_u24_be()` (when `size: 3`, `signed: false` and `little: false`),
+- `mainmemory.write_u24_le()` and `memory.write_u24_le()` (when `size: 3`, `signed: false` and `little: true`),
+- `mainmemory.write_s24_be()` and `memory.write_s24_be()` (when `size: 3`, `signed: true` and `little: false`),
+- `mainmemory.write_s24_le()` and `memory.write_s24_le()` (when `size: 3`, `signed: true` and `little: true`),
+- `mainmemory.write_u32_be()` and `memory.write_u32_be()` (when `size: 4`, `signed: false` and `little: false`),
+- `mainmemory.write_u32_le()` and `memory.write_u32_le()` (when `size: 4`, `signed: false` and `little: true`),
+- `mainmemory.write_s32_be()` and `memory.write_s32_be()` (when `size: 4`, `signed: true` and `little: false`),
+- `mainmemory.write_s32_le()` and `memory.write_s32_le()` (when `size: 4`, `signed: true` and `little: true`)
+
+
+## Write float
+::: danger SECURITY
+This command requires '**Allow writing memory**' to be enabled in the TASauria plugin security settings.
+This permission is usually **DISABLED** by default, and must be enabled by the user to be accessible.
+:::
+```ansi
+[0;34mPOST[0m   [0;30mhttp://127.0.0.1:20251[0m/memory/writefloat
+```
+::: code-group
+```typescript [Argument schema]
+{
+    /* The address to write to as a zero-indexed offset. */
+    address: number,
+    /* Determines the endianness of this write. */
+    /* If this is true, then the float is written as little-endian. */
+    /* If this is false, then the float is written as big-endian. */
+    /* If this is null or not provided, the float is written as big-endian. */
+    little?: boolean,
+    /* The float to write to this address. */
+    data: number,
+    /* Which memory domain to write to. */
+    /* If this is null, the default memory domain set by the core is used. */
+    /* If the domain specified does not exist it will write to the default memory domain set by the core instead. */
+    domain?: string,
+}
+```
+```typescript [Response schema]
+{
+    /* The value of the float at the memory address before the write occurred */
+    data: number,
+    /* The memory domain to which the value was written. */
+    domain: string,
+}
+```
+```json [Example arguments]
+{
+    "address": 12288,
+    "little": false,
+    "data": 2.5,
+    "domain": "RDRAM",
+}
+```
+```json [Example response]
+{
+    "data": 1.75,
+    "domain": "RDRAM",
+    "status": 200,
+    "messageIdentifier": null
+}
+```
+:::
+
+Writes a float to the specified memory address with the specified endianness.
+
+If no core is loaded or the core does not support memory writing this command will return an error.
+
+This is equivalent to the Lua `mainmemory.writefloat()` and `memory.writefloat()`.
+
+
+## Write range
+::: danger SECURITY
+This command requires '**Allow writing memory**' to be enabled in the TASauria plugin security settings.
+This permission is usually **DISABLED** by default, and must be enabled by the user to be accessible.
+:::
+```ansi
+[0;34mPOST[0m   [0;30mhttp://127.0.0.1:20251[0m/memory/writerange
+```
+::: code-group
+```typescript [Argument schema]
+{
+    /* The address to begin writing to as a zero-indexed offset. */
+    address: number,
+    /* The data to write, encoded as a Base64 string. */
+    /* This also determines the size of the range to write. */
+    data: string,
+    /* Which memory domain to write to. */
+    /* If this is null, the default memory domain set by the core is used. */
+    /* If the domain specified does not exist it will write to the default memory domain set by the core instead. */
+    domain?: string,
+}
+```
+```typescript [Response schema]
+{
+    /* The bytes that occupied the range before it was written, encoded as a Base64 string. */
+    /* The size of this will match the size of the buffer provided. */
+    data: string,
+    /* The memory domain to which the value was written. */
+    domain: string,
+}
+```
+```json [Example arguments]
+{
+    "address": 128,
+    "data": "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8gISIjJCUmJygpKissLS4vMDEyMzQ1Njc4OTo7PD0+Pw==",
+    "domain": "RDRAM",
+}
+```
+```json [Example response]
+{
+    "data": "PBqABydauIADQAAIAAAAAI1rABAxawABFWD/8AAAAAA8C7AAjWQACDwBABACwCglAIEgIzwBbAc0IYllAKEAGQ==",
+    "domain": "RDRAM",
+    "status": 200,
+    "messageIdentifier": null
+}
+```
+:::
+
+Reads a contiguous byte range from memory with the specified size at the address given.
+
+The `data` field in the request should contain a Base64-encoded string that represents the raw byte range to write.
+
+The `data` field in the response contains a Base64-encoded string that represents the raw byte range before the writing occurred.
+
+Both should use the RFC 4648 'standard' Base64 alphabet (i.e., it uses `+` and `/` as opposed to the URL-safe `-` and `_`), with the padding preserved (the trailing `=`s are not removed).
+
+If no core is loaded or the core does not support memory writing this command will return an error.
+
+This is equivalent to the Lua `mainmemory.write_bytes_as_array()` and `memory.write_bytes_as_array()`, and can be used to achieve similar means as `comm.mmfCopyToMemory()`.

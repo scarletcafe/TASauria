@@ -4,38 +4,35 @@ using System.Collections.Generic;
 using BizHawk.Client.Common;
 using Newtonsoft.Json.Linq;
 
-public class ReadFloatInput {
+public class WriteFloatInput {
     public int Address { get; set; }
     public bool Little { get; set; } = false;
+    public double Data { get; set; }
     public string? Domain { get; set; }
 }
 
-public class ReadFloatOutput {
-    public double Data { get; set; }
-    public string Domain { get; set; } = "";
-}
-
-public class ReadFloatCommand : EmulatorCommand<ReadFloatInput, ReadFloatOutput>
+public class WriteFloatCommand : EmulatorCommand<WriteFloatInput, ReadFloatOutput>
 {
-    public ReadFloatCommand():
+    public WriteFloatCommand():
         base(
-            @"/memory/readfloat"
+            @"/memory/writefloat"
         )
     {}
 
     public override bool SecurityCheck(Dictionary<string, string> arguments, JObject input) {
-        return GlobalState.configuration.SecurityAllowMemoryRead;
+        return GlobalState.configuration.SecurityAllowMemoryWrite;
     }
 
-    public override string SecurityRemarks { get; } = "This command requires 'Allow reading memory' to be enabled in the TASauria plugin security settings.";
+    public override string SecurityRemarks { get; } = "This command requires 'Allow writing memory' to be enabled in the TASauria plugin security settings.";
 
-    public override ReadFloatOutput RunSync(ApiContainer api, Dictionary<string, string> arguments, ReadFloatInput payload)
+    public override ReadFloatOutput RunSync(ApiContainer api, Dictionary<string, string> arguments, WriteFloatInput payload)
     {
         string domain = payload.Domain ?? api.Memory.GetCurrentMemoryDomain();
 
         api.Memory.SetBigEndian(!payload.Little);
 
         float value = api.Memory.ReadFloat(payload.Address, domain);
+        api.Memory.WriteFloat(payload.Address, (float)payload.Data, domain);
 
         return new ReadFloatOutput {
             Data = value,
