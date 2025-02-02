@@ -11,20 +11,7 @@ public sealed partial class ExternalToolForm : ToolFormBase, IExternalToolForm {
     protected override string WindowTitleStatic
         => "TASauria";
 
-    #region APIs
-    // Requesting these three APIs specifically somehow invokes some black magic that makes
-    // EmuHawk index the assembly on launch, allowing the server to be booted without user
-    // interaction in the Background Hook build of TASauria.
-    // Removing any of these seems to stop the assembly from being loaded at launch, I'm honestly
-    // not totally sure why.
-    [OptionalApi]
-    public IEmuClientApi? EmuClientAPI { get; set; }
-    [OptionalApi]
-    public IEmulationApi? EmulationAPI { get; set; }
-    [OptionalApi]
-    public IGuiApi? GuiAPI { get; set; }
-
-    // API container - this is what we will actually use.
+#region APIs
     public ApiContainer? _maybeAPIContainer { get; set; }
 
     private ApiContainer APIs
@@ -34,19 +21,14 @@ public sealed partial class ExternalToolForm : ToolFormBase, IExternalToolForm {
 #region Convenience
     private string ServerHostSetting {
         get {
-            switch (hostSelectorComboBox.SelectedIndex) {
-                case 0:
-                default:
-                    return "127.0.0.1";
-                case 1:
-                    return "[::1]";
-                case 2:
-                    return "0.0.0.0";
-                case 3:
-                    return "[::]";
-                case 4:
-                    return customHostTextBox.Text.Trim();
-            }
+            return hostSelectorComboBox.SelectedIndex switch
+            {
+                1 => "[::1]",
+                2 => "0.0.0.0",
+                3 => "[::]",
+                4 => customHostTextBox.Text.Trim(),
+                _ => "127.0.0.1",
+            };
         }
         set {
             // Resets the custom host text box for if this is not actually a custom host
@@ -110,14 +92,9 @@ public sealed partial class ExternalToolForm : ToolFormBase, IExternalToolForm {
     }
 
 #region EmuHawk events
-
     protected override void GeneralUpdate() {
-        if (!GlobalState.IsBackgroundHooked)
-        {
-            GlobalState.GeneralUpdate(APIs, false);
-        }
+        GlobalState.GeneralUpdate(APIs);
     }
-
 #endregion
 
 #region WinForms
@@ -136,31 +113,35 @@ public sealed partial class ExternalToolForm : ToolFormBase, IExternalToolForm {
     private void serverStartButton_Click(object sender, EventArgs e)
     {
         WriteConfiguration();
-        GlobalState.StartServer();
+        if (GlobalState.server == null) {
+            GlobalState.StartServer();
+        }
         UpdateServerHostVisibility();
     }
 
     private void serverStopButton_Click(object sender, EventArgs e)
     {
-        GlobalState.StopServer();
+        if (GlobalState.server != null) {
+            GlobalState.StopServer();
+        }
         UpdateServerHostVisibility();
     }
     #endregion
 
     private void ExternalToolForm_FormClosing(object sender, FormClosingEventArgs e)
     {
-#if !TASAURIA_BACKGROUND_EXECUTION
-        DialogResult result = MessageBox.Show(
-            "If the server is running, it will no longer be able to interact with the emulator until the external tool window is reopened.",
-            "Are you sure you want to exit TASauria?",
-            MessageBoxButtons.YesNo
-        );
+        if (GlobalState.server != null) {
+            DialogResult result = MessageBox.Show(
+                "The TASauria server can only interact with the emulator while this external tool window is open.\nIf you close it, the server will be automatically stopped.\nAre you sure you want to exit TASauria?",
+                "Are you sure you want to exit TASauria?",
+                MessageBoxButtons.YesNo
+            );
 
-        if (result == DialogResult.No) {
-            e.Cancel = true;
-        } else {
-            GlobalState.StopServer();
+            if (result == DialogResult.No) {
+                e.Cancel = true;
+            } else {
+                GlobalState.StopServer();
+            }
         }
-#endif
     }
 }

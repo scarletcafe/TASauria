@@ -3,20 +3,13 @@
         <LangVersion>12.0</LangVersion>
         <Nullable>enable</Nullable>
         <TargetFramework>net48</TargetFramework>
-        <Configurations>Debug;Debug Background;Release;Release Background</Configurations>
+        <Configurations>Debug;Release</Configurations>
     </PropertyGroup>
     <PropertyGroup Condition=" '$(BIZHAWK_HOME)' == '' ">
         <BIZHAWK_HOME>$(ProjectDir)../BizHawk/output/</BIZHAWK_HOME>
     </PropertyGroup>
     <PropertyGroup Condition=" '$(BIZHAWK_DATA_HOME)' == '' ">
         <BIZHAWK_DATA_HOME>$(BIZHAWK_HOME)</BIZHAWK_DATA_HOME>
-    </PropertyGroup>
-    <PropertyGroup Condition="$(Configuration.EndsWith('Background'))">
-        <TASauriaBackgroundExecution>true</TASauriaBackgroundExecution>
-        <DefineConstants>$(DefineConstants);TASAURIA_BACKGROUND_EXECUTION</DefineConstants>
-    </PropertyGroup>
-    <PropertyGroup Condition="!$(Configuration.EndsWith('Background'))">
-        <TASauriaBackgroundExecution>false</TASauriaBackgroundExecution>
     </PropertyGroup>
     <ItemGroup>
         <!-- General reference assemblies -->
@@ -28,9 +21,6 @@
         <!-- Required for JSON deserialization -->
         <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
 
-        <!-- Required to do code injection to load the server in the background -->
-        <PackageReference Include="Lib.Harmony" Version="2.3.3" PrivateAssets="all" Condition="$(TASauriaBackgroundExecution) == 'true'" />
-
         <!-- Required by BizHawk -->
         <Reference Include="System.Windows.Forms" />
         <Reference Include="BizHawk.Bizware.Graphics" HintPath="$(BIZHAWK_HOME)dll/BizHawk.Bizware.Graphics.dll" />
@@ -41,12 +31,10 @@
         <Reference Include="BizHawk.WinForms.Controls" HintPath="$(BIZHAWK_HOME)dll/BizHawk.WinForms.Controls.dll" />
     </ItemGroup>
     <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-        <Copy Condition="$(TASauriaBackgroundExecution) == 'true'" SourceFiles="$(OutputPath)0Harmony.dll" DestinationFolder="$(BIZHAWK_DATA_HOME)ExternalTools"  />
         <Copy SourceFiles="$(OutputPath)$(MSBuildProjectName).dll" DestinationFolder="$(BIZHAWK_DATA_HOME)ExternalTools" />
         <Copy SourceFiles="$(OutputPath)websocket-sharp.dll" DestinationFolder="$(BIZHAWK_DATA_HOME)ExternalTools" />
     </Target>
     <Target Name="PostClean" AfterTargets="Clean">
-        <Delete Files="$(BIZHAWK_DATA_HOME)ExternalTools/0Harmony.dll" />
         <Delete Files="$(BIZHAWK_DATA_HOME)ExternalTools/$(MSBuildProjectName).dll" />
         <Delete Files="$(BIZHAWK_DATA_HOME)ExternalTools/websocket-sharp.dll" />
     </Target>
