@@ -18,8 +18,24 @@ public interface ICommand {
     public Dictionary<string, string>? TestPath(string path);
 
     /// <summary>
+    /// Determines whether this command is allowed to be run with the current security settings.
+    /// Commands implement this to predicate their execution on security conditions.
+    /// </summary>
+    /// <param name="arguments">Any arguments parsed from the command path</param>
+    /// <param name="input">The payload content, as a generic parsed JObject</param>
+    /// <returns>Whether this command is allowed to run.</returns>
+    public bool SecurityCheck(Dictionary<string, string> arguments, JObject input);
+
+    /// <summary>
+    /// Any remarks the command has as to its security requirements.
+    /// This information will be relayed to the client if the security check fails.
+    /// </summary>
+    public string SecurityRemarks { get; }
+
+    /// <summary>
     /// Attempts to run the command using the provided payload.
     /// </summary>
+    /// <param name="arguments">Any arguments parsed from the command path</param>
     /// <param name="input">The payload content, as a generic parsed JObject</param>
     /// <returns>The response from the command, as a generic JObject</returns>
     public JObject Execute(Dictionary<string, string> arguments, JObject input);
@@ -48,6 +64,12 @@ public abstract class Command<Input, Output>: ICommand {
     }
 
     public abstract Output Run(Dictionary<string, string> arguments, Input payload);
+
+    public virtual bool SecurityCheck(Dictionary<string, string> arguments, JObject input) {
+        return true;
+    }
+
+    public virtual string SecurityRemarks { get; } = "";
 
     public Dictionary<string, string>? TestPath(string path)
     {

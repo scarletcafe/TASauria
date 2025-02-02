@@ -27,7 +27,14 @@ public static class Registry {
         JObject output;
 
         if (command != null) {
-            output = command.Execute(arguments!, input);
+            if (command.SecurityCheck(arguments!, input)) {
+                output = command.Execute(arguments!, input);
+            } else {
+                output = new JObject {
+                    { "status", 403 },
+                    { "error", $"Security check failed: {command.SecurityRemarks}" }
+                };
+            }
         } else {
             output = new JObject
             {

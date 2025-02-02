@@ -2,7 +2,7 @@ namespace ScarletCafe.TASauriaPlugin.Commands.Client;
 
 using System.Collections.Generic;
 using BizHawk.Client.Common;
-
+using Newtonsoft.Json.Linq;
 
 public class PauseAVCommand : EmulatorCommand<PauseInput, PauseOutput>
 {
@@ -11,6 +11,12 @@ public class PauseAVCommand : EmulatorCommand<PauseInput, PauseOutput>
             @"/client/pauseav"
         )
     {}
+
+    public override bool SecurityCheck(Dictionary<string, string> arguments, JObject input) {
+        return GlobalState.configuration.SecurityAllowClientControl || input?.GetValue("set")?.ToObject<bool?>() == null;
+    }
+
+    public override string SecurityRemarks { get; } = "To set pause state, this command requires 'Allow client control' to be enabled in the TASauria plugin security settings.";
 
     public override PauseOutput RunSync(ApiContainer api, Dictionary<string, string> arguments, PauseInput payload)
     {

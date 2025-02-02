@@ -79,6 +79,10 @@ This is equivalent to the Lua `memory.getmemorydomainlist()` and `memory.getmemo
 
 
 ## Read integer
+::: warning SECURITY
+This command requires '**Allow reading memory**' to be enabled in the TASauria plugin security settings.
+This permission is usually enabled by default.
+:::
 ```ansi
 [0;34mPOST[0m   [0;30mhttp://127.0.0.1:20251[0m/memory/readinteger
 ```
@@ -154,6 +158,10 @@ This is equivalent to these Lua functions:
 
 
 ## Read float
+::: warning SECURITY
+This command requires '**Allow reading memory**' to be enabled in the TASauria plugin security settings.
+This permission is usually enabled by default.
+:::
 ```ansi
 [0;34mPOST[0m   [0;30mhttp://127.0.0.1:20251[0m/memory/readfloat
 ```
@@ -206,6 +214,10 @@ This is equivalent to the Lua `mainmemory.readfloat()` and `memory.readfloat()`.
 
 
 ## Read range
+::: warning SECURITY
+This command requires '**Allow reading memory**' to be enabled in the TASauria plugin security settings.
+This permission is usually enabled by default.
+:::
 ```ansi
 [0;34mPOST[0m   [0;30mhttp://127.0.0.1:20251[0m/memory/readrange
 ```
@@ -258,6 +270,10 @@ This is equivalent to the Lua `mainmemory.read_bytes_as_array()` and `memory.rea
 
 
 ## Read entire domain
+::: warning SECURITY
+This command requires '**Allow reading memory**' to be enabled in the TASauria plugin security settings.
+This permission is usually enabled by default.
+:::
 ```ansi
 [0;34mPOST[0m   [0;30mhttp://127.0.0.1:20251[0m/memory/readdomain
 ```

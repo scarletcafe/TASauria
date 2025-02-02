@@ -2,7 +2,7 @@ namespace ScarletCafe.TASauriaPlugin.Commands.Client;
 
 using System.Collections.Generic;
 using BizHawk.Client.Common;
-
+using Newtonsoft.Json.Linq;
 
 public class SeekInput {
     public int? Frame { get; set; } = null;
@@ -19,6 +19,12 @@ public class SeekingCommand : EmulatorCommand<SeekInput, SeekOutput>
             @"/client/seek"
         )
     {}
+
+    public override bool SecurityCheck(Dictionary<string, string> arguments, JObject input) {
+        return GlobalState.configuration.SecurityAllowClientControl || input?.GetValue("frame")?.ToObject<int?>() == null;
+    }
+
+    public override string SecurityRemarks { get; } = "To seek, this command requires 'Allow client control' to be enabled in the TASauria plugin security settings.";
 
     public override SeekOutput RunSync(ApiContainer api, Dictionary<string, string> arguments, SeekInput payload)
     {

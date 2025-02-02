@@ -3,6 +3,7 @@ namespace ScarletCafe.TASauriaPlugin.Commands.Memory;
 using System;
 using System.Collections.Generic;
 using BizHawk.Client.Common;
+using Newtonsoft.Json.Linq;
 
 public class ReadFloatInput {
     public int Address { get; set; }
@@ -22,6 +23,12 @@ public class ReadFloatCommand : EmulatorCommand<ReadFloatInput, ReadFloatOutput>
             @"/memory/readfloat"
         )
     {}
+
+    public override bool SecurityCheck(Dictionary<string, string> arguments, JObject input) {
+        return GlobalState.configuration.SecurityAllowMemoryRead;
+    }
+
+    public override string SecurityRemarks { get; } = "This command requires 'Allow reading memory' to be enabled in the TASauria plugin security settings.";
 
     public override ReadFloatOutput RunSync(ApiContainer api, Dictionary<string, string> arguments, ReadFloatInput payload)
     {

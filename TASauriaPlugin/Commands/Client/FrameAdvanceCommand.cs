@@ -2,7 +2,7 @@ namespace ScarletCafe.TASauriaPlugin.Commands.Client;
 
 using System.Collections.Generic;
 using BizHawk.Client.Common;
-
+using Newtonsoft.Json.Linq;
 
 public class FrameAdvanceInput {
     public bool? Unpause { get; set; } = null;
@@ -15,6 +15,12 @@ public class FrameAdvanceCommand : EmulatorCommand<FrameAdvanceInput, FrameCount
             @"/client/frameadvance"
         )
     {}
+
+    public override bool SecurityCheck(Dictionary<string, string> arguments, JObject input) {
+        return GlobalState.configuration.SecurityAllowClientControl;
+    }
+
+    public override string SecurityRemarks { get; } = "This command requires 'Allow client control' to be enabled in the TASauria plugin security settings.";
 
     public override FrameCountOutput RunSync(ApiContainer api, Dictionary<string, string> arguments, FrameAdvanceInput payload)
     {

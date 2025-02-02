@@ -85,6 +85,18 @@ public sealed partial class ExternalToolForm : ToolFormBase, IExternalToolForm {
 
         ServerHostSetting = GlobalState.configuration.ServerHost;
         portNumericUpDown.Value = GlobalState.configuration.ServerPort;
+        serverStartOnLoad.Checked = GlobalState.configuration.ServerStartAutomatically;
+
+        secAllowClientControl.Checked = GlobalState.configuration.SecurityAllowClientControl;
+        secAllowJoypad.Checked = GlobalState.configuration.SecurityAllowJoypadSystemInput;
+        secAllowMemoryRead.Checked = GlobalState.configuration.SecurityAllowMemoryRead;
+        secAllowMemoryWrite.Checked = GlobalState.configuration.SecurityAllowMemoryWrite;
+        secAllowSavestate.Checked = GlobalState.configuration.SecurityAllowSavestate;
+        secAllowROMLoad.Checked = GlobalState.configuration.SecurityAllowROMManagement;
+
+        if (GlobalState.configuration.ServerStartAutomatically && GlobalState.server == null) {
+            GlobalState.StartServer();
+        }
 
         UpdateServerHostVisibility();
 
@@ -98,13 +110,30 @@ public sealed partial class ExternalToolForm : ToolFormBase, IExternalToolForm {
 #endregion
 
 #region WinForms
+    private void ExternalToolForm_FormClosing(object sender, FormClosingEventArgs e)
+    {
+        if (GlobalState.server != null) {
+            DialogResult result = MessageBox.Show(
+                "The TASauria server can only interact with the emulator while this external tool window is open.\nIf you close it, the server will be automatically stopped.\nAre you sure you want to exit TASauria?",
+                "Are you sure you want to exit TASauria?",
+                MessageBoxButtons.YesNo
+            );
+
+            if (result == DialogResult.No) {
+                e.Cancel = true;
+            } else {
+                GlobalState.StopServer();
+            }
+        }
+    }
+
     private void hostSelectorComboBox_SelectedIndexChanged(object sender, EventArgs e)
     {
         // The custom host text box should only be visible if the user has selected to provide a custom host value.
         customHostTextBox.Visible = hostSelectorComboBox.SelectedIndex == 4;
     }
 
-    private void saveHostSettingsButton_Click(object sender, EventArgs e)
+    private void saveSettingsButton_Click(object sender, EventArgs e)
     {
         WriteConfiguration();
         GlobalState.SaveConfig();
@@ -126,22 +155,42 @@ public sealed partial class ExternalToolForm : ToolFormBase, IExternalToolForm {
         }
         UpdateServerHostVisibility();
     }
-    #endregion
 
-    private void ExternalToolForm_FormClosing(object sender, FormClosingEventArgs e)
+    private void serverStartOnLoad_CheckedChanged(object sender, EventArgs e)
     {
-        if (GlobalState.server != null) {
-            DialogResult result = MessageBox.Show(
-                "The TASauria server can only interact with the emulator while this external tool window is open.\nIf you close it, the server will be automatically stopped.\nAre you sure you want to exit TASauria?",
-                "Are you sure you want to exit TASauria?",
-                MessageBoxButtons.YesNo
-            );
-
-            if (result == DialogResult.No) {
-                e.Cancel = true;
-            } else {
-                GlobalState.StopServer();
-            }
-        }
+        GlobalState.configuration.ServerStartAutomatically = serverStartOnLoad.Checked;
     }
+
+    private void secAllowClientControl_CheckedChanged(object sender, EventArgs e)
+    {
+        GlobalState.configuration.SecurityAllowClientControl = secAllowClientControl.Checked;
+    }
+
+    private void secAllowJoypad_CheckedChanged(object sender, EventArgs e)
+    {
+        GlobalState.configuration.SecurityAllowJoypadSystemInput = secAllowJoypad.Checked;
+    }
+
+    private void secAllowMemoryRead_CheckedChanged(object sender, EventArgs e)
+    {
+        GlobalState.configuration.SecurityAllowMemoryRead = secAllowMemoryRead.Checked;
+    }
+
+    private void secAllowMemoryWrite_CheckedChanged(object sender, EventArgs e)
+    {
+        GlobalState.configuration.SecurityAllowMemoryWrite = secAllowMemoryWrite.Checked;
+    }
+
+    private void secAllowSavestate_CheckedChanged(object sender, EventArgs e)
+    {
+        GlobalState.configuration.SecurityAllowSavestate = secAllowSavestate.Checked;
+    }
+
+    private void secAllowROMLoad_CheckedChanged(object sender, EventArgs e)
+    {
+        GlobalState.configuration.SecurityAllowROMManagement = secAllowROMLoad.Checked;
+    }
+
+#endregion
+
 }

@@ -2,6 +2,7 @@ namespace ScarletCafe.TASauriaPlugin.Commands.Memory;
 
 using System.Collections.Generic;
 using BizHawk.Client.Common;
+using Newtonsoft.Json.Linq;
 
 public class ReadRangeInput {
     public int Address { get; set; }
@@ -21,6 +22,12 @@ public class ReadRangeCommand : EmulatorCommand<ReadRangeInput, ReadRangeOutput>
             @"/memory/readrange"
         )
     {}
+
+    public override bool SecurityCheck(Dictionary<string, string> arguments, JObject input) {
+        return GlobalState.configuration.SecurityAllowMemoryRead;
+    }
+
+    public override string SecurityRemarks { get; } = "This command requires 'Allow reading memory' to be enabled in the TASauria plugin security settings.";
 
     public override ReadRangeOutput RunSync(ApiContainer api, Dictionary<string, string> arguments, ReadRangeInput payload)
     {
