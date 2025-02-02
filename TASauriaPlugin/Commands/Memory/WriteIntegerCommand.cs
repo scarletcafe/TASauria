@@ -3,13 +3,17 @@ namespace ScarletCafe.TASauriaPlugin.Commands.Memory;
 using System;
 using System.Collections.Generic;
 using BizHawk.Client.Common;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 public class WriteIntegerInput {
+    [JsonProperty(Required = Required.Always)]
     public int Address { get; set; }
+    [JsonProperty(Required = Required.Always)]
     public int Size { get; set; }
-    public bool Signed { get; set; }
+    public bool Signed { get; set; } = true;
     public bool Little { get; set; } = false;
+    [JsonProperty(Required = Required.Always)]
     public long Data { get; set; }
     public string? Domain { get; set; }
 }

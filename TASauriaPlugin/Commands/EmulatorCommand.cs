@@ -6,7 +6,11 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using BizHawk.Client.Common;
 
-public abstract class EmulatorCommand<Input, Output> : Command<Input, Output> where Output: class {
+public abstract class EmulatorCommand<Input, Output>
+    : Command<Input, Output>
+    where Input: class
+    where Output: class
+{
 
     public EmulatorCommand(Regex pattern) : base(pattern) {}
     public EmulatorCommand(string pattern) : base(pattern) {}

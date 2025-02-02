@@ -42,7 +42,7 @@ public class Server {
                 }
             }
 
-            Handle(response, request.RawUrl, input);
+            Handle(response, request.Url.AbsolutePath, input);
         };
 
         // HTTP POST handler
@@ -68,7 +68,7 @@ public class Server {
                 input = [];
             }
 
-            Handle(response, request.RawUrl, input);
+            Handle(response, request.Url.AbsolutePath, input);
         };
 
         httpServer.AddWebSocketService<WebsocketHandler>("/websocket");

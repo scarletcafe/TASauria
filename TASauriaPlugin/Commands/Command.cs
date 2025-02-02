@@ -41,7 +41,7 @@ public interface ICommand {
     public JObject Execute(Dictionary<string, string> arguments, JObject input);
 }
 
-public abstract class Command<Input, Output>: ICommand {
+public abstract class Command<Input, Output>: ICommand where Input: class {
 
     private static readonly JsonSerializer jsonSerializer = JsonSerializer.Create(new JsonSerializerSettings {
         ContractResolver = new DefaultContractResolver()
@@ -86,7 +86,13 @@ public abstract class Command<Input, Output>: ICommand {
     public JObject Execute(Dictionary<string, string> arguments, JObject input)
     {
         // Convert input to type
-        Input? convertedInput = input.ToObject<Input>(jsonSerializer);
+        Input? convertedInput = null;
+        try {
+            convertedInput = input.ToObject<Input>(jsonSerializer);
+        } catch (JsonSerializationException) {
+            // Missing fields or fields of wrong type
+            // We leave convertedInput as null and it gets handled below
+        }
 
         if (convertedInput != null) {
             try {

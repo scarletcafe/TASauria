@@ -2,10 +2,13 @@ namespace ScarletCafe.TASauriaPlugin.Commands.Memory;
 
 using System.Collections.Generic;
 using BizHawk.Client.Common;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 public class ReadRangeInput {
+    [JsonProperty(Required = Required.Always)]
     public int Address { get; set; }
+    [JsonProperty(Required = Required.Always)]
     public int Size { get; set; }
     public string? Domain { get; set; }
 }

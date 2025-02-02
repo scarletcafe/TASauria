@@ -3,10 +3,13 @@ namespace ScarletCafe.TASauriaPlugin.Commands.Joypad;
 using System;
 using System.Collections.Generic;
 using BizHawk.Client.Common;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 public class SetButtonInput {
+    [JsonProperty(Required = Required.Always)]
     public string Name { get; set; } = "";
+    [JsonProperty(Required = Required.Always)]
     public bool Value;
     public int? Controller { get; set; }
 }

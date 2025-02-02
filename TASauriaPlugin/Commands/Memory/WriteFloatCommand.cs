@@ -2,11 +2,14 @@ namespace ScarletCafe.TASauriaPlugin.Commands.Memory;
 
 using System.Collections.Generic;
 using BizHawk.Client.Common;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 public class WriteFloatInput {
+    [JsonProperty(Required = Required.Always)]
     public int Address { get; set; }
     public bool Little { get; set; } = false;
+    [JsonProperty(Required = Required.Always)]
     public double Data { get; set; }
     public string? Domain { get; set; }
 }

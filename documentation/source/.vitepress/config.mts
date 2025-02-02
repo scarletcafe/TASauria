@@ -42,6 +42,7 @@ export default defineConfig({
           { text: 'Client commands', link: '/http-ws-api/client-commands' },
           { text: 'Joypad commands', link: '/http-ws-api/joypad-commands' },
           { text: 'Memory commands', link: '/http-ws-api/memory-commands' },
+          { text: 'Savestate commands', link: '/http-ws-api/savestate-commands' },
           { text: 'Test commands', link: '/http-ws-api/test-commands' },
         ]
       }
