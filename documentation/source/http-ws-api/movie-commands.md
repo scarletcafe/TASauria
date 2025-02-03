@@ -153,10 +153,6 @@ This is equivalent to the Lua `movie.getreadonly()` and `movie.setreadonly()`.
 
 
 ## Get movie
-::: danger SECURITY
-This command requires '**Allow movie management**' to be enabled in the TASauria plugin security settings.
-This permission is usually **DISABLED** by default, and must be enabled by the user to be accessible.
-:::
 ```ansi
 [0;34mPOST[0m   [0;30mhttp://127.0.0.1:20251[0m/movie/get
 ```

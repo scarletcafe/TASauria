@@ -8,7 +8,7 @@ public class FrameAdvanceInput {
     public bool? Unpause { get; set; } = null;
 }
 
-public class FrameAdvanceCommand : EmulatorCommand<FrameAdvanceInput, FrameCountOutput>
+public class FrameAdvanceCommand : EmulatorCommand<FrameAdvanceInput, FrameStatusOutput>
 {
     public FrameAdvanceCommand():
         base(
@@ -22,7 +22,7 @@ public class FrameAdvanceCommand : EmulatorCommand<FrameAdvanceInput, FrameCount
 
     public override string SecurityRemarks { get; } = "This command requires 'Allow client control' to be enabled in the TASauria plugin security settings.";
 
-    public override FrameCountOutput RunSync(ApiContainer api, Dictionary<string, string> arguments, FrameAdvanceInput payload)
+    public override FrameStatusOutput RunSync(ApiContainer api, Dictionary<string, string> arguments, FrameAdvanceInput payload)
     {
         int frameCount = api.Emulation.FrameCount();
         bool pause = payload.Unpause == null ? api.EmuClient.IsPaused() : !(bool)payload.Unpause;
@@ -33,7 +33,7 @@ public class FrameAdvanceCommand : EmulatorCommand<FrameAdvanceInput, FrameCount
             api.EmuClient.DoFrameAdvanceAndUnpause();
         }
 
-        return new FrameCountOutput {
+        return new FrameStatusOutput {
             FrameCount = frameCount
         };
     }

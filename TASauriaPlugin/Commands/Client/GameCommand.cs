@@ -8,8 +8,9 @@ public class GameOutput {
     public bool Loaded { get; set; }
     public string? Name { get; set; }
     public string? System { get; set; }
-    public string? Region { get; set; }
     public string? BoardType { get; set; }
+    public string? Region { get; set; }
+    public string? DisplayType { get; set; }
     public string? Hash { get; set; }
     public bool? InDatabase { get; set; }
     public string? DatabaseStatus { get; set; }
@@ -34,8 +35,9 @@ public class GameCommand : EmulatorCommand<NoArguments, GameOutput>
             Loaded = gameInfo != null && gameInfo.System != "NULL",
             Name = gameInfo?.Name,
             System = gameInfo?.System,
-            Region = gameInfo?.Region,
             BoardType = api.Emulation.GetBoardName(),
+            Region = gameInfo?.Region,
+            DisplayType = api.Emulation.GetDisplayType(),
             Hash = gameInfo?.Hash,
             InDatabase = !gameInfo?.NotInDatabase,
             DatabaseStatus = gameInfo?.Status.ToString(),

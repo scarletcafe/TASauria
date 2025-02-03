@@ -2,111 +2,6 @@
 # Client commands (`/client`)
 
 
-## Board name
-```ansi
-[0;34mPOST[0m   [0;30mhttp://127.0.0.1:20251[0m/client/boardname
-```
-::: code-group
-```typescript [Argument schema]
-{
-    /* none */
-}
-```
-```typescript [Response schema]
-{
-    /* The board name */
-    boardName: string,
-}
-```
-```json [Example arguments]
-{}
-```
-```json [Example response]
-{
-    "boardName": "NROM",
-    "status": 200,
-    "messageIdentifier": null
-}
-```
-:::
-
-Returns the currently loaded board name.
-If there is no core loaded, or the current core does not have different board types, `boardName` will be an empty string `""`.
-
-This is equivalent to the Lua `emu.getboardname()`.
-
-
-## Cycle count
-```ansi
-[0;34mPOST[0m   [0;30mhttp://127.0.0.1:20251[0m/client/cyclecount
-```
-::: code-group
-```typescript [Argument schema]
-{
-    /* none */
-}
-```
-```typescript [Response schema]
-{
-    /* The total executed cycles at the time of the command execution */
-    cycleCount: number,
-}
-```
-```json [Example arguments]
-{}
-```
-```json [Example response]
-{
-    "cycleCount": 100,
-    "status": 200,
-    "messageIdentifier": null
-}
-```
-:::
-
-Returns the total number of executed cycles.
-
-If no core is loaded, `cycleCount` will be `0`.
-
-If the loaded core doesn't support cycle counting, `cycleCount` will be `0`.
-
-This is equivalent to the Lua `emu.totalexecutedcycles()`.
-
-
-## Display type
-```ansi
-[0;34mPOST[0m   [0;30mhttp://127.0.0.1:20251[0m/client/displaytype
-```
-::: code-group
-```typescript [Argument schema]
-{
-    /* none */
-}
-```
-```typescript [Response schema]
-{
-    /* The display type, e.g. PAL or NTSC */
-    displayType: string,
-}
-```
-```json [Example arguments]
-{}
-```
-```json [Example response]
-{
-    "displayType": "PAL",
-    "status": 200,
-    "messageIdentifier": null
-}
-```
-:::
-
-Returns the display type determined by the current ROM and core.
-If no core is currently loaded, `displayType` will be an empty string `""`.
-
-This is equivalent to the Lua `emu.getdisplaytype()`.
-
-
 ## Frame advance
 ::: warning SECURITY
 This command requires '**Allow client control**' to be enabled in the TASauria plugin security settings.
@@ -150,9 +45,9 @@ Advances the active emulation core by 1 frame.
 This is equivalent to the Lua `emu.frameadvance()`.
 
 
-## Frame count
+## Frame status
 ```ansi
-[0;34mPOST[0m   [0;30mhttp://127.0.0.1:20251[0m/client/framecount
+[0;34mPOST[0m   [0;30mhttp://127.0.0.1:20251[0m/client/framestatus
 ```
 ::: code-group
 ```typescript [Argument schema]
@@ -162,8 +57,14 @@ This is equivalent to the Lua `emu.frameadvance()`.
 ```
 ```typescript [Response schema]
 {
+    /* The total executed cycles at the time of the command execution */
+    cycleCount: number,
     /* The frame the emulator was on at the time of the command execution */
     frameCount: number,
+    /* The amount of lag frames elapsed since the core booted. */
+    lagCount: number,
+    /* Whether the frame that the command was executed was a lag frame. */
+    lagged: boolean,
 }
 ```
 ```json [Example arguments]
@@ -171,17 +72,25 @@ This is equivalent to the Lua `emu.frameadvance()`.
 ```
 ```json [Example response]
 {
-    "frameCount": 100,
+    "cycleCount": 5804814,
+    "frameCount": 195,
+    "lagCount": 6,
+    "lagged": false,
     "status": 200,
     "messageIdentifier": null
 }
 ```
 :::
 
-Returns the current frame in the core.
-If no core is loaded, `frameCount` will be `0`.
+Returns information about the current frame status of the core.
 
-This is equivalent to the Lua `emu.framecount()`.
+If no core is loaded or if the core doesn't support the counting type, some fields will be the default `0` or `false`.
+
+This is equivalent to these Lua functions:
+- `emu.totalexecutedcycles()`,
+- `emu.framecount()`,
+- `emu.lagcount()`,
+- `emu.islagged()`
 
 
 ## Game info
@@ -202,10 +111,12 @@ This is equivalent to the Lua `emu.framecount()`.
     name: string,
     /* The system the game is for. */
     system: string,
-    /* The region the game is for. */
-    region: string,
     /* The board type the game uses. */
     boardType: string,
+    /* The region the game is for. */
+    region: string,
+    /* The display type the game uses. */
+    displayType: string,
     /* The unique game hash */
     hash: string,
     /* Whether this ROM itself is in the database or not */
@@ -242,8 +153,9 @@ This is equivalent to the Lua `emu.framecount()`.
     "loaded": true,
     "name": "Super Mario Bros.",
     "system": "NES",
-    "region": "",
     "boardType": "NROM",
+    "region": "",
+    "displayType": "NTSC",
     "hash": "EA343F4E445A9050D4B4FBAC2C77D0693B1D0922",
     "inDatabase": true,
     "databaseStatus": "GoodDump",
@@ -260,81 +172,15 @@ Returns information about the currently loaded game.
 If no game or core is loaded, `loaded` will be `false` and most of the fields will be either `null` or some default value.
 
 This is equivalent to these Lua functions:
-- `gameinfo.getboardtype()`,
+- `gameinfo.getboardtype()` or `emu.getboardname()`,
 - `gameinfo.getoptions()`,
 - `gameinfo.getromhash()`,
 - `gameinfo.getromname()`,
 - `gameinfo.getstatus()`,
 - `gameinfo.indatabase()`,
-- `gameinfo.isstatusbad()`
-
-
-## Lag count
-```ansi
-[0;34mPOST[0m   [0;30mhttp://127.0.0.1:20251[0m/client/lagcount
-```
-::: code-group
-```typescript [Argument schema]
-{
-    /* none */
-}
-```
-```typescript [Response schema]
-{
-    /* The amount of lag frames elapsed since the core booted. */
-    lagCount: number,
-}
-```
-```json [Example arguments]
-{}
-```
-```json [Example response]
-{
-    "lagCount": 37,
-    "status": 200,
-    "messageIdentifier": null
-}
-```
-:::
-
-Returns the amount of lagged frames so far.
-If no core is loaded, `lagCount` will be `0`.
-
-This is equivalent to the Lua `emu.lagcount()`.
-
-
-## Is lagged
-```ansi
-[0;34mPOST[0m   [0;30mhttp://127.0.0.1:20251[0m/client/lagged
-```
-::: code-group
-```typescript [Argument schema]
-{
-    /* none */
-}
-```
-```typescript [Response schema]
-{
-    /* Whether the frame that the command was executed was a lag frame. */
-    lagged: boolean,
-}
-```
-```json [Example arguments]
-{}
-```
-```json [Example response]
-{
-    "lagged": false,
-    "status": 200,
-    "messageIdentifier": null
-}
-```
-:::
-
-Returns whether the current frame is a lag frame or not.
-If no core is loaded, `lagged` will be `false`.
-
-This is equivalent to the Lua `emu.islagged()`.
+- `gameinfo.isstatusbad()`,
+- `emu.getdisplaytype()`,
+- `emu.getsystemid()`
 
 
 ## Pause
@@ -569,40 +415,6 @@ If you need speeds slower than this, you should consider pausing the emulator in
 It's still possible for the user to inadvertently slow TASauria down by manually setting a lower speed.
 
 This is equivalent to the Lua `client.speedmode()`.
-
-
-## System ID
-```ansi
-[0;34mPOST[0m   [0;30mhttp://127.0.0.1:20251[0m/client/systemid
-```
-::: code-group
-```typescript [Argument schema]
-{
-    /* none */
-}
-```
-```typescript [Response schema]
-{
-    /* The system ID represented by the current core */
-    systemID: string,
-}
-```
-```json [Example arguments]
-{}
-```
-```json [Example response]
-{
-    "systemID": "N64",
-    "status": 200,
-    "messageIdentifier": null
-}
-```
-:::
-
-Returns the system ID of the currently loaded core.
-If there is no core loaded, `systemID` will be the string `"NULL"`
-
-This is equivalent to the Lua `emu.getdisplaytype()`.
 
 
 ## Turbo
