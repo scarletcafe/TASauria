@@ -2,3 +2,4 @@ endianness
 TASauria
 BizHawk
 analog
+NullHawk

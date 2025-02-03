@@ -21,7 +21,7 @@ public class ReadFloatCommand : EmulatorCommand<ReadFloatInput, ReadFloatOutput>
 {
     public ReadFloatCommand():
         base(
-            @"/memory/readfloat"
+            @"^/memory/readfloat$"
         )
     {}
 

@@ -16,12 +16,12 @@ public class SeekingCommand : EmulatorCommand<SeekInput, SeekOutput>
 {
     public SeekingCommand():
         base(
-            @"/client/seek"
+            @"^/client/seek$"
         )
     {}
 
     public override bool SecurityCheck(Dictionary<string, string> arguments, JObject input) {
-        return GlobalState.configuration.SecurityAllowClientControl || input?.GetValue("frame")?.Type == JTokenType.None;
+        return GlobalState.configuration.SecurityAllowClientControl || (input?.GetValue("frame")?.Type ?? JTokenType.Null) == JTokenType.Null;
     }
 
     public override string SecurityRemarks { get; } = "To seek, this command requires 'Allow client control' to be enabled in the TASauria plugin security settings.";

@@ -12,7 +12,7 @@ public class FrameCountCommand : EmulatorCommand<NoArguments, FrameCountOutput>
 {
     public FrameCountCommand():
         base(
-            @"/client/framecount"
+            @"^/client/framecount$"
         )
     {}
 

@@ -17,7 +17,7 @@ public class GetCommand : EmulatorCommand<GetInput, GetOutput>
 {
     public GetCommand():
         base(
-            @"/joypad/get"
+            @"^/joypad/get$"
         )
     {}
 

@@ -388,9 +388,9 @@ This is equivalent to the Lua `client.ispaused()`, `client.pause()`, and `client
 
 
 ## Pause A/V
-::: warning SECURITY
-Setting the pause state requires '**Allow client control**' to be enabled in the TASauria plugin security settings.
-This permission is usually enabled by default.
+::: danger SECURITY
+Setting the A/V pause state requires '**Allow A/V control**' to be enabled in the TASauria plugin security settings.
+This permission is usually **DISABLED** by default, and must be enabled by the user to be accessible.
 :::
 ```ansi
 [0;34mPOST[0m   [0;30mhttp://127.0.0.1:20251[0m/client/pauseav

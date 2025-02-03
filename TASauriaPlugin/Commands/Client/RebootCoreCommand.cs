@@ -12,7 +12,7 @@ public class RebootCoreCommand : EmulatorCommand<NoArguments, RebootCoreOutput>
 {
     public RebootCoreCommand():
         base(
-            @"/client/rebootcore"
+            @"^/client/rebootcore$"
         )
     {}
 

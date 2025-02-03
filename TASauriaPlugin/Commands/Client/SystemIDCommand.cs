@@ -12,7 +12,7 @@ public class SystemIDCommand : EmulatorCommand<NoArguments, SystemIDOutput>
 {
     public SystemIDCommand():
         base(
-            @"/client/systemid"
+            @"^/client/systemid$"
         )
     {}
 

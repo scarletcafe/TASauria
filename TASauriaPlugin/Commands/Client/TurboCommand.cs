@@ -12,7 +12,7 @@ public class TurboCommand : EmulatorCommand<NoArguments, TurboOutput>
 {
     public TurboCommand():
         base(
-            @"/client/turbo"
+            @"^/client/turbo$"
         )
     {}
 

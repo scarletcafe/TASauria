@@ -12,7 +12,7 @@ public class LagCountCommand : EmulatorCommand<NoArguments, LagCountOutput>
 {
     public LagCountCommand():
         base(
-            @"/client/lagcount"
+            @"^/client/lagcount$"
         )
     {}
 

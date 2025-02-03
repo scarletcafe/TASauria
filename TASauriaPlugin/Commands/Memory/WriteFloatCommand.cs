@@ -18,7 +18,7 @@ public class WriteFloatCommand : EmulatorCommand<WriteFloatInput, ReadFloatOutpu
 {
     public WriteFloatCommand():
         base(
-            @"/memory/writefloat"
+            @"^/memory/writefloat$"
         )
     {}
 

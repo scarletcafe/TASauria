@@ -22,7 +22,7 @@ public class WriteIntegerCommand : EmulatorCommand<WriteIntegerInput, ReadIntege
 {
     public WriteIntegerCommand():
         base(
-            @"/memory/writeinteger"
+            @"^/memory/writeinteger$"
         )
     {}
 

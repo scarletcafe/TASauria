@@ -19,7 +19,7 @@ public class DomainsCommand : EmulatorCommand<NoArguments, DomainsOutput>
 {
     public DomainsCommand():
         base(
-            @"/memory/domains"
+            @"^/memory/domains$"
         )
     {}
 

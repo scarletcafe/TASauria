@@ -9,7 +9,7 @@ public class GetImmediateCommand : EmulatorCommand<GetInput, GetOutput>
 {
     public GetImmediateCommand():
         base(
-            @"/joypad/getimmediate"
+            @"^/joypad/getimmediate$"
         )
     {}
 

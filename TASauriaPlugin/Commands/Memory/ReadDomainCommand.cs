@@ -12,7 +12,7 @@ public class ReadDomainCommand : EmulatorCommand<ReadDomainInput, ReadRangeOutpu
 {
     public ReadDomainCommand():
         base(
-            @"/memory/readdomain"
+            @"^/memory/readdomain$"
         )
     {}
 

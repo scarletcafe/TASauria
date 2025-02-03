@@ -21,7 +21,7 @@ public class GameCommand : EmulatorCommand<NoArguments, GameOutput>
 {
     public GameCommand():
         base(
-            @"/client/game"
+            @"^/client/game$"
         )
     {}
 

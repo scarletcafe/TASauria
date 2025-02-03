@@ -25,7 +25,7 @@ public class ReadIntegerCommand : EmulatorCommand<ReadIntegerInput, ReadIntegerO
 {
     public ReadIntegerCommand():
         base(
-            @"/memory/readinteger"
+            @"^/memory/readinteger$"
         )
     {}
 

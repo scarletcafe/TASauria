@@ -12,7 +12,7 @@ public class CycleCountCommand : EmulatorCommand<NoArguments, CycleCountOutput>
 {
     public CycleCountCommand():
         base(
-            @"/client/cyclecount"
+            @"^/client/cyclecount$"
         )
     {}
 

@@ -12,7 +12,7 @@ public class FrameAdvanceCommand : EmulatorCommand<FrameAdvanceInput, FrameCount
 {
     public FrameAdvanceCommand():
         base(
-            @"/client/frameadvance"
+            @"^/client/frameadvance$"
         )
     {}
 

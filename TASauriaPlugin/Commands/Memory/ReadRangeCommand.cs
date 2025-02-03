@@ -22,7 +22,7 @@ public class ReadRangeCommand : EmulatorCommand<ReadRangeInput, ReadRangeOutput>
 {
     public ReadRangeCommand():
         base(
-            @"/memory/readrange"
+            @"^/memory/readrange$"
         )
     {}
 

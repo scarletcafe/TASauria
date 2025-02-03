@@ -16,7 +16,7 @@ public class EchoCommand : Command<EchoInput, EchoOutput>
 {
     public EchoCommand():
         base(
-            @"/test/echo(?:/(?<PathContent>\w+))?"
+            @"^/test/echo(?:/(?<PathContent>\w+))?$"
         )
     {}
 

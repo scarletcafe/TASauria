@@ -17,7 +17,7 @@ public class VersionCommand : Command<NoArguments, VersionOutput>
 {
     public VersionCommand():
         base(
-            @"/client/version"
+            @"^/client/version$"
         )
     {}
 

@@ -16,7 +16,7 @@ public class WaitCommand : Command<WaitInput, WaitOutput>
 {
     public WaitCommand():
         base(
-            @"/test/wait"
+            @"^/test/wait$"
         )
     {}
 

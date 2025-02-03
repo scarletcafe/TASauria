@@ -92,6 +92,8 @@ public sealed partial class ExternalToolForm : ToolFormBase, IExternalToolForm {
         secAllowMemoryRead.Checked = GlobalState.configuration.SecurityAllowMemoryRead;
         secAllowMemoryWrite.Checked = GlobalState.configuration.SecurityAllowMemoryWrite;
         secAllowSavestate.Checked = GlobalState.configuration.SecurityAllowSavestate;
+        secAllowMovie.Checked = GlobalState.configuration.SecurityAllowMovieManagement;
+        secAllowAVControl.Checked = GlobalState.configuration.SecurityAllowAVControl;
         secAllowROMLoad.Checked = GlobalState.configuration.SecurityAllowROMManagement;
 
         if (GlobalState.configuration.ServerStartAutomatically && GlobalState.server == null) {
@@ -100,12 +102,20 @@ public sealed partial class ExternalToolForm : ToolFormBase, IExternalToolForm {
 
         UpdateServerHostVisibility();
 
+        saveSettingsButton.Enabled = false;
+
         Logging.Log("Form initialized");
     }
 
 #region EmuHawk events
     protected override void GeneralUpdate() {
         GlobalState.GeneralUpdate(APIs);
+
+        // After saving, show it in the status label for 1 second
+        if (DateTime.UtcNow < GlobalState.ConfigLastSaved.AddSeconds(1)) {
+            statusLabel.Text = "Settings saved.";
+            return;
+        }
 
         if (GlobalState.server != null) {
             Server server = GlobalState.server!;
@@ -138,12 +148,24 @@ public sealed partial class ExternalToolForm : ToolFormBase, IExternalToolForm {
     {
         // The custom host text box should only be visible if the user has selected to provide a custom host value.
         customHostTextBox.Visible = hostSelectorComboBox.SelectedIndex == 4;
+        saveSettingsButton.Enabled = true;
+    }
+
+    private void customHostTextBox_TextChanged(object sender, EventArgs e)
+    {
+        saveSettingsButton.Enabled = true;
+    }
+
+    private void portNumericUpDown_ValueChanged(object sender, EventArgs e)
+    {
+        saveSettingsButton.Enabled = true;
     }
 
     private void saveSettingsButton_Click(object sender, EventArgs e)
     {
         WriteConfiguration();
         GlobalState.SaveConfig();
+        saveSettingsButton.Enabled = false;
     }
 
     private void serverStartButton_Click(object sender, EventArgs e)
@@ -166,36 +188,54 @@ public sealed partial class ExternalToolForm : ToolFormBase, IExternalToolForm {
     private void serverStartOnLoad_CheckedChanged(object sender, EventArgs e)
     {
         GlobalState.configuration.ServerStartAutomatically = serverStartOnLoad.Checked;
+        saveSettingsButton.Enabled = true;
     }
 
     private void secAllowClientControl_CheckedChanged(object sender, EventArgs e)
     {
         GlobalState.configuration.SecurityAllowClientControl = secAllowClientControl.Checked;
+        saveSettingsButton.Enabled = true;
     }
 
     private void secAllowJoypad_CheckedChanged(object sender, EventArgs e)
     {
         GlobalState.configuration.SecurityAllowJoypadSystemInput = secAllowJoypad.Checked;
+        saveSettingsButton.Enabled = true;
     }
 
     private void secAllowMemoryRead_CheckedChanged(object sender, EventArgs e)
     {
         GlobalState.configuration.SecurityAllowMemoryRead = secAllowMemoryRead.Checked;
+        saveSettingsButton.Enabled = true;
     }
 
     private void secAllowMemoryWrite_CheckedChanged(object sender, EventArgs e)
     {
         GlobalState.configuration.SecurityAllowMemoryWrite = secAllowMemoryWrite.Checked;
+        saveSettingsButton.Enabled = true;
     }
 
     private void secAllowSavestate_CheckedChanged(object sender, EventArgs e)
     {
         GlobalState.configuration.SecurityAllowSavestate = secAllowSavestate.Checked;
+        saveSettingsButton.Enabled = true;
     }
 
+    private void secAllowMovie_CheckedChanged(object sender, EventArgs e)
+    {
+        GlobalState.configuration.SecurityAllowMovieManagement = secAllowMovie.Checked;
+        saveSettingsButton.Enabled = true;
+    }
+
+    private void secAllowAVControl_CheckedChanged(object sender, EventArgs e)
+    {
+        GlobalState.configuration.SecurityAllowAVControl = secAllowAVControl.Checked;
+        saveSettingsButton.Enabled = true;
+    }
     private void secAllowROMLoad_CheckedChanged(object sender, EventArgs e)
     {
         GlobalState.configuration.SecurityAllowROMManagement = secAllowROMLoad.Checked;
+        saveSettingsButton.Enabled = true;
     }
 
 #endregion

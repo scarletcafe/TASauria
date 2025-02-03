@@ -17,7 +17,7 @@ public class WriteRangeCommand : EmulatorCommand<WriteRangeInput, ReadRangeOutpu
 {
     public WriteRangeCommand():
         base(
-            @"/memory/writerange"
+            @"^/memory/writerange$"
         )
     {}
 

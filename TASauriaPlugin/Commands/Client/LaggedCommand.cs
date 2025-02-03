@@ -12,7 +12,7 @@ public class LaggedCommand : EmulatorCommand<NoArguments, LaggedOutput>
 {
     public LaggedCommand():
         base(
-            @"/client/lagged"
+            @"^/client/lagged$"
         )
     {}
 

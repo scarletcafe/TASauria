@@ -34,8 +34,11 @@ public static class GlobalState {
         configuration = ConfigService.Load<Configuration>(ConfigLocation);
     }
 
+    public static DateTime ConfigLastSaved { get; private set; } = new DateTime(1970, 1, 1);
+
     public static void SaveConfig() {
         ConfigService.Save(ConfigLocation, configuration);
+        ConfigLastSaved = DateTime.UtcNow;
     }
 
     public static void StartServer()

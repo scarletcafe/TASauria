@@ -12,7 +12,7 @@ public class DisplayTypeCommand : EmulatorCommand<NoArguments, DisplayTypeOutput
 {
     public DisplayTypeCommand():
         base(
-            @"/client/displaytype"
+            @"^/client/displaytype$"
         )
     {}
 

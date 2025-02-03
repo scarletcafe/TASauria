@@ -11,6 +11,8 @@ public class Configuration {
     public bool SecurityAllowMemoryRead { get; set; } = true;
     public bool SecurityAllowMemoryWrite { get; set; } = false;
     public bool SecurityAllowSavestate { get; set; } = false;
+    public bool SecurityAllowMovieManagement { get; set; } = false;
+    public bool SecurityAllowAVControl { get; set; } = false;
     public bool SecurityAllowROMManagement { get; set; } = false;
 
 }

@@ -22,7 +22,7 @@ public class SetAnalogCommand : EmulatorCommand<SetAnalogInput, SetAnalogOutput>
 {
     public SetAnalogCommand():
         base(
-            @"/joypad/setanalog"
+            @"^/joypad/setanalog$"
         )
     {}
 

@@ -22,7 +22,7 @@ public class SetButtonCommand : EmulatorCommand<SetButtonInput, SetButtonOutput>
 {
     public SetButtonCommand():
         base(
-            @"/joypad/setbutton"
+            @"^/joypad/setbutton$"
         )
     {}
 

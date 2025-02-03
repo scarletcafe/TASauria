@@ -12,7 +12,7 @@ public class BoardNameCommand : EmulatorCommand<NoArguments, BoardNameOutput>
 {
     public BoardNameCommand():
         base(
-            @"/client/boardname"
+            @"^/client/boardname$"
         )
     {}
 

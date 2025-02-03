@@ -15,7 +15,7 @@ public class SetCommand : EmulatorCommand<SetInput, GetOutput>
 {
     public SetCommand():
         base(
-            @"/joypad/set"
+            @"^/joypad/set$"
         )
     {}
 

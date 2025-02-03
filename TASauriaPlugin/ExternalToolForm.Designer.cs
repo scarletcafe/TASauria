@@ -32,6 +32,8 @@ partial class ExternalToolForm
             this.saveSettingsButton = new System.Windows.Forms.Button();
             this.panelHeader = new System.Windows.Forms.Panel();
             this.statusLabel = new System.Windows.Forms.Label();
+            this.secAllowMovie = new System.Windows.Forms.CheckBox();
+            this.secAllowAVControl = new System.Windows.Forms.CheckBox();
             this.mainTabSelector.SuspendLayout();
             this.tabServer.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.portNumericUpDown)).BeginInit();
@@ -49,7 +51,7 @@ partial class ExternalToolForm
             this.mainTabSelector.Location = new System.Drawing.Point(12, 92);
             this.mainTabSelector.Name = "mainTabSelector";
             this.mainTabSelector.SelectedIndex = 0;
-            this.mainTabSelector.Size = new System.Drawing.Size(658, 203);
+            this.mainTabSelector.Size = new System.Drawing.Size(658, 253);
             this.mainTabSelector.TabIndex = 0;
             // 
             // tabServer
@@ -64,7 +66,7 @@ partial class ExternalToolForm
             this.tabServer.Location = new System.Drawing.Point(4, 25);
             this.tabServer.Name = "tabServer";
             this.tabServer.Padding = new System.Windows.Forms.Padding(3);
-            this.tabServer.Size = new System.Drawing.Size(650, 174);
+            this.tabServer.Size = new System.Drawing.Size(650, 224);
             this.tabServer.TabIndex = 0;
             this.tabServer.Text = "Server";
             this.tabServer.UseVisualStyleBackColor = true;
@@ -90,6 +92,7 @@ partial class ExternalToolForm
             this.customHostTextBox.TabIndex = 5;
             this.customHostTextBox.Text = "127.0.0.1";
             this.customHostTextBox.Visible = false;
+            this.customHostTextBox.TextChanged += new System.EventHandler(this.customHostTextBox_TextChanged);
             // 
             // portInfoLabel
             // 
@@ -123,6 +126,7 @@ partial class ExternalToolForm
             0,
             0,
             0});
+            this.portNumericUpDown.ValueChanged += new System.EventHandler(this.portNumericUpDown_ValueChanged);
             // 
             // hostInfoLabel
             // 
@@ -159,7 +163,7 @@ partial class ExternalToolForm
             this.serverLifecycleButtonPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.serverLifecycleButtonPanel.Controls.Add(this.serverStartButton, 0, 0);
             this.serverLifecycleButtonPanel.Controls.Add(this.serverStopButton, 1, 0);
-            this.serverLifecycleButtonPanel.Location = new System.Drawing.Point(0, 140);
+            this.serverLifecycleButtonPanel.Location = new System.Drawing.Point(0, 190);
             this.serverLifecycleButtonPanel.Name = "serverLifecycleButtonPanel";
             this.serverLifecycleButtonPanel.RowCount = 1;
             this.serverLifecycleButtonPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
@@ -196,6 +200,8 @@ partial class ExternalToolForm
             // 
             // tabSecurity
             // 
+            this.tabSecurity.Controls.Add(this.secAllowAVControl);
+            this.tabSecurity.Controls.Add(this.secAllowMovie);
             this.tabSecurity.Controls.Add(this.secAllowROMLoad);
             this.tabSecurity.Controls.Add(this.secAllowSavestate);
             this.tabSecurity.Controls.Add(this.secAllowMemoryWrite);
@@ -205,7 +211,7 @@ partial class ExternalToolForm
             this.tabSecurity.Location = new System.Drawing.Point(4, 25);
             this.tabSecurity.Name = "tabSecurity";
             this.tabSecurity.Padding = new System.Windows.Forms.Padding(3);
-            this.tabSecurity.Size = new System.Drawing.Size(750, 174);
+            this.tabSecurity.Size = new System.Drawing.Size(650, 224);
             this.tabSecurity.TabIndex = 1;
             this.tabSecurity.Text = "Security";
             this.tabSecurity.UseVisualStyleBackColor = true;
@@ -213,7 +219,7 @@ partial class ExternalToolForm
             // secAllowROMLoad
             // 
             this.secAllowROMLoad.AutoSize = true;
-            this.secAllowROMLoad.Location = new System.Drawing.Point(6, 131);
+            this.secAllowROMLoad.Location = new System.Drawing.Point(6, 181);
             this.secAllowROMLoad.Name = "secAllowROMLoad";
             this.secAllowROMLoad.Size = new System.Drawing.Size(222, 19);
             this.secAllowROMLoad.TabIndex = 5;
@@ -284,9 +290,9 @@ partial class ExternalToolForm
             // 
             // saveSettingsButton
             // 
-            this.saveSettingsButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.saveSettingsButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.saveSettingsButton.Location = new System.Drawing.Point(12, 296);
+            this.saveSettingsButton.Location = new System.Drawing.Point(12, 346);
             this.saveSettingsButton.Name = "saveSettingsButton";
             this.saveSettingsButton.Size = new System.Drawing.Size(658, 24);
             this.saveSettingsButton.TabIndex = 6;
@@ -307,15 +313,37 @@ partial class ExternalToolForm
             // 
             this.statusLabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.statusLabel.Location = new System.Drawing.Point(12, 327);
+            this.statusLabel.Location = new System.Drawing.Point(12, 377);
             this.statusLabel.Name = "statusLabel";
             this.statusLabel.Size = new System.Drawing.Size(658, 17);
             this.statusLabel.TabIndex = 2;
             this.statusLabel.Text = "No status available";
             // 
+            // secAllowMovie
+            // 
+            this.secAllowMovie.AutoSize = true;
+            this.secAllowMovie.Location = new System.Drawing.Point(6, 131);
+            this.secAllowMovie.Name = "secAllowMovie";
+            this.secAllowMovie.Size = new System.Drawing.Size(189, 19);
+            this.secAllowMovie.TabIndex = 6;
+            this.secAllowMovie.Text = "Allow movie management";
+            this.secAllowMovie.UseVisualStyleBackColor = true;
+            this.secAllowMovie.CheckedChanged += new System.EventHandler(this.secAllowMovie_CheckedChanged);
+            // 
+            // secAllowAVControl
+            // 
+            this.secAllowAVControl.AutoSize = true;
+            this.secAllowAVControl.Location = new System.Drawing.Point(6, 156);
+            this.secAllowAVControl.Name = "secAllowAVControl";
+            this.secAllowAVControl.Size = new System.Drawing.Size(143, 19);
+            this.secAllowAVControl.TabIndex = 7;
+            this.secAllowAVControl.Text = "Allow A/V control";
+            this.secAllowAVControl.UseVisualStyleBackColor = true;
+            this.secAllowAVControl.CheckedChanged += new System.EventHandler(this.secAllowAVControl_CheckedChanged);
+            // 
             // ExternalToolForm
             // 
-            this.ClientSize = new System.Drawing.Size(682, 353);
+            this.ClientSize = new System.Drawing.Size(682, 403);
             this.Controls.Add(this.saveSettingsButton);
             this.Controls.Add(this.statusLabel);
             this.Controls.Add(this.panelHeader);
@@ -354,4 +382,6 @@ partial class ExternalToolForm
     private CheckBox secAllowMemoryRead;
     private Label statusLabel;
     private CheckBox serverStartOnLoad;
+    private CheckBox secAllowAVControl;
+    private CheckBox secAllowMovie;
 }
