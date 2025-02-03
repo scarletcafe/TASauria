@@ -2,6 +2,43 @@
 # Client commands (`/client`)
 
 
+## Close ROM
+::: danger SECURITY
+Setting the A/V pause state requires '**Allow loading and closing ROMs**' to be enabled in the TASauria plugin security settings.
+This permission is usually **DISABLED** by default, and must be enabled by the user to be accessible.
+:::
+```ansi
+[0;34mPOST[0m   [0;30mhttp://127.0.0.1:20251[0m/client/closerom
+```
+::: code-group
+```typescript [Argument schema]
+{
+    /* none */
+}
+```
+```typescript [Response schema]
+{
+    /* Whether the command succeeded. This should always be true. */
+    success: boolean,
+}
+```
+```json [Example arguments]
+{}
+```
+```json [Example response]
+{
+    "success": true,
+    "status": 200,
+    "messageIdentifier": null
+}
+```
+:::
+
+Closes the currently open ROM.
+
+This is equivalent to the Lua `client.closerom()`.
+
+
 ## Frame advance
 ::: warning SECURITY
 This command requires '**Allow client control**' to be enabled in the TASauria plugin security settings.
@@ -181,6 +218,48 @@ This is equivalent to these Lua functions:
 - `gameinfo.isstatusbad()`,
 - `emu.getdisplaytype()`,
 - `emu.getsystemid()`
+
+
+
+## Load ROM
+::: danger SECURITY
+Setting the A/V pause state requires '**Allow loading and closing ROMs**' to be enabled in the TASauria plugin security settings.
+This permission is usually **DISABLED** by default, and must be enabled by the user to be accessible.
+:::
+```ansi
+[0;34mPOST[0m   [0;30mhttp://127.0.0.1:20251[0m/client/loadrom
+```
+::: code-group
+```typescript [Argument schema]
+{
+    /* The binary data of the ROM encoded as a Base64-encoded string. */
+    data: string,
+}
+```
+```typescript [Response schema]
+{
+    /* Whether the command succeeded. This could be false if the ROM is of an unknown type or so on. */
+    success: boolean,
+}
+```
+```json [Example arguments]
+{}
+```
+```json [Example response]
+{
+    "success": true,
+    "status": 200,
+    "messageIdentifier": null
+}
+```
+:::
+
+Loads the ROM provided.
+
+The `data` field should contain a Base64-encoded string that represents the raw binary data of the ROM.
+This should use the RFC 4648 'standard' Base64 alphabet (i.e., using `+` and `/` as opposed to the URL-safe `-` and `_`), with the padding preserved (the trailing `=`s are not removed).
+
+This is equivalent to the Lua `client.openrom()`.
 
 
 ## Pause
