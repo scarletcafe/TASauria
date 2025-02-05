@@ -5,18 +5,18 @@ using System.Linq;
 using BizHawk.Client.Common;
 using Newtonsoft.Json.Linq;
 
-public class GetImmediateCommand : EmulatorCommand<GetInput, GetOutput>
+public class GetWithMovieCommand : EmulatorCommand<GetInput, GetOutput>
 {
-    public GetImmediateCommand():
+    public GetWithMovieCommand():
         base(
-            @"^/joypad/getimmediate$"
+            @"^/joypad/getwithmovie$"
         )
     {}
 
     public override GetOutput RunSync(ApiContainer api, Dictionary<string, string> arguments, GetInput payload)
     {
         var gameInfo = api.Emulation.GetGameInfo();
-        var dictionary = api.Joypad.GetImmediate(payload.Controller);
+        var dictionary = api.Joypad.GetWithMovie(payload.Controller);
 
         return new GetOutput {
             System = gameInfo?.System,

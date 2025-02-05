@@ -16,6 +16,10 @@
 ```
 ```typescript [Response schema]
 {
+    /* The currently loaded system ID */
+    system: string,
+    /* The currently loaded board type */
+    boardType: string,
     /* The state of the joypad and (optionally) system buttons. */
     /* Buttons are represented with booleans, and analog inputs with integers. */
     state: {
@@ -30,6 +34,8 @@
 ```
 ```json [Example response]
 {
+    "system": "N64",
+    "boardType": "",
     "state": {
         "A Up": false,
         "A Down": false,
@@ -62,6 +68,8 @@ Reads the current joypad state as processed by the emulator.
 
 This may be the user's own input via their controller or the virtual pad, or it may be inputs read from a movie if one is playing.
 
+The system ID and board type are included in this payload to help interpret the input values returned.
+
 If no core is loaded the `state` will be an empty object `{}`.
 
 This is equivalent to the Lua `joypad.get()`.
@@ -81,6 +89,10 @@ This is equivalent to the Lua `joypad.get()`.
 ```
 ```typescript [Response schema]
 {
+    /* The currently loaded system ID */
+    system: string,
+    /* The currently loaded board type */
+    boardType: string,
     /* The state of the joypad and (optionally) system buttons. */
     /* Buttons are represented with booleans, and analog inputs with integers. */
     state: {
@@ -95,6 +107,8 @@ This is equivalent to the Lua `joypad.get()`.
 ```
 ```json [Example response]
 {
+    "system": "N64",
+    "boardType": "",
     "state": {
         "A Up": false,
         "A Down": false,
@@ -127,9 +141,82 @@ Reads the immediate joypad state as reported by the emulator.
 
 This is always the input provided by the user.
 
+The system ID and board type are included in this payload to help interpret the input values returned.
+
 If no core is loaded the `state` will be an empty object `{}`.
 
 This is equivalent to the Lua `joypad.getimmediate()`.
+
+
+## Get with movie inputs
+```ansi
+[0;34mPOST[0m   [0;30mhttp://127.0.0.1:20251[0m/joypad/getwithmovie
+```
+::: code-group
+```typescript [Argument schema]
+{
+    /* The controller to read from. */
+    /* If this is null, the state of all controllers and system buttons is returned. */
+    controller?: int,
+}
+```
+```typescript [Response schema]
+{
+    /* The currently loaded system ID */
+    system: string,
+    /* The currently loaded board type */
+    boardType: string,
+    /* The state of the joypad and (optionally) system buttons. */
+    /* Buttons are represented with booleans, and analog inputs with integers. */
+    state: {
+        [name: string]: boolean | number,
+    }
+}
+```
+```json [Example arguments]
+{
+    "controller": 1,
+}
+```
+```json [Example response]
+{
+    "system": "N64",
+    "boardType": "",
+    "state": {
+        "A Up": false,
+        "A Down": false,
+        "A Left": false,
+        "A Right": false,
+        "DPad U": false,
+        "DPad D": false,
+        "DPad L": false,
+        "DPad R": false,
+        "Start": false,
+        "Z": false,
+        "B": false,
+        "A": false,
+        "C Up": false,
+        "C Down": false,
+        "C Left": false,
+        "C Right": false,
+        "L": false,
+        "R": false,
+        "X Axis": 0,
+        "Y Axis": 0
+    },
+    "status": 200,
+    "messageIdentifier": null
+}
+```
+:::
+
+Reads the joypad state, including any inputs controlled by the current movie.
+
+The system ID and board type are included in this payload to help interpret the input values returned.
+
+If no core is loaded the `state` will be an empty object `{}`.
+
+This is equivalent to the Lua `joypad.getwithmovie()`.
 
 
 ## Set button
@@ -255,6 +342,10 @@ This permission is usually enabled by default.
 ```
 ```typescript [Response schema]
 {
+    /* The currently loaded system ID */
+    system: string,
+    /* The currently loaded board type */
+    boardType: string,
     /* The state of the joypad and (optionally) system buttons before this action was performed. */
     /* Buttons are represented with booleans, and analog inputs with integers. */
     state: {
@@ -274,6 +365,8 @@ This permission is usually enabled by default.
 ```
 ```json [Example response]
 {
+    "system": "N64",
+    "boardType": "",
     "state": {
         "A Up": false,
         "A Down": false,

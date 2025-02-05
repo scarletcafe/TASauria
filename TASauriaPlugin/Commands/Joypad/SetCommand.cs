@@ -27,6 +27,7 @@ public class SetCommand : EmulatorCommand<SetInput, GetOutput>
 
     public override GetOutput RunSync(ApiContainer api, Dictionary<string, string> arguments, SetInput payload)
     {
+        var gameInfo = api.Emulation.GetGameInfo();
         var dictionary = api.Joypad.Get(payload.Controller);
 
         var buttonInputs = new Dictionary<string, bool>();
@@ -44,6 +45,8 @@ public class SetCommand : EmulatorCommand<SetInput, GetOutput>
         api.Joypad.SetAnalog(analogInputs, payload.Controller);
 
         return new GetOutput {
+            System = gameInfo?.System,
+            BoardType = api.Emulation.GetBoardName(),
             State = dictionary.ToDictionary(
                 x => x.Key,
                 x => {

@@ -10,6 +10,8 @@ public class GetInput {
 }
 
 public class GetOutput {
+    public string? System { get; set; }
+    public string? BoardType { get; set; }
     public Dictionary<string, JToken> State { get; set; } = [];
 }
 
@@ -23,9 +25,12 @@ public class GetCommand : EmulatorCommand<GetInput, GetOutput>
 
     public override GetOutput RunSync(ApiContainer api, Dictionary<string, string> arguments, GetInput payload)
     {
+        var gameInfo = api.Emulation.GetGameInfo();
         var dictionary = api.Joypad.Get(payload.Controller);
 
         return new GetOutput {
+            System = gameInfo?.System,
+            BoardType = api.Emulation.GetBoardName(),
             State = dictionary.ToDictionary(
                 x => x.Key,
                 x => {
