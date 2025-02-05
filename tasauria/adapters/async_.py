@@ -169,31 +169,42 @@ class WebSocketAdapter(AsyncAdapter):
         self
     ):
         cancel = asyncio.create_task(self._closed.wait())
+        heartbeat_task = asyncio.create_task(asyncio.sleep(5))
+        receive_future = asyncio.create_task(self._socket.receive_json())
 
         while not self._closed.is_set():
-            receive_future = asyncio.create_task(self._socket.receive_json())
-
             done, _ = await asyncio.wait((
                 receive_future,
+                heartbeat_task,
                 cancel
             ), return_when=asyncio.FIRST_COMPLETED)
 
+            if heartbeat_task in done:
+                heartbeat_task = asyncio.create_task(asyncio.sleep(5))
+                await self._socket.send_json({
+                    "command": "/ping",
+                    "messageIdentifier": self.next_sequence_id(),
+                })
+
+            if receive_future in done:
+                try:
+                    response: typing.Dict[str, typing.Any] = await receive_future  # type: ignore
+                except aiohttp.WebSocketError:
+                    break
+
+                receive_future = asyncio.create_task(self._socket.receive_json())
+
+                if "messageIdentifier" in response:
+                    message_id = response["messageIdentifier"]
+
+                    if isinstance(message_id, list):
+                        message_id: typing.Tuple[int, ...] = tuple(message_id)
+
+                    if message_id in self._response_listeners:
+                        self._response_listeners[message_id].set_result(response)
+
             if cancel in done:
                 break
-
-            try:
-                response: typing.Dict[str, typing.Any] = await receive_future
-            except aiohttp.WebSocketError:
-                break
-
-            if "messageIdentifier" in response:
-                message_id = response["messageIdentifier"]
-
-                if isinstance(message_id, list):
-                    message_id: typing.Tuple[int, ...] = tuple(message_id)
-
-                if message_id in self._response_listeners:
-                    self._response_listeners[message_id].set_result(response)
 
         await self._socket.close()
         await self._session.close()

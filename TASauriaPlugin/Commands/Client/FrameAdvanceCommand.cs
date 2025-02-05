@@ -24,7 +24,11 @@ public class FrameAdvanceCommand : EmulatorCommand<FrameAdvanceInput, FrameStatu
 
     public override FrameStatusOutput RunSync(ApiContainer api, Dictionary<string, string> arguments, FrameAdvanceInput payload)
     {
+        long cycleCount = api.Emulation.TotalExecutedCycles();
         int frameCount = api.Emulation.FrameCount();
+        int lagCount = api.Emulation.LagCount();
+        bool lagged = api.Emulation.IsLagged();
+
         bool pause = payload.Unpause == null ? api.EmuClient.IsPaused() : !(bool)payload.Unpause;
 
         if (pause) {
@@ -34,7 +38,10 @@ public class FrameAdvanceCommand : EmulatorCommand<FrameAdvanceInput, FrameStatu
         }
 
         return new FrameStatusOutput {
-            FrameCount = frameCount
+            CycleCount = cycleCount,
+            FrameCount = frameCount,
+            LagCount = lagCount,
+            Lagged = lagged
         };
     }
 }

@@ -22,28 +22,35 @@ public static class Registry {
 
     public static JObject Resolve(string path, JObject input) {
         // Try to find a command that matches the path.
-        var (command, arguments) = commands
-            .Select(x => (x, x.TestPath(path)))
-            .FirstOrDefault(x => x.Item2 != null);
-
         JObject output;
 
-        if (command != null) {
-            if (command.SecurityCheck(arguments!, input)) {
-                output = command.Execute(arguments!, input);
-                commandsExecuted++;
+        if (path == "/ping") {
+            output = new JObject {
+                { "status", 200 },
+                { "pong", true }
+            };
+        } else {
+            var (command, arguments) = commands
+                .Select(x => (x, x.TestPath(path)))
+                .FirstOrDefault(x => x.Item2 != null);
+
+            if (command != null) {
+                if (command.SecurityCheck(arguments!, input)) {
+                    output = command.Execute(arguments!, input);
+                    commandsExecuted++;
+                } else {
+                    output = new JObject {
+                        { "status", 403 },
+                        { "error", $"Security check failed: {command.SecurityRemarks}" }
+                    };
+                }
             } else {
-                output = new JObject {
-                    { "status", 403 },
-                    { "error", $"Security check failed: {command.SecurityRemarks}" }
+                output = new JObject
+                {
+                    { "status", 404 },
+                    { "error", "No command matched this path." }
                 };
             }
-        } else {
-            output = new JObject
-            {
-                { "status", 404 },
-                { "error", "No command matched this path." }
-            };
         }
 
         output.Add("messageIdentifier", input.GetValue("messageIdentifier"));

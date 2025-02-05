@@ -18,6 +18,7 @@ import yarl
 
 from tasauria.adapters.async_ import AsyncAdapter, HTTPAdapter, WebSocketAdapter
 from tasauria.commands import Command, PythonCommandInput, ServerCommandInput, ServerCommandOutput, PythonCommandOutput
+from tasauria.commands.client import ClientFrameStatusCommand, ClientFrameAdvanceCommand, FrameStatus
 from tasauria.commands.joypad import JoypadGetCommand
 from tasauria.exceptions import AdapterDisconnected
 from tasauria.types import BizHawkInput
@@ -75,6 +76,22 @@ class TASauria:
             await self.adapter.stop()
 
     # -- Commands --
+    async def get_frame_status(
+        self
+    ) -> FrameStatus:
+        return await self._execute_command(
+            ClientFrameStatusCommand
+        )
+
+    async def frame_advance(
+        self,
+        unpause: bool = False
+    ) -> FrameStatus:
+        return await self._execute_command(
+            ClientFrameAdvanceCommand,
+            unpause=unpause
+        )
+
     async def get_joypad(
         self,
         controller: typing.Optional[int] = None,
