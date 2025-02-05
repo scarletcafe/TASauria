@@ -74,8 +74,16 @@ class TASauria:
         if self.adapter is not None:
             await self.adapter.stop()
 
+    # -- Commands --
     async def get_joypad(
         self,
-        controller: typing.Optional[int] = None
+        controller: typing.Optional[int] = None,
+        with_movie: bool = False,
+        immediate: bool = False,
     ) -> BizHawkInput:
-        return await self._execute_command(JoypadGetCommand, controller=controller)
+        return await self._execute_command(
+            JoypadGetCommand,
+            controller=controller,
+            with_movie=with_movie,
+            immediate=immediate
+        )

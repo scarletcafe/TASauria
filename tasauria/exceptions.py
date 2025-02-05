@@ -18,3 +18,7 @@ class TASauriaException(Exception):
 
 class AdapterDisconnected(TASauriaException):
     pass
+
+
+class NoBindingsAvailable(TASauriaException):
+    pass

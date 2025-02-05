@@ -47,10 +47,14 @@ class Command(typing.Generic[PythonCommandInput, ServerCommandInput, ServerComma
 
     @staticmethod
     def demarshal_output(
-        payload: ServerCommandOutput
+        payload: ServerCommandOutput,
+        **kwargs: typing.Any
     ) -> PythonCommandOutput:
         """
         Takes the payload from the server and returns an appropriate Python type to wrap it.
+
+        The keyword arguments to this function are the same as is sent to `marshal_input`.
+        This allows decoding to use information about what arguments were sent.
         """
 
         raise NotImplementedError()

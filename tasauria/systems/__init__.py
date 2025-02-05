@@ -13,6 +13,7 @@ Classes and functions that wrap the different systems BizHawk supports.
 
 import typing
 
+from tasauria.exceptions import NoBindingsAvailable
 from tasauria.types import BizHawkInput, TASauriaJoypadPayload
 
 from tasauria.systems.amiga import AMIGA_SYSTEM_NAME, AmigaController, AmigaInput
@@ -74,12 +75,30 @@ INPUT_MAPPING: typing.Dict[str, typing.Tuple[typing.Type[BizHawkInput], typing.O
 
 def parse_system_input(joypad: TASauriaJoypadPayload) -> BizHawkInput:
     """
-    Converts a TASauria joypad payload (e.g. received from `/joypad/get`) into an input class of the appropriate type.
+    Converts a TASauria joypad payload (e.g. received from `/joypad/get`) into an input class of the
+    appropriate type.
     """
 
     input_type = INPUT_MAPPING.get(joypad['system'], None)
 
     if input_type is None:
-        raise ValueError("No bindings are available for system type '%s'. You must handle the input type manually." % joypad['system'])
+        raise NoBindingsAvailable("No bindings are available for system type '%s'. You must handle the input type manually." % joypad['system'])
 
     return input_type[0].from_dict(joypad['state'])
+
+
+def parse_controller_input(joypad: TASauriaJoypadPayload) -> BizHawkInput:
+    """
+    Converts a TASauria controller-only joypad payload (e.g. received from `/joypad/get` with a controller
+    argument) into an input class of the appropriate type.
+    """
+
+    input_type = INPUT_MAPPING.get(joypad['system'], None)
+
+    if input_type is None:
+        raise NoBindingsAvailable("No bindings are available for system type '%s'. You must handle the input type manually." % joypad['system'])
+
+    if input_type[1] is None:
+        raise NoBindingsAvailable("System type '%s' has bindings for the system but not individual controllers. You must handle the input type manually." % joypad['system'])
+
+    return input_type[1].from_dict(joypad['state'])

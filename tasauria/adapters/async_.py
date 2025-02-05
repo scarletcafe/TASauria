@@ -127,7 +127,7 @@ class HTTPAdapter(AsyncAdapter):
         ) as request:
             response = await request.json()
 
-        return command.demarshal_output(response)
+        return command.demarshal_output(response, **kwargs)
 
 
 class WebSocketAdapter(AsyncAdapter):
@@ -258,4 +258,4 @@ class WebSocketAdapter(AsyncAdapter):
         finally:
             self._response_listeners.pop(sequence_id, None)
 
-        return command.demarshal_output(response)
+        return command.demarshal_output(response, **kwargs)
