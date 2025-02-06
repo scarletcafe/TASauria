@@ -3,3 +3,6 @@ TASauria
 BizHawk
 analog
 NullHawk
+WebSocket
+pyright
+Pyright

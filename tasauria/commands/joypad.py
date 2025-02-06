@@ -29,7 +29,6 @@ class JoypadGetServerInput(typing.TypedDict):
 
 
 class JoypadGetCommand(Command[JoypadGetInput, JoypadGetServerInput, TASauriaJoypadPayload, BizHawkInput]):
-
     @staticmethod
     def marshal_input(
         **kwargs: typing.Any,
@@ -50,7 +49,43 @@ class JoypadGetCommand(Command[JoypadGetInput, JoypadGetServerInput, TASauriaJoy
         )
 
     @staticmethod
-    def demarshal_output(
+    def unmarshal_output(
+        payload: TASauriaJoypadPayload,
+        **kwargs: typing.Any
+    ) -> BizHawkInput:
+        if kwargs.get("controller", None) is not None:
+            return parse_controller_input(payload)
+        else:
+            return parse_system_input(payload)
+
+
+class JoypadSetInput(typing.TypedDict):
+    controller: typing.Optional[int]
+    state: BizHawkInput
+
+
+class JoypadSetServerInput(typing.TypedDict):
+    controller: typing.Optional[int]
+    state: typing.Dict[str, typing.Union[int, bool]]
+
+
+class JoypadSetCommand(Command[JoypadSetInput, JoypadSetServerInput, TASauriaJoypadPayload, BizHawkInput]):
+    @staticmethod
+    def marshal_input(
+        **kwargs: typing.Any,
+    ) -> typing.Tuple[str, JoypadSetServerInput]:
+        state = typing.cast(BizHawkInput, kwargs["state"])
+
+        return (
+            "/joypad/set",
+            {
+                "controller": kwargs.get("controller", None),
+                "state": state.to_dict()
+            }
+        )
+
+    @staticmethod
+    def unmarshal_output(
         payload: TASauriaJoypadPayload,
         **kwargs: typing.Any
     ) -> BizHawkInput:

@@ -24,13 +24,13 @@ export default defineConfig({
         ]
       },
       {
-        text: 'Cookbook',
+        text: 'Using the Python API',
         items: [
-
+          { text: 'First steps', link: '/python-api/first-steps' },
         ]
       },
       {
-        text: 'Using the Python API',
+        text: 'Cookbook',
         items: [
 
         ]

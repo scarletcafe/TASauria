@@ -46,7 +46,7 @@ class Command(typing.Generic[PythonCommandInput, ServerCommandInput, ServerComma
         raise NotImplementedError()
 
     @staticmethod
-    def demarshal_output(
+    def unmarshal_output(
         payload: ServerCommandOutput,
         **kwargs: typing.Any
     ) -> PythonCommandOutput:
