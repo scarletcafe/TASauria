@@ -60,5 +60,13 @@ class Command(typing.Generic[PythonCommandInput, ServerCommandInput, ServerComma
         raise NotImplementedError()
 
 
+AnyCommand = Command[
+    typing.Any,
+    typing.Dict[str, typing.Any],
+    typing.Dict[str, typing.Any],
+    typing.Any
+]
+
+
 class NoArguments(typing.TypedDict):
     pass

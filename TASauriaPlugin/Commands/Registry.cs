@@ -20,40 +20,34 @@ public static class Registry {
 
     public static ulong commandsExecuted = 0;
 
-    public static JObject Resolve(string path, JObject input) {
+    public static JObject ResolveAndRun(
+        string path,
+        JObject input,
+        Func<ICommand, Dictionary<string, string>, JObject> callback
+    ) {
         // Try to find a command that matches the path.
+        var (command, arguments) = commands
+            .Select(x => (x, x.TestPath(path)))
+            .FirstOrDefault(x => x.Item2 != null);
+
         JObject output;
-
-        if (path == "/ping") {
-            output = new JObject {
-                { "status", 200 },
-                { "pong", true }
-            };
-        } else {
-            var (command, arguments) = commands
-                .Select(x => (x, x.TestPath(path)))
-                .FirstOrDefault(x => x.Item2 != null);
-
-            if (command != null) {
-                if (command.SecurityCheck(arguments!, input)) {
-                    output = command.Execute(arguments!, input);
-                    commandsExecuted++;
-                } else {
-                    output = new JObject {
-                        { "status", 403 },
-                        { "error", $"Security check failed: {command.SecurityRemarks}" }
-                    };
-                }
+        if (command != null) {
+            if (command.SecurityCheck(arguments!, input)) {
+                output = callback(command, arguments!);
+                commandsExecuted++;
             } else {
-                output = new JObject
-                {
-                    { "status", 404 },
-                    { "error", "No command matched this path." }
+                output = new JObject {
+                    { "status", 403 },
+                    { "error", $"Security check failed: {command.SecurityRemarks}" }
                 };
             }
+        } else {
+            output = new JObject
+            {
+                { "status", 404 },
+                { "error", "No command matched this path." }
+            };
         }
-
-        output.Add("messageIdentifier", input.GetValue("messageIdentifier"));
 
         return output;
     }

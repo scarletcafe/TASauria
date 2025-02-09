@@ -1,7 +1,8 @@
 import { defineConfig } from 'vitepress'
+import { withMermaid } from 'vitepress-plugin-mermaid'
 
 // https://vitepress.dev/reference/site-config
-export default defineConfig({
+export default defineConfig(withMermaid({
   title: "TASauria Documentation",
   description: "User guide and API reference for TASauria, a plugin and library for remotely controlling the BizHawk emulator.",
   themeConfig: {
@@ -42,9 +43,17 @@ export default defineConfig({
           { text: 'Client commands', link: '/http-ws-api/client-commands' },
           { text: 'Joypad commands', link: '/http-ws-api/joypad-commands' },
           { text: 'Memory commands', link: '/http-ws-api/memory-commands' },
+          { text: 'Meta commands', link: '/http-ws-api/meta-commands' },
           { text: 'Movie commands', link: '/http-ws-api/movie-commands' },
           { text: 'Savestate commands', link: '/http-ws-api/savestate-commands' },
           { text: 'Test commands', link: '/http-ws-api/test-commands' },
+        ]
+      },
+      {
+        text: 'Additional reading',
+        items: [
+          { text: 'Performance', link: '/additional-reading/performance' },
+          { text: 'Alternatives', link: '/additional-reading/alternatives' },
         ]
       }
     ],
@@ -53,4 +62,4 @@ export default defineConfig({
       { icon: 'github', link: 'https://github.com/vuejs/vitepress' }
     ]
   }
-})
+}))

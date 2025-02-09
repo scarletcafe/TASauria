@@ -38,6 +38,8 @@ class Nintendo64Controller(BizHawkInput):
     c_down: typing.Annotated[bool, BizHawkName("C Down")] = False
     c_left: typing.Annotated[bool, BizHawkName("C Left")] = False
     c_right: typing.Annotated[bool, BizHawkName("C Right")] = False
+    l_button: typing.Annotated[bool, BizHawkName("L")] = False
+    r_button: typing.Annotated[bool, BizHawkName("R")] = False
     x_axis: typing.Annotated[int, BizHawkName("X Axis")] = 0
     y_axis: typing.Annotated[int, BizHawkName("Y Axis")] = 0
 

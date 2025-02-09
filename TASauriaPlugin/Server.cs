@@ -83,7 +83,11 @@ public class Server {
     }
 
     private void Handle(WebSocketSharp.Net.HttpListenerResponse response, string path, JObject input) {
-        JObject output = Commands.Registry.Resolve(path, input);
+        JObject output = Commands.Registry.ResolveAndRun(
+            path, input,
+            (command, arguments) => command.Execute(arguments, input)
+        );
+        output.Add("messageIdentifier", input.GetValue("messageIdentifier"));
         WriteObjectToResponse(response, output);
     }
 
@@ -134,8 +138,12 @@ public class Server {
 
             // Push command execution to thread pool
             Task.Run(() => {
-                JObject output = Commands.Registry.Resolve(path, input);
+                JObject output = Commands.Registry.ResolveAndRun(
+                    path, input,
+                    (command, arguments) => command.Execute(arguments, input)
+                );
 
+                output.Add("messageIdentifier", input.GetValue("messageIdentifier"));
                 Send(output.ToString(Formatting.None));
             });
         }

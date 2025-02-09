@@ -1,0 +1,2 @@
+{"rule":"UPPERCASE_SENTENCE_START","sentence":"^\\Qbirds-eye by SkiHatDuckie is another Python-centric external scripting option that uses TCP sockets instead of an HTTP/WebSocket interface.\\E$"}
+{"rule":"ALL_OF_THE","sentence":"^\\QBecause it needs to wait for all of the work of the plugin to be done before it can report results, simply executing commands normally results in a long wait time on the Python side.\\E$"}

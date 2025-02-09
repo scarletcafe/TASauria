@@ -43,7 +43,7 @@ public interface ICommand {
 
 public abstract class Command<Input, Output>: ICommand where Input: class {
 
-    private static readonly JsonSerializer jsonSerializer = JsonSerializer.Create(new JsonSerializerSettings {
+    protected static readonly JsonSerializer jsonSerializer = JsonSerializer.Create(new JsonSerializerSettings {
         ContractResolver = new DefaultContractResolver()
         {
             NamingStrategy = new CamelCaseNamingStrategy(),
@@ -101,7 +101,9 @@ public abstract class Command<Input, Output>: ICommand where Input: class {
                 if (output != null) {
                     // Convert output back to JObject
                     JObject convertedOutput = JObject.FromObject(output, jsonSerializer);
-                    convertedOutput.Add("status", 200);
+
+                    if (!convertedOutput.ContainsKey("status"))
+                        convertedOutput.Add("status", 200);
 
                     return convertedOutput;
                 } else {

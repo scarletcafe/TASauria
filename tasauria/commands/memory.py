@@ -120,30 +120,6 @@ class MemoryReadRangeCommand(Command[MemoryReadRangeInput, MemoryReadRangeInput,
         return base64.b64decode(payload["data"])
 
 
-class MemoryReadDomainInput(typing.TypedDict):
-    domain: typing.Optional[str]
-
-
-class MemoryReadDomainCommand(Command[MemoryReadDomainInput, MemoryReadDomainInput, MemoryReadRangeServerOutput, bytes]):
-    @staticmethod
-    def marshal_input(
-        **kwargs: typing.Any,
-    ) -> typing.Tuple[str, MemoryReadDomainInput]:
-        return (
-            "/memory/readdomain",
-            {
-                "domain": kwargs.get("domain", None)
-            }
-        )
-
-    @staticmethod
-    def unmarshal_output(
-        payload: MemoryReadRangeServerOutput,
-        **kwargs: typing.Any
-    ) -> bytes:
-        return base64.b64decode(payload["data"])
-
-
 # Writes
 class MemoryWriteIntegerInput(MemoryReadIntegerInput):
     data: int

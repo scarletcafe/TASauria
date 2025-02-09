@@ -20,7 +20,7 @@ import aiohttp
 import yarl
 
 from tasauria.commands import Command, PythonCommandInput, ServerCommandInput, ServerCommandOutput, PythonCommandOutput
-from tasauria.exceptions import AdapterDisconnected
+from tasauria.exceptions import AdapterDisconnected, TASauriaServerError
 
 
 LOG = logging.getLogger("tasauria.adapters.async")
@@ -113,6 +113,14 @@ class HTTPAdapter(AsyncAdapter):
         if not isinstance(url, yarl.URL):
             url = yarl.URL(url)
 
+        async with session.post(
+            url.with_path("/meta/ping"),
+            json={}
+        ) as request:
+            response = await request.json()
+
+        assert response.get('pong', None) is True
+
         return cls(
             session,
             url
@@ -147,6 +155,9 @@ class HTTPAdapter(AsyncAdapter):
         ) as request:
             LOG.debug("HTTPAdapter receiving response for %s %s", type(command).__name__, sequence_id)
             response = await request.json()
+
+        if "error" in response:
+            raise TASauriaServerError(response["error"])
 
         LOG.debug("HTTPAdapter unmarshalling output for %s %s", type(command).__name__, sequence_id)
         return command.unmarshal_output(response, **kwargs)
@@ -210,7 +221,7 @@ class WebSocketAdapter(AsyncAdapter):
 
                 LOG.debug("WebSocketAdapter loop sending heartbeat PING %s", heartbeat_sequence)
                 await self._socket.send_json({
-                    "command": "/ping",
+                    "command": "/meta/ping",
                     "messageIdentifier": heartbeat_sequence,
                 })
 
@@ -325,6 +336,9 @@ class WebSocketAdapter(AsyncAdapter):
                 raise AdapterDisconnected()
         finally:
             self._response_listeners.pop(sequence_id, None)
+
+        if "error" in response:
+            raise TASauriaServerError(response["error"])
 
         LOG.debug("WebSocketAdapter unmarshalling output for %s %s", type(command).__name__, sequence_id)
         return command.unmarshal_output(response, **kwargs)

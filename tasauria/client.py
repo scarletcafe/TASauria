@@ -18,11 +18,13 @@ from types import TracebackType
 import yarl
 
 from tasauria.adapters.async_ import AsyncAdapter, HTTPAdapter, WebSocketAdapter
-from tasauria.commands import Command, PythonCommandInput, ServerCommandInput, ServerCommandOutput, PythonCommandOutput
+from tasauria.commands import AnyCommand, Command, PythonCommandInput, ServerCommandInput, ServerCommandOutput, PythonCommandOutput
 from tasauria.commands.client import ClientFrameStatusCommand, ClientFrameAdvanceCommand, ClientGameCommand, FrameStatus, GameInfo
 from tasauria.commands.joypad import JoypadGetCommand, JoypadSetCommand
-from tasauria.commands.memory import MemoryReadDomainCommand, MemoryReadFloatCommand, MemoryReadIntegerCommand, MemoryReadRangeCommand, MemoryWriteFloatCommand, MemoryWriteIntegerCommand, MemoryWriteRangeCommand
+from tasauria.commands.memory import MemoryReadFloatCommand, MemoryReadIntegerCommand, MemoryReadRangeCommand, MemoryWriteFloatCommand, MemoryWriteIntegerCommand, MemoryWriteRangeCommand
+from tasauria.commands.meta import MetaBatchCommand, MetaPingCommand
 from tasauria.commands.movie import MovieInfo, MovieInfoCommand
+from tasauria.commands.savestate import SavestateLoadSlotCommand, SavestateSaveSlotCommand
 from tasauria.exceptions import AdapterDisconnected
 from tasauria.types import BizHawkInput
 
@@ -86,6 +88,26 @@ class TASauria:
             await self.adapter.close()
 
     # === Commands ===
+    # -- Meta --
+    async def ping(
+        self
+    ) -> bool:
+        return await self._execute_command(
+            MetaPingCommand
+        )
+
+    async def batch_commands(
+        self,
+        commands: typing.Sequence[typing.Tuple[
+            typing.Type[AnyCommand],
+            typing.Dict[str, typing.Any]
+        ]]
+    ) -> typing.List[typing.Any]:
+        return await self._execute_command(
+            MetaBatchCommand,
+            commands=commands
+        )
+
     # -- Client --
     async def get_frame_status(
         self
@@ -312,7 +334,7 @@ class TASauria:
         return await self._execute_command(
             MemoryReadIntegerCommand,
             address=address,
-            size=1,
+            size=4,
             signed=False,
             little=False,
             domain=domain
@@ -326,7 +348,7 @@ class TASauria:
         return await self._execute_command(
             MemoryReadIntegerCommand,
             address=address,
-            size=1,
+            size=4,
             signed=False,
             little=True,
             domain=domain
@@ -340,7 +362,7 @@ class TASauria:
         return await self._execute_command(
             MemoryReadIntegerCommand,
             address=address,
-            size=1,
+            size=4,
             signed=True,
             little=False,
             domain=domain
@@ -354,7 +376,7 @@ class TASauria:
         return await self._execute_command(
             MemoryReadIntegerCommand,
             address=address,
-            size=1,
+            size=4,
             signed=True,
             little=True,
             domain=domain
@@ -365,48 +387,52 @@ class TASauria:
         address: int,
         domain: typing.Optional[str] = None,
     ) -> int:
-        return struct.unpack(">Q", await self._execute_command(
+        buffer: bytes = await self._execute_command(
             MemoryReadRangeCommand,
             address=address,
             size=8,
             domain=domain
-        ))[0]
+        )
+        return struct.unpack(">Q", buffer)[0]
 
     async def read_u64_le(
         self,
         address: int,
         domain: typing.Optional[str] = None,
     ) -> int:
-        return struct.unpack("<Q", await self._execute_command(
+        buffer: bytes = await self._execute_command(
             MemoryReadRangeCommand,
             address=address,
             size=8,
             domain=domain
-        ))[0]
+        )
+        return struct.unpack("<Q", buffer)[0]
 
     async def read_i64_be(
         self,
         address: int,
         domain: typing.Optional[str] = None,
     ) -> int:
-        return struct.unpack(">q", await self._execute_command(
+        buffer: bytes = await self._execute_command(
             MemoryReadRangeCommand,
             address=address,
             size=8,
             domain=domain
-        ))[0]
+        )
+        return struct.unpack(">q", buffer)[0]
 
     async def read_i64_le(
         self,
         address: int,
         domain: typing.Optional[str] = None,
     ) -> int:
-        return struct.unpack("<q", await self._execute_command(
+        buffer: bytes = await self._execute_command(
             MemoryReadRangeCommand,
             address=address,
             size=8,
             domain=domain
-        ))[0]
+        )
+        return struct.unpack("<q", buffer)[0]
 
     async def read_f32_be(
         self,
@@ -437,24 +463,26 @@ class TASauria:
         address: int,
         domain: typing.Optional[str] = None,
     ) -> float:
-        return struct.unpack(">d", await self._execute_command(
+        buffer: bytes = await self._execute_command(
             MemoryReadRangeCommand,
             address=address,
             size=8,
             domain=domain
-        ))[0]
+        )
+        return struct.unpack(">d", buffer)[0]
 
     async def read_f64_le(
         self,
         address: int,
         domain: typing.Optional[str] = None,
     ) -> float:
-        return struct.unpack("<d", await self._execute_command(
+        buffer: bytes = await self._execute_command(
             MemoryReadRangeCommand,
             address=address,
             size=8,
             domain=domain
-        ))[0]
+        )
+        return struct.unpack("<d", buffer)[0]
 
     async def read_memory_range(
         self,
@@ -469,14 +497,41 @@ class TASauria:
             domain=domain
         )
 
-    async def read_memory_domain(
+    async def read_struct(
         self,
+        address: int,
+        format: str,
         domain: typing.Optional[str] = None,
-    ) -> bytes:
-        return await self._execute_command(
-            MemoryReadDomainCommand,
+    ) -> typing.Tuple[typing.Any, ...]:
+        size = struct.calcsize(format)
+        buffer: bytes = await self._execute_command(
+            MemoryReadRangeCommand,
+            address=address,
+            size=size,
             domain=domain
         )
+        return struct.unpack(format, buffer)
+
+    async def read_structs(
+        self,
+        structs: typing.Sequence[typing.Tuple[int, str]],
+        domain: typing.Optional[str] = None,
+    ) -> typing.List[typing.Tuple[typing.Any, ...]]:
+        commands: typing.List[
+            typing.Tuple[typing.Type[typing.Any], typing.Dict[str, typing.Any]]
+        ] = [
+            (MemoryReadRangeCommand, {
+                "address": address,
+                "size": struct.calcsize(format),
+                "domain": domain
+            })
+            for (address, format) in structs
+        ]
+        results: typing.List[bytes] = await self.batch_commands(commands)
+        return [
+            struct.unpack(format, result)
+            for result, (_, format) in zip(results, structs)
+        ]
 
     # -- Memory write --
     async def write_u8_be(
@@ -741,13 +796,14 @@ class TASauria:
         data: int,
         domain: typing.Optional[str] = None,
     ) -> int:
-        return struct.unpack(">Q", await self._execute_command(
+        buffer: bytes = await self._execute_command(
             MemoryWriteRangeCommand,
             address=address,
             size=8,
             data=struct.pack(">Q", data),
             domain=domain
-        ))[0]
+        )
+        return struct.unpack(">Q", buffer)[0]
 
     async def write_u64_le(
         self,
@@ -755,13 +811,14 @@ class TASauria:
         data: int,
         domain: typing.Optional[str] = None,
     ) -> int:
-        return struct.unpack("<Q", await self._execute_command(
+        buffer: bytes = await self._execute_command(
             MemoryWriteRangeCommand,
             address=address,
             size=8,
             data=struct.pack("<Q", data),
             domain=domain
-        ))[0]
+        )
+        return struct.unpack("<Q", buffer)[0]
 
     async def write_i64_be(
         self,
@@ -769,13 +826,14 @@ class TASauria:
         data: int,
         domain: typing.Optional[str] = None,
     ) -> int:
-        return struct.unpack(">q", await self._execute_command(
+        buffer: bytes = await self._execute_command(
             MemoryWriteRangeCommand,
             address=address,
             size=8,
             data=struct.pack(">q", data),
             domain=domain
-        ))[0]
+        )
+        return struct.unpack(">q", buffer)[0]
 
     async def write_i64_le(
         self,
@@ -783,13 +841,14 @@ class TASauria:
         data: int,
         domain: typing.Optional[str] = None,
     ) -> int:
-        return struct.unpack("<q", await self._execute_command(
+        buffer: bytes = await self._execute_command(
             MemoryWriteRangeCommand,
             address=address,
             size=8,
             data=struct.pack("<q", data),
             domain=domain
-        ))[0]
+        )
+        return struct.unpack("<q", buffer)[0]
 
     async def write_f32_be(
         self,
@@ -825,13 +884,14 @@ class TASauria:
         data: float,
         domain: typing.Optional[str] = None,
     ) -> float:
-        return struct.unpack(">d", await self._execute_command(
+        buffer: bytes = await self._execute_command(
             MemoryWriteRangeCommand,
             address=address,
             size=8,
             data=struct.pack(">d", data),
             domain=domain
-        ))[0]
+        )
+        return struct.unpack(">d", buffer)[0]
 
     async def write_f64_le(
         self,
@@ -839,13 +899,14 @@ class TASauria:
         data: float,
         domain: typing.Optional[str] = None,
     ) -> float:
-        return struct.unpack("<d", await self._execute_command(
+        buffer: bytes = await self._execute_command(
             MemoryWriteRangeCommand,
             address=address,
             size=8,
             data=struct.pack("<d", data),
             domain=domain
-        ))[0]
+        )
+        return struct.unpack("<d", buffer)[0]
 
     async def write_memory_range(
         self,
@@ -862,10 +923,72 @@ class TASauria:
             domain=domain
         )
 
+    async def write_struct(
+        self,
+        address: int,
+        format: str,
+        *arguments: typing.Any,
+        domain: typing.Optional[str] = None,
+    ) -> typing.Tuple[typing.Any, ...]:
+        size = struct.calcsize(format)
+        buffer: bytes = await self._execute_command(
+            MemoryWriteRangeCommand,
+            address=address,
+            size=size,
+            data=struct.pack(format, *arguments),
+            domain=domain
+        )
+        return struct.unpack(format, buffer)
+
+    async def write_structs(
+        self,
+        structs: typing.Sequence[typing.Tuple[int, str, typing.Tuple[typing.Any, ...]]],
+        domain: typing.Optional[str] = None,
+    ) -> typing.List[typing.Tuple[typing.Any, ...]]:
+        commands: typing.List[
+            typing.Tuple[typing.Type[typing.Any], typing.Dict[str, typing.Any]]
+        ] = [
+            (MemoryWriteRangeCommand, {
+                "address": address,
+                "size": struct.calcsize(format),
+                "data": struct.pack(format, *arguments),
+                "domain": domain
+            })
+            for (address, format, arguments) in structs
+        ]
+        results: typing.List[bytes] = await self.batch_commands(commands)
+        return [
+            struct.unpack(format, result)
+            for result, (_, format, _) in zip(results, structs)
+        ]
+
     # -- Movie --
     async def get_movie_info(
         self,
     ) -> MovieInfo:
         return await self._execute_command(
             MovieInfoCommand
+        )
+
+    # -- Savestate --
+    async def save_state_to_slot(
+        self,
+        slot: int,
+        suppress_osd: bool = False
+    ):
+        return await self._execute_command(
+            SavestateSaveSlotCommand,
+            slot=slot,
+            suppress_osd=suppress_osd
+        )
+
+    async def load_state_from_slot(
+        self,
+        slot: int,
+        suppress_osd: bool = False
+    ):
+        return await self._execute_command(
+            SavestateLoadSlotCommand,
+            slot=slot,
+            suppress_osd=suppress_osd
         )
