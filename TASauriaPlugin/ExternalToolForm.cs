@@ -1,12 +1,15 @@
 namespace ScarletCafe.TASauriaPlugin;
 
 using System;
+using System.IO;
+using System.Reflection;
 using System.Windows.Forms;
 using BizHawk.Client.Common;
 using BizHawk.Client.EmuHawk;
 
 
 [ExternalTool("TASauria", Description = "")]
+[ExternalToolEmbeddedIcon("TASauriaPlugin.TASauriaIcon.ico")]
 public sealed partial class ExternalToolForm : ToolFormBase, IExternalToolForm {
     protected override string WindowTitleStatic
         => "TASauria";
@@ -103,6 +106,10 @@ public sealed partial class ExternalToolForm : ToolFormBase, IExternalToolForm {
         UpdateServerHostVisibility();
 
         saveSettingsButton.Enabled = false;
+
+        using (Stream stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("TASauriaPlugin.TASauriaIcon.ico")) {
+            Icon = new System.Drawing.Icon(stream);
+        }
 
         Logging.Log("Form initialized");
     }

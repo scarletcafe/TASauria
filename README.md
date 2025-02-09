@@ -3,8 +3,8 @@
 
 ***
 <h1 align="center">
-<sub>
-    <img src=".github/assets/tasauria_logo.svg" height="36">
+<sub valign="center">
+    <img src=".github/assets/tasauria_logo.svg" height="128">
 </sub>
 &nbsp;
 TASauria

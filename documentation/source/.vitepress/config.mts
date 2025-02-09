@@ -5,15 +5,25 @@ import { withMermaid } from 'vitepress-plugin-mermaid'
 export default defineConfig(withMermaid({
   title: "TASauria Documentation",
   description: "User guide and API reference for TASauria, a plugin and library for remotely controlling the BizHawk emulator.",
+  head: [
+    ['link', { rel: 'icon', type: 'image/png', href: '/favicon-96x96.png', sizes: '96x96' }],
+    ['link', { rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' }],
+    ['link', { rel: 'shortcut icon', href: '/favicon.ico' }],
+    ['link', { rel: 'apple-touch-icon', href: '/apple-touch-icon.png', sizes: '180x180' }],
+    ['meta', { name: 'apple-mobile-web-app-title', content: 'TASauria' }],
+    ['link', { rel: 'manifest', href: '/site.webmanifest' }]
+  ],
   themeConfig: {
     // https://vitepress.dev/reference/default-theme-config
+    logo: '/favicon.svg',
+
     search: {
       provider: 'local'
     },
 
     nav: [
       { text: 'Home', link: '/' },
-      { text: 'Examples', link: '/markdown-examples' }
+      { text: 'Cookbook', link: '/cookbook/' }
     ],
 
     sidebar: [
@@ -21,13 +31,14 @@ export default defineConfig(withMermaid({
         text: 'Installation and setup',
         items: [
           { text: 'Getting started', link: '/getting-started' },
-          { text: 'Building manually', link: '/building-manually' }
+          { text: 'Building manually', link: '/building-manually' },
         ]
       },
       {
         text: 'Using the Python API',
         items: [
           { text: 'First steps', link: '/python-api/first-steps' },
+          { text: 'Client API reference', link: '/python-api/client-api-reference' },
         ]
       },
       {
@@ -59,7 +70,7 @@ export default defineConfig(withMermaid({
     ],
 
     socialLinks: [
-      { icon: 'github', link: 'https://github.com/vuejs/vitepress' }
+      { icon: 'github', link: 'https://github.com/scarletcafe/TASauria' },
     ]
   }
 }))

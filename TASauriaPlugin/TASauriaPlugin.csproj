@@ -30,6 +30,9 @@
         <Reference Include="BizHawk.Emulation.Common" HintPath="$(BIZHAWK_HOME)dll/BizHawk.Emulation.Common.dll" />
         <Reference Include="BizHawk.WinForms.Controls" HintPath="$(BIZHAWK_HOME)dll/BizHawk.WinForms.Controls.dll" />
     </ItemGroup>
+    <ItemGroup>
+        <EmbeddedResource Include="TASauriaIcon.ico" />
+    </ItemGroup>
     <Target Name="PostBuild" AfterTargets="PostBuildEvent">
         <Copy SourceFiles="$(OutputPath)$(MSBuildProjectName).dll" DestinationFolder="$(BIZHAWK_DATA_HOME)ExternalTools" />
         <Copy SourceFiles="$(OutputPath)websocket-sharp.dll" DestinationFolder="$(BIZHAWK_DATA_HOME)ExternalTools" />
