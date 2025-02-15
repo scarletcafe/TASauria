@@ -116,7 +116,8 @@ jobs:
           TASAURIA_TARGET: ${{ matrix.target.TASAURIA_TARGET }}
         run: |
           cd TASauriaPlugin
-          dotnet build TASauriaPlugin.sln -c "${env:TASAURIA_TARGET}"
+          $ADDITIONAL_BUILD_CONSTANTS="$(python ../.github/scripts/generate_bizhawk_version_constants.py)"
+          dotnet build TASauriaPlugin.sln -c "${env:TASAURIA_TARGET}" -p:AdditionalBuildConstants="${ADDITIONAL_BUILD_CONSTANTS}"
           cd ..
 
       - name: Upload artifacts

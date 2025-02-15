@@ -34,7 +34,11 @@ public class LoadROMCommand : EmulatorCommand<LoadROMInput, LoadROMOutput>
         // Write the state provided to that file
         System.IO.File.WriteAllBytes(fileName, payload.Data);
 
+#if BIZHAWK_VERSION_PRE_2_10_X
         var success = emulator.MainForm.LoadRom(fileName, new LoadRomArgs { OpenAdvanced = new OpenAdvanced_OpenRom { Path = fileName } });
+#else
+        var success = emulator.MainForm.LoadRom(fileName, new LoadRomArgs(new OpenAdvanced_OpenRom(fileName)));
+#endif
 
         emulator.Config.RecentRoms.Remove(fileName);
 

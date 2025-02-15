@@ -5,6 +5,9 @@
         <TargetFramework>net48</TargetFramework>
         <Configurations>Debug;Release</Configurations>
     </PropertyGroup>
+    <PropertyGroup>
+        <DefineConstants Condition="'$(AdditionalBuildConstants)' != ''">$(DefineConstants);$(AdditionalBuildConstants)</DefineConstants>
+    </PropertyGroup>
     <PropertyGroup Condition=" '$(BIZHAWK_HOME)' == '' ">
         <BIZHAWK_HOME>$(ProjectDir)../BizHawk/output/</BIZHAWK_HOME>
     </PropertyGroup>
