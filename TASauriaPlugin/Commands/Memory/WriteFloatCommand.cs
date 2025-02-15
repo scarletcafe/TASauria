@@ -1,7 +1,6 @@
 namespace ScarletCafe.TASauriaPlugin.Commands.Memory;
 
 using System.Collections.Generic;
-using BizHawk.Client.Common;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -28,14 +27,14 @@ public class WriteFloatCommand : EmulatorCommand<WriteFloatInput, ReadFloatOutpu
 
     public override string SecurityRemarks { get; } = "This command requires 'Allow writing memory' to be enabled in the TASauria plugin security settings.";
 
-    public override ReadFloatOutput RunSync(ApiContainer api, Dictionary<string, string> arguments, WriteFloatInput payload)
+    public override ReadFloatOutput RunSync(EmulatorInterface emulator, Dictionary<string, string> arguments, WriteFloatInput payload)
     {
-        string domain = payload.Domain ?? api.Memory.GetCurrentMemoryDomain();
+        string domain = payload.Domain ?? emulator.APIs.Memory.GetCurrentMemoryDomain();
 
-        api.Memory.SetBigEndian(!payload.Little);
+        emulator.APIs.Memory.SetBigEndian(!payload.Little);
 
-        float value = api.Memory.ReadFloat(payload.Address, domain);
-        api.Memory.WriteFloat(payload.Address, (float)payload.Data, domain);
+        float value = emulator.APIs.Memory.ReadFloat(payload.Address, domain);
+        emulator.APIs.Memory.WriteFloat(payload.Address, (float)payload.Data, domain);
 
         return new ReadFloatOutput {
             Data = value,

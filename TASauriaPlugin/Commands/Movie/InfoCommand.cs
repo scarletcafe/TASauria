@@ -21,17 +21,9 @@ public class InfoCommand : EmulatorCommand<NoArguments, InfoOutput>
         )
     {}
 
-    public override InfoOutput RunSync(ApiContainer api, Dictionary<string, string> arguments, NoArguments payload)
+    public override InfoOutput RunSync(EmulatorInterface emulator, Dictionary<string, string> arguments, NoArguments payload)
     {
-        // !HACK!: IMovieApi raises NullReferenceException internally when using some of the API for movies.
-        // It's easier to circumvent this by accessing the content directly.
-        MovieApi concreteApi =
-            (MovieApi)api.Movie;
-        IMovieSession movieSession =
-            (IMovieSession)concreteApi
-            .GetType()
-            .GetField("_movieSession", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
-            .GetValue(concreteApi);
+        IMovieSession movieSession = emulator.IMovieSession;
 
         // We don't show the full path. Only the actual file name.
         string moviePath = movieSession.Movie?.Filename ?? "";
@@ -45,7 +37,7 @@ public class InfoCommand : EmulatorCommand<NoArguments, InfoOutput>
             ReadOnly = movieSession.ReadOnly,
             FileName = moviePath,
             Length = movieSession.Movie?.FrameCount ?? 0,
-            FrameRate = api.Movie.GetFps(),
+            FrameRate = emulator.APIs.Movie.GetFps(),
             Rerecords = movieSession.Movie?.Rerecords ?? 0,
         };
     }

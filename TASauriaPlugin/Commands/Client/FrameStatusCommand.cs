@@ -1,7 +1,6 @@
 namespace ScarletCafe.TASauriaPlugin.Commands.Client;
 
 using System.Collections.Generic;
-using BizHawk.Client.Common;
 
 
 public class FrameStatusOutput {
@@ -19,13 +18,13 @@ public class FrameStatusCommand : EmulatorCommand<NoArguments, FrameStatusOutput
         )
     {}
 
-    public override FrameStatusOutput RunSync(ApiContainer api, Dictionary<string, string> arguments, NoArguments payload)
+    public override FrameStatusOutput RunSync(EmulatorInterface emulator, Dictionary<string, string> arguments, NoArguments payload)
     {
         return new FrameStatusOutput {
-            CycleCount = api.Emulation.TotalExecutedCycles(),
-            FrameCount = api.Emulation.FrameCount(),
-            LagCount = api.Emulation.LagCount(),
-            Lagged = api.Emulation.IsLagged(),
+            CycleCount = emulator.APIs.Emulation.TotalExecutedCycles(),
+            FrameCount = emulator.APIs.Emulation.FrameCount(),
+            LagCount = emulator.APIs.Emulation.LagCount(),
+            Lagged = emulator.APIs.Emulation.IsLagged(),
         };
     }
 }

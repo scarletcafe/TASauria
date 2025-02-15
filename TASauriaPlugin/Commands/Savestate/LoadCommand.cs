@@ -1,7 +1,6 @@
 namespace ScarletCafe.TASauriaPlugin.Commands.Savestate;
 
 using System.Collections.Generic;
-using BizHawk.Client.Common;
 using Newtonsoft.Json.Linq;
 
 public class LoadInput {
@@ -22,7 +21,7 @@ public class LoadCommand : EmulatorCommand<LoadInput, LoadSlotOutput>
 
     public override string SecurityRemarks { get; } = "This command requires 'Allow saving and loading save states' to be enabled in the TASauria plugin security settings.";
 
-    public override LoadSlotOutput RunSync(ApiContainer api, Dictionary<string, string> arguments, LoadInput payload)
+    public override LoadSlotOutput RunSync(EmulatorInterface emulator, Dictionary<string, string> arguments, LoadInput payload)
     {
         // Generate a temporary file to load from
         string fileName = System.IO.Path.GetTempFileName();
@@ -31,7 +30,7 @@ public class LoadCommand : EmulatorCommand<LoadInput, LoadSlotOutput>
         System.IO.File.WriteAllBytes(fileName, payload.Data);
 
         // Load the save state
-        var success = api.SaveState.Load(fileName, true);
+        var success = emulator.APIs.SaveState.Load(fileName, true);
 
         // Delete the file
         System.IO.File.Delete(fileName);

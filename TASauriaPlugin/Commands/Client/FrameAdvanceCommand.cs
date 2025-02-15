@@ -1,7 +1,6 @@
 namespace ScarletCafe.TASauriaPlugin.Commands.Client;
 
 using System.Collections.Generic;
-using BizHawk.Client.Common;
 using Newtonsoft.Json.Linq;
 
 public class FrameAdvanceInput {
@@ -22,19 +21,19 @@ public class FrameAdvanceCommand : EmulatorCommand<FrameAdvanceInput, FrameStatu
 
     public override string SecurityRemarks { get; } = "This command requires 'Allow client control' to be enabled in the TASauria plugin security settings.";
 
-    public override FrameStatusOutput RunSync(ApiContainer api, Dictionary<string, string> arguments, FrameAdvanceInput payload)
+    public override FrameStatusOutput RunSync(EmulatorInterface emulator, Dictionary<string, string> arguments, FrameAdvanceInput payload)
     {
-        long cycleCount = api.Emulation.TotalExecutedCycles();
-        int frameCount = api.Emulation.FrameCount();
-        int lagCount = api.Emulation.LagCount();
-        bool lagged = api.Emulation.IsLagged();
+        long cycleCount = emulator.APIs.Emulation.TotalExecutedCycles();
+        int frameCount = emulator.APIs.Emulation.FrameCount();
+        int lagCount = emulator.APIs.Emulation.LagCount();
+        bool lagged = emulator.APIs.Emulation.IsLagged();
 
-        bool pause = payload.Unpause == null ? api.EmuClient.IsPaused() : !(bool)payload.Unpause;
+        bool pause = payload.Unpause == null ? emulator.APIs.EmuClient.IsPaused() : !(bool)payload.Unpause;
 
         if (pause) {
-            api.EmuClient.DoFrameAdvance();
+            emulator.APIs.EmuClient.DoFrameAdvance();
         } else {
-            api.EmuClient.DoFrameAdvanceAndUnpause();
+            emulator.APIs.EmuClient.DoFrameAdvanceAndUnpause();
         }
 
         return new FrameStatusOutput {

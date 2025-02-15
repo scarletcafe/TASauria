@@ -2,8 +2,6 @@ namespace ScarletCafe.TASauriaPlugin.Commands.Memory;
 
 using System.Collections.Generic;
 using System.Linq;
-using BizHawk.Client.Common;
-
 
 public class DomainDescriptor {
     public string Name { get; set; } = "";
@@ -23,15 +21,15 @@ public class DomainsCommand : EmulatorCommand<NoArguments, DomainsOutput>
         )
     {}
 
-    public override DomainsOutput RunSync(ApiContainer api, Dictionary<string, string> arguments, NoArguments payload)
+    public override DomainsOutput RunSync(EmulatorInterface emulator, Dictionary<string, string> arguments, NoArguments payload)
     {
-        var domainList = api.Memory.GetMemoryDomainList();
+        var domainList = emulator.APIs.Memory.GetMemoryDomainList();
 
         return new DomainsOutput {
-            Current = api.Memory.GetCurrentMemoryDomain(),
+            Current = emulator.APIs.Memory.GetCurrentMemoryDomain(),
             Domains = [.. domainList.Select(name => new DomainDescriptor {
                 Name = name,
-                Size = api.Memory.GetMemoryDomainSize(name)
+                Size = emulator.APIs.Memory.GetMemoryDomainSize(name)
             })]
         };
     }

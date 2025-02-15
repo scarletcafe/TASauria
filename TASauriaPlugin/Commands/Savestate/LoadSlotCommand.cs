@@ -1,7 +1,6 @@
 namespace ScarletCafe.TASauriaPlugin.Commands.Savestate;
 
 using System.Collections.Generic;
-using BizHawk.Client.Common;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -29,9 +28,9 @@ public class LoadSlotCommand : EmulatorCommand<LoadSlotInput, LoadSlotOutput>
 
     public override string SecurityRemarks { get; } = "This command requires 'Allow saving and loading save states' to be enabled in the TASauria plugin security settings.";
 
-    public override LoadSlotOutput RunSync(ApiContainer api, Dictionary<string, string> arguments, LoadSlotInput payload)
+    public override LoadSlotOutput RunSync(EmulatorInterface emulator, Dictionary<string, string> arguments, LoadSlotInput payload)
     {
-        var success = api.SaveState.LoadSlot(payload.Slot, payload.SuppressOSD);
+        var success = emulator.APIs.SaveState.LoadSlot(payload.Slot, payload.SuppressOSD);
 
         return new LoadSlotOutput {
             Success = success

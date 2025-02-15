@@ -2,7 +2,6 @@ namespace ScarletCafe.TASauriaPlugin.Commands.Joypad;
 
 using System;
 using System.Collections.Generic;
-using BizHawk.Client.Common;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -32,15 +31,15 @@ public class SetAnalogCommand : EmulatorCommand<SetAnalogInput, SetAnalogOutput>
 
     public override string SecurityRemarks { get; } = "This command requires 'Allow joypad/system input' to be enabled in the TASauria plugin security settings.";
 
-    public override SetAnalogOutput RunSync(ApiContainer api, Dictionary<string, string> arguments, SetAnalogInput payload)
+    public override SetAnalogOutput RunSync(EmulatorInterface emulator, Dictionary<string, string> arguments, SetAnalogInput payload)
     {
-        var dictionary = api.Joypad.Get(payload.Controller);
+        var dictionary = emulator.APIs.Joypad.Get(payload.Controller);
         int value;
 
         if (dictionary.TryGetValue(payload.Name, out object old)) {
             if (old is int val) {
                 value = val;
-                api.Joypad.SetAnalog(payload.Name, payload.Value, payload.Controller);
+                emulator.APIs.Joypad.SetAnalog(payload.Name, payload.Value, payload.Controller);
             } else {
                 throw new ArgumentException("Input with the provided name was not a button.");
             }

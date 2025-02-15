@@ -2,7 +2,6 @@ namespace ScarletCafe.TASauriaPlugin.Commands.Client;
 
 using System.Collections.Generic;
 using System.Linq;
-using BizHawk.Client.Common;
 
 public class GameOutput {
     public bool Loaded { get; set; }
@@ -26,18 +25,18 @@ public class GameCommand : EmulatorCommand<NoArguments, GameOutput>
         )
     {}
 
-    public override GameOutput RunSync(ApiContainer api, Dictionary<string, string> arguments, NoArguments payload)
+    public override GameOutput RunSync(EmulatorInterface emulator, Dictionary<string, string> arguments, NoArguments payload)
     {
-        var gameInfo = api.Emulation.GetGameInfo();
-        var gameOptions = api.Emulation.GetGameOptions();
+        var gameInfo = emulator.APIs.Emulation.GetGameInfo();
+        var gameOptions = emulator.APIs.Emulation.GetGameOptions();
 
         return new GameOutput {
             Loaded = gameInfo != null && gameInfo.System != "NULL",
             Name = gameInfo?.Name,
             System = gameInfo?.System,
-            BoardType = api.Emulation.GetBoardName(),
+            BoardType = emulator.APIs.Emulation.GetBoardName(),
             Region = gameInfo?.Region,
-            DisplayType = api.Emulation.GetDisplayType(),
+            DisplayType = emulator.APIs.Emulation.GetDisplayType(),
             Hash = gameInfo?.Hash,
             InDatabase = !gameInfo?.NotInDatabase,
             DatabaseStatus = gameInfo?.Status.ToString(),

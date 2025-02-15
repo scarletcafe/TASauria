@@ -2,7 +2,6 @@ namespace ScarletCafe.TASauriaPlugin.Commands.Joypad;
 
 using System.Collections.Generic;
 using System.Linq;
-using BizHawk.Client.Common;
 using Newtonsoft.Json.Linq;
 
 public class GetWithMovieCommand : EmulatorCommand<GetInput, GetOutput>
@@ -13,14 +12,14 @@ public class GetWithMovieCommand : EmulatorCommand<GetInput, GetOutput>
         )
     {}
 
-    public override GetOutput RunSync(ApiContainer api, Dictionary<string, string> arguments, GetInput payload)
+    public override GetOutput RunSync(EmulatorInterface emulator, Dictionary<string, string> arguments, GetInput payload)
     {
-        var gameInfo = api.Emulation.GetGameInfo();
-        var dictionary = api.Joypad.GetWithMovie(payload.Controller);
+        var gameInfo = emulator.APIs.Emulation.GetGameInfo();
+        var dictionary = emulator.APIs.Joypad.GetWithMovie(payload.Controller);
 
         return new GetOutput {
             System = gameInfo?.System,
-            BoardType = api.Emulation.GetBoardName(),
+            BoardType = emulator.APIs.Emulation.GetBoardName(),
             State = dictionary.ToDictionary(
                 x => x.Key,
                 x => {

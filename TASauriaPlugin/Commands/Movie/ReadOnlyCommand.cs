@@ -1,7 +1,6 @@
 namespace ScarletCafe.TASauriaPlugin.Commands.Movie;
 
 using System.Collections.Generic;
-using BizHawk.Client.Common;
 using Newtonsoft.Json.Linq;
 
 public class ReadOnlyInput {
@@ -26,14 +25,14 @@ public class ReadOnlyCommand : EmulatorCommand<ReadOnlyInput, ReadOnlyOutput>
 
     public override string SecurityRemarks { get; } = "To set readonly state, this command requires 'Allow movie management' to be enabled in the TASauria plugin security settings.";
 
-    public override ReadOnlyOutput RunSync(ApiContainer api, Dictionary<string, string> arguments, ReadOnlyInput payload)
+    public override ReadOnlyOutput RunSync(EmulatorInterface emulator, Dictionary<string, string> arguments, ReadOnlyInput payload)
     {
-        bool @readonly = api.Movie.GetReadOnly();
+        bool @readonly = emulator.APIs.Movie.GetReadOnly();
 
         if (payload.Set == true) {
-            api.Movie.SetReadOnly(true);
+            emulator.APIs.Movie.SetReadOnly(true);
         } else if (payload.Set == false) {
-            api.Movie.SetReadOnly(false);
+            emulator.APIs.Movie.SetReadOnly(false);
         }
 
         return new ReadOnlyOutput {

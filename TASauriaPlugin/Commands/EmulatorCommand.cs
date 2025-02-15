@@ -14,10 +14,11 @@ public interface IEmulatorCommand : ICommand {
     /// Attempts to execute the command with the given payload.
     /// This is SYNC and should only be run from the emulator main thread.
     /// </summary>
+    /// <param name="emulator">The EmulatorInterface generated from the emulator this frame.</param>
     /// <param name="arguments">Any arguments parsed from the command path</param>
     /// <param name="input">The payload content, as a generic parsed JObject</param>
     /// <returns>The response from the command, as a generic JObject</returns>
-    public JObject ExecuteSync(ApiContainer api, Dictionary<string, string> arguments, JObject input);
+    public JObject ExecuteSync(EmulatorInterface emulator, Dictionary<string, string> arguments, JObject input);
 }
 
 public abstract class EmulatorCommand<Input, Output>
@@ -39,9 +40,9 @@ public abstract class EmulatorCommand<Input, Output>
     public override Output Run(Dictionary<string, string> arguments, Input payload) {
         ResponseSignal signal = new();
 
-        GlobalState.generalUpdateQueue.Enqueue((ApiContainer container) => {
+        GlobalState.generalUpdateQueue.Enqueue((EmulatorInterface emulator) => {
             try {
-                Output output = RunSync(container, arguments, payload);
+                Output output = RunSync(emulator, arguments, payload);
                 signal.response = output;
                 signal.successHandle.Set();
             } catch (Exception exception) {
@@ -61,9 +62,9 @@ public abstract class EmulatorCommand<Input, Output>
         }
     }
 
-    public abstract Output RunSync(ApiContainer api, Dictionary<string, string> arguments, Input payload);
+    public abstract Output RunSync(EmulatorInterface emulator, Dictionary<string, string> arguments, Input payload);
 
-    public JObject ExecuteSync(ApiContainer api, Dictionary<string, string> arguments, JObject input)
+    public JObject ExecuteSync(EmulatorInterface emulator, Dictionary<string, string> arguments, JObject input)
     {
         // TODO: This code is pretty much identical to Execute, can we do something clean to not duplicate the code here?
 
@@ -78,7 +79,7 @@ public abstract class EmulatorCommand<Input, Output>
 
         if (convertedInput != null) {
             try {
-                Output output = RunSync(api, arguments, convertedInput!);
+                Output output = RunSync(emulator, arguments, convertedInput!);
 
                 if (output != null) {
                     // Convert output back to JObject

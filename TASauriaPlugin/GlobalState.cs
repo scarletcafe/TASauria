@@ -66,13 +66,13 @@ public static class GlobalState {
     /// As many updates as possible will be executed before allowing execution to continue, so it's important
     /// that actions pushed to this queue do not take too long else it will lock up the emulator.
     /// </summary>
-    public static ConcurrentQueue<Action<ApiContainer>> generalUpdateQueue = new();
+    public static ConcurrentQueue<Action<EmulatorInterface>> generalUpdateQueue = new();
 
-    public static void GeneralUpdate(ApiContainer container)
+    public static void GeneralUpdate(EmulatorInterface emulator)
     {
-        while (generalUpdateQueue.TryDequeue(out Action<ApiContainer> action)) {
+        while (generalUpdateQueue.TryDequeue(out Action<EmulatorInterface> action)) {
             try {
-                action.Invoke(container);
+                action.Invoke(emulator);
             } catch (Exception exception) {
                 Logging.Log($"Action in general update queue caused exception: {exception}");
             }

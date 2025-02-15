@@ -13,16 +13,16 @@ jobs:
       fail-fast: false
       matrix:
         bizhawk:
-          - { HEAD: "master", CACHEABLE: false, INCLUDE_COMMIT: true }
-          - { HEAD: "2.10",   CACHEABLE: true,  INCLUDE_COMMIT: false }
-          - { HEAD: "2.9.1",  CACHEABLE: true,  INCLUDE_COMMIT: false }
-          - { HEAD: "2.9",    CACHEABLE: true,  INCLUDE_COMMIT: false }
-          - { HEAD: "2.8",    CACHEABLE: true,  INCLUDE_COMMIT: false }
-          - { HEAD: "2.7",    CACHEABLE: true,  INCLUDE_COMMIT: false }
-          - { HEAD: "2.6.3",  CACHEABLE: true,  INCLUDE_COMMIT: false }
-          - { HEAD: "2.6.2",  CACHEABLE: true,  INCLUDE_COMMIT: false }
-          - { HEAD: "2.6.1",  CACHEABLE: true,  INCLUDE_COMMIT: false }
-          - { HEAD: "2.6",    CACHEABLE: true,  INCLUDE_COMMIT: false }
+          - { HEAD: "master", DOTNET_VERSION: "8",       CACHEABLE: false, INCLUDE_COMMIT: true }
+          - { HEAD: "2.10",   DOTNET_VERSION: "8",       CACHEABLE: true,  INCLUDE_COMMIT: false }
+          - { HEAD: "2.9.1",  DOTNET_VERSION: "8",       CACHEABLE: true,  INCLUDE_COMMIT: false }
+          - { HEAD: "2.9",    DOTNET_VERSION: "8",       CACHEABLE: true,  INCLUDE_COMMIT: false }
+          - { HEAD: "2.8",    DOTNET_VERSION: "8",       CACHEABLE: true,  INCLUDE_COMMIT: false }
+          - { HEAD: "2.7",    DOTNET_VERSION: "5.0.100", CACHEABLE: true,  INCLUDE_COMMIT: false }
+          - { HEAD: "2.6.3",  DOTNET_VERSION: "5.0.100", CACHEABLE: true,  INCLUDE_COMMIT: false }
+          - { HEAD: "2.6.2",  DOTNET_VERSION: "5.0.100", CACHEABLE: true,  INCLUDE_COMMIT: false }
+          - { HEAD: "2.6.1",  DOTNET_VERSION: "5.0.100", CACHEABLE: true,  INCLUDE_COMMIT: false }
+          - { HEAD: "2.6",    DOTNET_VERSION: "5.0.100", CACHEABLE: true,  INCLUDE_COMMIT: false }
         target:
           - { BIZHAWK_TARGET: "Release", TASAURIA_TARGET: "Release" }
     name: "Build TASauria plugin for BizHawk ${{ matrix.bizhawk.HEAD }}"
@@ -32,10 +32,12 @@ jobs:
           fetch-depth: 0
           submodules: true
 
-      - name: Install .NET 8
+      - name: Install .NET versions
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: "8"
+          dotnet-version: |
+            8
+            ${{ matrix.bizhawk.DOTNET_VERSION }}
 
       - id: tasauria-checkout
         name: Get TASauria revision
@@ -76,13 +78,13 @@ jobs:
 
       - id: bizhawk-build
         name: Build BizHawk
-        shell: pwsh
+        shell: bash
         if: ${{ !matrix.bizhawk.CACHEABLE || steps.restore-bizhawk.outputs.cache-hit != 'true' }}
         env:
           BIZHAWK_TARGET: ${{ matrix.target.BIZHAWK_TARGET }}
         run: |
           cd BizHawk
-          dotnet build BizHawk.sln -c "${env:BIZHAWK_TARGET}"
+          Dist/BuildRelease.sh -p:RunAnalyzersDuringBuild=true
           cd ..
 
       - id: save-bizhawk

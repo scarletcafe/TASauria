@@ -32,46 +32,22 @@ public class NewCommand : EmulatorCommand<NewInput, NewOutput>
 
     public override string SecurityRemarks { get; } = "This command requires 'Allow movie management' to be enabled in the TASauria plugin security settings.";
 
-    public override NewOutput RunSync(ApiContainer api, Dictionary<string, string> arguments, NewInput payload)
+    public override NewOutput RunSync(EmulatorInterface emulator, Dictionary<string, string> arguments, NewInput payload)
     {
-        // !HACK!: Accessing the config allows us to read the default author. See Client/SpeedCommand.cs for why
-        // we access the config in this way.
-        EmuClientApi concreteEmuClientApi =
-            (EmuClientApi)api.EmuClient;
-        BizHawk.Client.EmuHawk.MainForm mainForm =
-            (BizHawk.Client.EmuHawk.MainForm)concreteEmuClientApi
-            .GetType()
-            .GetField("_mainForm", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
-            .GetValue(concreteEmuClientApi);
-        Config config =
-            (Config)mainForm
-            .GetType()
-            .GetProperty("Config", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
-            .GetValue(mainForm);
-
-        // !HACK!: IMovieApi doesn't expose the API for creating new movies.
-        MovieApi concreteMovieApi =
-            (MovieApi)api.Movie;
-        IMovieSession movieSession =
-            (IMovieSession)concreteMovieApi
-            .GetType()
-            .GetField("_movieSession", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
-            .GetValue(concreteMovieApi);
-
         // Create a new path for the movie to reside in.
-        string newMoviePath = System.IO.Path.GetTempFileName();
+        string newMoviePath = Path.GetTempFileName();
 
         // Set up and create the movie.
         // Emulates the behavior of BizHawk.Client.EmuHawk.RecordMovie.Ok_Click
-        var movieToRecord = movieSession.Get(newMoviePath);
-        movieToRecord.Author = payload.Author ?? config.DefaultAuthor;
+        var movieToRecord = emulator.IMovieSession.Get(newMoviePath);
+        movieToRecord.Author = payload.Author ?? emulator.Config.DefaultAuthor;
 
-        if (payload.StartFromSaveState && mainForm.Emulator.HasSavestates()) {
-            var core = mainForm.Emulator.AsStatable();
+        if (payload.StartFromSaveState && emulator.MainForm.Emulator.HasSavestates()) {
+            var core = emulator.MainForm.Emulator.AsStatable();
 
             movieToRecord.StartsFromSavestate = true;
 
-            if (config.Savestates.Type == SaveStateType.Binary)
+            if (emulator.Config.Savestates.Type == SaveStateType.Binary)
             {
                 movieToRecord.BinarySavestate = core.CloneSavestate();
             }
@@ -83,17 +59,17 @@ public class NewCommand : EmulatorCommand<NewInput, NewOutput>
             }
 
             movieToRecord.SavestateFramebuffer = [];
-            if (mainForm.Emulator.HasVideoProvider())
+            if (emulator.MainForm.Emulator.HasVideoProvider())
             {
-                movieToRecord.SavestateFramebuffer = mainForm.Emulator.AsVideoProvider().GetVideoBufferCopy();
+                movieToRecord.SavestateFramebuffer = (int[])emulator.MainForm.Emulator.AsVideoProvider().GetVideoBuffer().Clone();
             }
-        } else if (payload.StartFromSaveRAM && mainForm.Emulator.HasSaveRam()) {
-            var core = mainForm.Emulator.AsSaveRam();
+        } else if (payload.StartFromSaveRAM && emulator.MainForm.Emulator.HasSaveRam()) {
+            var core = emulator.MainForm.Emulator.AsSaveRam();
             movieToRecord.StartsFromSaveRam = true;
             movieToRecord.SaveRam = core.CloneSaveRam();
         }
 
-        mainForm.StartNewMovie(movieToRecord, true);
+        emulator.MainForm.StartNewMovie(movieToRecord, true);
 
         return new NewOutput {
             Author = movieToRecord.Author,

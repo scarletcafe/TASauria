@@ -22,13 +22,13 @@ public class SaveCommand : EmulatorCommand<NoArguments, SaveOutput>
 
     public override string SecurityRemarks { get; } = "This command requires 'Allow saving and loading save states' to be enabled in the TASauria plugin security settings.";
 
-    public override SaveOutput RunSync(ApiContainer api, Dictionary<string, string> arguments, NoArguments payload)
+    public override SaveOutput RunSync(EmulatorInterface emulator, Dictionary<string, string> arguments, NoArguments payload)
     {
         // Generate a temporary file to save to
         string fileName = System.IO.Path.GetTempFileName();
 
         // Save the state to that file
-        api.SaveState.Save(fileName, true);
+        emulator.APIs.SaveState.Save(fileName, true);
 
         // Read the data from the file
         byte[] saveStateData = System.IO.File.ReadAllBytes(fileName);

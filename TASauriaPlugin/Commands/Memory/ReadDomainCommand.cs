@@ -1,7 +1,6 @@
 namespace ScarletCafe.TASauriaPlugin.Commands.Memory;
 
 using System.Collections.Generic;
-using BizHawk.Client.Common;
 using Newtonsoft.Json.Linq;
 
 public class ReadDomainInput {
@@ -22,17 +21,17 @@ public class ReadDomainCommand : EmulatorCommand<ReadDomainInput, ReadRangeOutpu
 
     public override string SecurityRemarks { get; } = "This command requires 'Allow reading memory' to be enabled in the TASauria plugin security settings.";
 
-    public override ReadRangeOutput RunSync(ApiContainer api, Dictionary<string, string> arguments, ReadDomainInput payload)
+    public override ReadRangeOutput RunSync(EmulatorInterface emulator, Dictionary<string, string> arguments, ReadDomainInput payload)
     {
-        string domain = payload.Domain ?? api.Memory.GetCurrentMemoryDomain();
+        string domain = payload.Domain ?? emulator.APIs.Memory.GetCurrentMemoryDomain();
 
         // Probably not necessary, but for good measure and consistency
-        api.Memory.SetBigEndian(true);
+        emulator.APIs.Memory.SetBigEndian(true);
 
         // Get memory domain size
-        long size = api.Memory.GetMemoryDomainSize(domain);
+        long size = emulator.APIs.Memory.GetMemoryDomainSize(domain);
 
-        var bytes = api.Memory.ReadByteRange(0, (int)size, domain);
+        var bytes = emulator.APIs.Memory.ReadByteRange(0, (int)size, domain);
 
         return new ReadRangeOutput {
             Data = [.. bytes],

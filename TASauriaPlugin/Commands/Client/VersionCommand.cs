@@ -27,7 +27,7 @@ public class VersionCommand : Command<NoArguments, VersionOutput>
             StableVersion = VersionInfo.MainVersion,
             ReleaseDate = VersionInfo.ReleaseDate,
             GitBranch = VersionInfo.GIT_BRANCH,
-            GitHash = VersionInfo.GIT_HASH,
+            GitHash = VersionInfo.GIT_SHORTHASH,
             GitRevision = VersionInfo.SVN_REV,
             IsDevelopmentVersion = VersionInfo.DeveloperBuild,
             CustomBuildString = VersionInfo.CustomBuildString ?? null,

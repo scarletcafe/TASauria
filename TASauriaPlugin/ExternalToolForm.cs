@@ -116,7 +116,13 @@ public sealed partial class ExternalToolForm : ToolFormBase, IExternalToolForm {
 
 #region EmuHawk events
     protected override void GeneralUpdate() {
-        GlobalState.GeneralUpdate(APIs);
+        if (Config != null) {
+            GlobalState.GeneralUpdate(new EmulatorInterface(
+                APIs, MainForm, Config
+            ));
+        } else {
+            statusLabel.Text = "Config not initialized, no updates happening...";
+        }
 
         // After saving, show it in the status label for 1 second
         if (DateTime.UtcNow < GlobalState.ConfigLastSaved.AddSeconds(1)) {

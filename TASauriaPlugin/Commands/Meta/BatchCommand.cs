@@ -3,7 +3,6 @@ namespace ScarletCafe.TASauriaPlugin.Commands.Meta;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using BizHawk.Client.Common;
 using Newtonsoft.Json.Linq;
 
 public class BatchInput {
@@ -22,7 +21,7 @@ public class BatchCommand : EmulatorCommand<BatchInput, JObject>
         )
     {}
 
-    public override JObject RunSync(ApiContainer api, Dictionary<string, string> arguments, BatchInput payload)
+    public override JObject RunSync(EmulatorInterface emulator, Dictionary<string, string> arguments, BatchInput payload)
     {
         // Get command, argument, and input pairs
         (ICommand, Dictionary<string, string>, JObject)?[] maybePairs = [..
@@ -85,7 +84,7 @@ public class BatchCommand : EmulatorCommand<BatchInput, JObject>
             var (command, arguments, input) = value!.Value;
 
             if (command is IEmulatorCommand emulatorCommand) {
-                return emulatorCommand.ExecuteSync(api, arguments, input);
+                return emulatorCommand.ExecuteSync(emulator, arguments, input);
             } else {
                 return command.Execute(arguments, input);
             }

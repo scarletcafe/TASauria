@@ -1,7 +1,6 @@
 namespace ScarletCafe.TASauriaPlugin.Commands.Test;
 
 using System.Collections.Generic;
-using BizHawk.Common.CollectionExtensions;
 
 public class EchoInput {
     public string Input { get; set; } = "";
@@ -22,8 +21,14 @@ public class EchoCommand : Command<EchoInput, EchoOutput>
 
     public override EchoOutput Run(Dictionary<string, string> arguments, EchoInput payload)
     {
+        string pathContent = "";
+        if (arguments.TryGetValue("PathContent", out string content))
+        {
+            pathContent = content;
+        }
+
         return new EchoOutput {
-            PathMessage = arguments.GetValueOrDefault("PathContent"),
+            PathMessage = pathContent,
             PayloadMessage = payload.Input,
         };
     }

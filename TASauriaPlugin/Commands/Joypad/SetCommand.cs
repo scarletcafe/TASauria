@@ -2,7 +2,6 @@ namespace ScarletCafe.TASauriaPlugin.Commands.Joypad;
 
 using System.Collections.Generic;
 using System.Linq;
-using BizHawk.Client.Common;
 using Newtonsoft.Json.Linq;
 
 public class SetInput {
@@ -25,10 +24,10 @@ public class SetCommand : EmulatorCommand<SetInput, GetOutput>
 
     public override string SecurityRemarks { get; } = "This command requires 'Allow joypad/system input' to be enabled in the TASauria plugin security settings.";
 
-    public override GetOutput RunSync(ApiContainer api, Dictionary<string, string> arguments, SetInput payload)
+    public override GetOutput RunSync(EmulatorInterface emulator, Dictionary<string, string> arguments, SetInput payload)
     {
-        var gameInfo = api.Emulation.GetGameInfo();
-        var dictionary = api.Joypad.Get(payload.Controller);
+        var gameInfo = emulator.APIs.Emulation.GetGameInfo();
+        var dictionary = emulator.APIs.Joypad.Get(payload.Controller);
 
         var buttonInputs = new Dictionary<string, bool>();
         var analogInputs = new Dictionary<string, int?>();
@@ -41,12 +40,12 @@ public class SetCommand : EmulatorCommand<SetInput, GetOutput>
             }
         }
 
-        api.Joypad.Set(buttonInputs, payload.Controller);
-        api.Joypad.SetAnalog(analogInputs, payload.Controller);
+        emulator.APIs.Joypad.Set(buttonInputs, payload.Controller);
+        emulator.APIs.Joypad.SetAnalog(analogInputs, payload.Controller);
 
         return new GetOutput {
             System = gameInfo?.System,
-            BoardType = api.Emulation.GetBoardName(),
+            BoardType = emulator.APIs.Emulation.GetBoardName(),
             State = dictionary.ToDictionary(
                 x => x.Key,
                 x => {
