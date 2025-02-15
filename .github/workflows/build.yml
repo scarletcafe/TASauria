@@ -62,13 +62,14 @@ jobs:
           INCLUDE_COMMIT: ${{ matrix.bizhawk.INCLUDE_COMMIT && '1' || '' }}
         run: |
           cd BizHawk
-          git checkout --recurse-submodules "origin/${BIZHAWK_HEAD}"
+          git checkout --recurse-submodules "${BIZHAWK_HEAD}"
           export BIZHAWK_REV="$(git rev-list --count HEAD).$(git rev-parse --short HEAD)"
           if [ -z "${INCLUDE_COMMIT}" ]; then
             export BIZHAWK_VERSION="${BIZHAWK_HEAD}";
           else
             export BIZHAWK_VERSION="${BIZHAWK_HEAD}.rev${BIZHAWK_REV}";
           fi
+          mkdir -p output
           echo "BIZHAWK_REV=${BIZHAWK_REV}" >> output/.build_environment
           echo "BIZHAWK_VERSION=${BIZHAWK_VERSION}" >> output/.build_environment
           cd ..
