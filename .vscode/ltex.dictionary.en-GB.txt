@@ -5,7 +5,9 @@ HissHawk
 NullHawk
 pyright
 Pyright
+Sauria
 SkiHatDuckie
+Speedrun
 TASauria
 TAStudio
 tuxie
