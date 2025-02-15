@@ -24,4 +24,5 @@ with open(BIZHAWK_DIRECTORY / 'src' / 'BizHawk.Common' / 'VersionInfo.cs', 'r', 
             if version_tuple < (2, sub_minor):
                 constants.append(f"BIZHAWK_VERSION_PRE_2_{sub_minor}_X")
 
-        print(";".join(constants))
+        # For MSBuild compatibility we can't put a raw semicolon
+        print("%3B".join(constants))

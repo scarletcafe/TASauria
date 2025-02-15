@@ -13,16 +13,16 @@ jobs:
       fail-fast: false
       matrix:
         bizhawk:
-          - { HEAD: "master", DOTNET_VERSION: "8",       CACHEABLE: false, INCLUDE_COMMIT: true }
-          - { HEAD: "2.10",   DOTNET_VERSION: "8",       CACHEABLE: true,  INCLUDE_COMMIT: false }
-          - { HEAD: "2.9.1",  DOTNET_VERSION: "8",       CACHEABLE: true,  INCLUDE_COMMIT: false }
-          - { HEAD: "2.9",    DOTNET_VERSION: "8",       CACHEABLE: true,  INCLUDE_COMMIT: false }
-          - { HEAD: "2.8",    DOTNET_VERSION: "8",       CACHEABLE: true,  INCLUDE_COMMIT: false }
-          - { HEAD: "2.7",    DOTNET_VERSION: "5.0.100", CACHEABLE: true,  INCLUDE_COMMIT: false }
-          - { HEAD: "2.6.3",  DOTNET_VERSION: "5.0.100", CACHEABLE: true,  INCLUDE_COMMIT: false }
-          - { HEAD: "2.6.2",  DOTNET_VERSION: "5.0.100", CACHEABLE: true,  INCLUDE_COMMIT: false }
-          - { HEAD: "2.6.1",  DOTNET_VERSION: "5.0.100", CACHEABLE: true,  INCLUDE_COMMIT: false }
-          - { HEAD: "2.6",    DOTNET_VERSION: "5.0.100", CACHEABLE: true,  INCLUDE_COMMIT: false }
+          - { HEAD: "master", DOTNET_VERSION: "8",       OLD_VERSION_BUILD: false, CACHEABLE: false, INCLUDE_COMMIT: true }
+          - { HEAD: "2.10",   DOTNET_VERSION: "8",       OLD_VERSION_BUILD: false, CACHEABLE: true,  INCLUDE_COMMIT: false }
+          - { HEAD: "2.9.1",  DOTNET_VERSION: "8",       OLD_VERSION_BUILD: false, CACHEABLE: true,  INCLUDE_COMMIT: false }
+          - { HEAD: "2.9",    DOTNET_VERSION: "8",       OLD_VERSION_BUILD: true,  CACHEABLE: true,  INCLUDE_COMMIT: false }
+          - { HEAD: "2.8",    DOTNET_VERSION: "8",       OLD_VERSION_BUILD: true,  CACHEABLE: true,  INCLUDE_COMMIT: false }
+          - { HEAD: "2.7",    DOTNET_VERSION: "5.0.100", OLD_VERSION_BUILD: true,  CACHEABLE: true,  INCLUDE_COMMIT: false }
+          - { HEAD: "2.6.3",  DOTNET_VERSION: "5.0.100", OLD_VERSION_BUILD: true,  CACHEABLE: true,  INCLUDE_COMMIT: false }
+          - { HEAD: "2.6.2",  DOTNET_VERSION: "5.0.100", OLD_VERSION_BUILD: true,  CACHEABLE: true,  INCLUDE_COMMIT: false }
+          - { HEAD: "2.6.1",  DOTNET_VERSION: "5.0.100", OLD_VERSION_BUILD: true,  CACHEABLE: true,  INCLUDE_COMMIT: false }
+          - { HEAD: "2.6",    DOTNET_VERSION: "5.0.100", OLD_VERSION_BUILD: true,  CACHEABLE: true,  INCLUDE_COMMIT: false }
         target:
           - { BIZHAWK_TARGET: "Release", TASAURIA_TARGET: "Release" }
     name: "Build TASauria plugin for BizHawk ${{ matrix.bizhawk.HEAD }}"
@@ -51,6 +51,25 @@ jobs:
           export TASAURIA_REV="$(git rev-list --count HEAD).$(git rev-parse --short HEAD)"
           echo "TASAURIA_REV=${TASAURIA_REV}" >> $GITHUB_OUTPUT
 
+      - id: bizhawk-checkout
+        name: Checkout the appropriate BizHawk ref
+        shell: bash
+        env:
+          BIZHAWK_HEAD: ${{ matrix.bizhawk.HEAD }}
+          INCLUDE_COMMIT: ${{ matrix.bizhawk.INCLUDE_COMMIT && '1' || '' }}
+        run: |
+          cd BizHawk
+          git checkout "${BIZHAWK_HEAD}"
+          export BIZHAWK_REV="$(git rev-list --count HEAD).$(git rev-parse --short HEAD)"
+          if [ -z "${INCLUDE_COMMIT}" ]; then
+            export BIZHAWK_VERSION="${BIZHAWK_HEAD}";
+          else
+            export BIZHAWK_VERSION="${BIZHAWK_HEAD}.rev${BIZHAWK_REV}";
+          fi
+          echo "BIZHAWK_REV=${BIZHAWK_REV}" >> ${GITHUB_OUTPUT}
+          echo "BIZHAWK_VERSION=${BIZHAWK_VERSION}" >> ${GITHUB_OUTPUT}
+          cd ..
+
       - id: restore-bizhawk
         name: Restore BizHawk build
         if: ${{ matrix.bizhawk.CACHEABLE }}
@@ -60,35 +79,21 @@ jobs:
             BizHawk/output
           key: ${{ runner.os }}-BizHawk-${{ matrix.bizhawk.HEAD }}-${{ matrix.target.BIZHAWK_TARGET }}
 
-      - id: bizhawk-checkout
-        name: Checkout the appropriate BizHawk version
-        if: ${{ !matrix.bizhawk.CACHEABLE || steps.restore-bizhawk.outputs.cache-hit != 'true' }}
-        shell: bash
-        env:
-          BIZHAWK_HEAD: ${{ matrix.bizhawk.HEAD }}
-          INCLUDE_COMMIT: ${{ matrix.bizhawk.INCLUDE_COMMIT && '1' || '' }}
-        run: |
-          cd BizHawk
-          git checkout --recurse-submodules "${BIZHAWK_HEAD}"
-          export BIZHAWK_REV="$(git rev-list --count HEAD).$(git rev-parse --short HEAD)"
-          if [ -z "${INCLUDE_COMMIT}" ]; then
-            export BIZHAWK_VERSION="${BIZHAWK_HEAD}";
-          else
-            export BIZHAWK_VERSION="${BIZHAWK_HEAD}.rev${BIZHAWK_REV}";
-          fi
-          mkdir -p output
-          echo "BIZHAWK_REV=${BIZHAWK_REV}" >> output/.build_environment
-          echo "BIZHAWK_VERSION=${BIZHAWK_VERSION}" >> output/.build_environment
-          cd ..
-
       - id: bizhawk-build
         name: Build BizHawk
         shell: pwsh
         if: ${{ !matrix.bizhawk.CACHEABLE || steps.restore-bizhawk.outputs.cache-hit != 'true' }}
         env:
           BIZHAWK_TARGET: ${{ matrix.target.BIZHAWK_TARGET }}
+          OLD_VERSION_BUILD: ${{ matrix.bizhawk.OLD_VERSION_BUILD && '1' || '' }}
         run: |
           cd BizHawk
+          git checkout --recurse-submodules
+          if (-not [string]::IsNullOrEmpty($env:OLD_VERSION_BUILD)) {
+            cd src/BizHawk.Version
+            dotnet build -c "${env:BIZHAWK_TARGET}"
+            cd ../..
+          }
           # Emulate what Dist/BuildRelease.sh does but in a Windows-compatible way
           $BIZHAWK_VERSION="$(python ../.github/scripts/get_bizhawk_version.py)"
           $BIZHAWK_GIT_HASH="$(git rev-parse --verify HEAD)"
@@ -104,12 +109,6 @@ jobs:
             BizHawk/output
           key: ${{ steps.restore-bizhawk.outputs.cache-primary-key }}
 
-      - id: bizhawk-version
-        name: Retrieve BizHawk version from build
-        shell: bash
-        run: |
-          cat BizHawk/output/.build_environment >> ${GITHUB_OUTPUT}
-
       - name: Build TASauria
         shell: pwsh
         env:
@@ -123,5 +122,5 @@ jobs:
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: TASauriaPlugin.rev${{ steps.tasauria-checkout.outputs.TASAURIA_REV }}_BizHawk.${{ steps.bizhawk-version.outputs.BIZHAWK_VERSION }}
+          name: TASauriaPlugin.rev${{ steps.tasauria-checkout.outputs.TASAURIA_REV }}_BizHawk.${{ steps.bizhawk-checkout.outputs.BIZHAWK_VERSION }}
           path: BizHawk/output/ExternalTools/*
