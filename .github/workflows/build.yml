@@ -39,6 +39,11 @@ jobs:
             8
             ${{ matrix.bizhawk.DOTNET_VERSION }}
 
+      - name: Install Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
       - id: tasauria-checkout
         name: Get TASauria revision
         shell: bash
@@ -78,13 +83,16 @@ jobs:
 
       - id: bizhawk-build
         name: Build BizHawk
-        shell: bash
+        shell: pwsh
         if: ${{ !matrix.bizhawk.CACHEABLE || steps.restore-bizhawk.outputs.cache-hit != 'true' }}
         env:
           BIZHAWK_TARGET: ${{ matrix.target.BIZHAWK_TARGET }}
         run: |
           cd BizHawk
-          Dist/BuildRelease.sh -p:RunAnalyzersDuringBuild=true
+          # Emulate what Dist/BuildRelease.sh does but in a Windows-compatible way
+          $BIZHAWK_VERSION="$(python ../.github/scripts/get_bizhawk_version.py)"
+          $BIZHAWK_GIT_HASH="$(git rev-parse --verify HEAD)"
+          dotnet build BizHawk.sln -c "${env:BIZHAWK_TARGET}" -m -clp:NoSummary -p:Version="${BIZHAWK_VERSION}" -p:SourceRevisionId="${BIZHAWK_GIT_HASH}"
           cd ..
 
       - id: save-bizhawk
