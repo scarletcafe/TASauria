@@ -1,11 +1,11 @@
 namespace ScarletCafe.TASauriaPlugin;
 
+using BizHawk.Client.Common;
+using BizHawk.Client.EmuHawk;
 using System;
 using System.IO;
 using System.Reflection;
 using System.Windows.Forms;
-using BizHawk.Client.Common;
-using BizHawk.Client.EmuHawk;
 
 
 [ExternalTool("TASauria", Description = "")]
@@ -137,9 +137,66 @@ public sealed partial class ExternalToolForm : ToolFormBase, IExternalToolForm {
             statusLabel.Text = "Server stopped.";
         }
     }
-#endregion
+    #endregion
 
-#region WinForms
+    #region WinForms
+
+    /// <summary>
+    /// In BizHawk 2.10 and onwards, external tools receive GeneralUpdate, or more specifically,
+    /// they receive UpdateValues(ToolFormUpdateType.General) every UI frame, regardless of if the
+    /// core is advancing or not.
+    /// 
+    /// However, this was not always the case.
+    /// 
+    /// The change that introduced this is below:
+    /// https://github.com/TASEmulators/BizHawk/issues/3626
+    /// https://github.com/TASEmulators/BizHawk/commit/5eb2cd8cb128928fc4fd9af00010a5d74c99adcd
+    /// 
+    /// Before 2.10, external tools would only be updated when the core was advancing.
+    /// Because TASauria intentionally tries to block the main thread for as little time as possible,
+    /// this means that in these old versions it is almost impossible to do things like update the
+    /// joypad values every frame.
+    /// 
+    /// In 2.10, we can do it by pausing the emulator and manually frame advancing, but in <2.10
+    /// pausing stops TASauria from executing any requests at all.
+    /// 
+    /// On the other hand, we can't just mess with the emulator without *any* regard for the UI status.
+    /// 
+    /// BizHawk's cores are NOT thread safe and the behavior of ApiContainer and so on is undefined
+    /// when not on the main thread.
+    /// 
+    /// Fortunately, System.Windows.Forms.Timer comes in clutch:
+    /// https://learn.microsoft.com/en-us/dotnet/api/system.windows.forms.timer?view=netframework-4.8.1
+    /// 
+    /// As per the documentation:
+    ///  "This Windows timer is designed for a single-threaded environment where UI threads are used
+    ///   to perform processing."
+    /// 
+    /// This gives us a way to take control of the main thread at regular intervals, allowing us to
+    /// control the emulator while paused in <2.10 without losing thread safety.
+    /// 
+    /// The only caveat is that:
+    ///  "The Windows Forms Timer component is [...] limited to an accuracy of 55 milliseconds."
+    ///  
+    /// This is not really a problem when paused anyway as operations should be able to take as much
+    /// time as they need, but in 2.10 we can actually *guarantee* the external tool is updated once
+    /// per UI frame, so if no frame limiter is enabled it can theoretically update at a much higher
+    /// frequency.
+    /// 
+    /// The resulting call stack ends up being:
+    ///   - BizHawk.Client.EmuHawk.Program.Main
+    ///   - BizHawk.Client.EmuHawk.Program.SubMain
+    ///   - BizHawk.Client.EmuHawk.MainForm.ProgramRunLoop  (this is where GeneralUpdate happens in 2.10)
+    ///   - BizHawk.Client.EmuHawk.MainForm.CheckMessages
+    ///   - ScarletCafe.TASauriaPlugin.ExternalToolForm.frameUpdateTimer_Tick (this function)
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
+    private void frameUpdateTimer_Tick(object sender, EventArgs e)
+    {
+        UpdateValues(ToolFormUpdateType.General);
+    }
+
     private void ExternalToolForm_FormClosing(object sender, FormClosingEventArgs e)
     {
         if (GlobalState.server != null) {
@@ -251,6 +308,6 @@ public sealed partial class ExternalToolForm : ToolFormBase, IExternalToolForm {
         saveSettingsButton.Enabled = true;
     }
 
-#endregion
+    #endregion
 
 }
