@@ -4,6 +4,10 @@ using System.Collections.Generic;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
+#if BIZHAWK_VERSION_PRE_2_9_X
+using System.Linq;
+#endif
+
 public class WriteRangeInput {
     [JsonProperty(Required = Required.Always)]
     public int Address { get; set; }
@@ -34,7 +38,11 @@ public class WriteRangeCommand : EmulatorCommand<WriteRangeInput, ReadRangeOutpu
         emulator.APIs.Memory.SetBigEndian(true);
 
         var bytes = emulator.APIs.Memory.ReadByteRange(payload.Address, payload.Data.Length, domain);
+#if BIZHAWK_VERSION_PRE_2_9_X
+        emulator.APIs.Memory.WriteByteRange(payload.Address, payload.Data.ToList(), domain);
+#else
         emulator.APIs.Memory.WriteByteRange(payload.Address, payload.Data, domain);
+#endif
 
         return new ReadRangeOutput {
             Data = [.. bytes],

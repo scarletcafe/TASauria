@@ -30,7 +30,12 @@ public class LoadSlotCommand : EmulatorCommand<LoadSlotInput, LoadSlotOutput>
 
     public override LoadSlotOutput RunSync(EmulatorInterface emulator, Dictionary<string, string> arguments, LoadSlotInput payload)
     {
+#if BIZHAWK_VERSION_PRE_2_9_X
+        emulator.APIs.SaveState.LoadSlot(payload.Slot, payload.SuppressOSD);
+        var success = true;
+#else
         var success = emulator.APIs.SaveState.LoadSlot(payload.Slot, payload.SuppressOSD);
+#endif
 
         return new LoadSlotOutput {
             Success = success

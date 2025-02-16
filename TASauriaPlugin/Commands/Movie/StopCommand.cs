@@ -29,7 +29,12 @@ public class StopCommand : EmulatorCommand<StopInput, GetOutput>
 
         string? moviePath = emulator.IMovieSession.Movie?.Filename;
 
+#if BIZHAWK_VERSION_PRE_2_9_X
+        emulator.IMovieSession.StopMovie(saveChanges: payload.Save);
+        emulator.MainForm.SetMainformMovieInfo();
+#else
         emulator.APIs.Movie.Stop(payload.Save);
+#endif
 
         if (moviePath != null && moviePath.Length > 0 && System.IO.File.Exists(moviePath)) {
             movieData = System.IO.File.ReadAllBytes(moviePath);

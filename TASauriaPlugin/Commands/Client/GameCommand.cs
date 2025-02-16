@@ -27,8 +27,8 @@ public class GameCommand : EmulatorCommand<NoArguments, GameOutput>
 
     public override GameOutput RunSync(EmulatorInterface emulator, Dictionary<string, string> arguments, NoArguments payload)
     {
-        var gameInfo = emulator.APIs.Emulation.GetGameInfo();
-        var gameOptions = emulator.APIs.Emulation.GetGameOptions();
+        var gameInfo = emulator.GetGameInfo();
+        var gameOptions = emulator.GetGameOptions();
 
         return new GameOutput {
             Loaded = gameInfo != null && gameInfo.System != "NULL",

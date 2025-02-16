@@ -14,7 +14,7 @@ public class GetWithMovieCommand : EmulatorCommand<GetInput, GetOutput>
 
     public override GetOutput RunSync(EmulatorInterface emulator, Dictionary<string, string> arguments, GetInput payload)
     {
-        var gameInfo = emulator.APIs.Emulation.GetGameInfo();
+        var gameInfo = emulator.GetGameInfo();
         var dictionary = emulator.APIs.Joypad.GetWithMovie(payload.Controller);
 
         return new GetOutput {

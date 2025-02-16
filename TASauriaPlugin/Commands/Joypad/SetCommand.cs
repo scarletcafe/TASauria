@@ -26,7 +26,7 @@ public class SetCommand : EmulatorCommand<SetInput, GetOutput>
 
     public override GetOutput RunSync(EmulatorInterface emulator, Dictionary<string, string> arguments, SetInput payload)
     {
-        var gameInfo = emulator.APIs.Emulation.GetGameInfo();
+        var gameInfo = emulator.GetGameInfo();
         var dictionary = emulator.APIs.Joypad.Get(payload.Controller);
 
         var buttonInputs = new Dictionary<string, bool>();

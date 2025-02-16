@@ -30,7 +30,12 @@ public class LoadCommand : EmulatorCommand<LoadInput, LoadSlotOutput>
         System.IO.File.WriteAllBytes(fileName, payload.Data);
 
         // Load the save state
+#if BIZHAWK_VERSION_PRE_2_9_X
+        emulator.APIs.SaveState.Load(fileName, true);
+        var success = true;
+#else
         var success = emulator.APIs.SaveState.Load(fileName, true);
+#endif
 
         // Delete the file
         System.IO.File.Delete(fileName);
