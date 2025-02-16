@@ -115,7 +115,7 @@ public sealed partial class ExternalToolForm : ToolFormBase, IExternalToolForm {
     }
 
 #region EmuHawk events
-    protected override void GeneralUpdate() {
+    public override void UpdateValues(ToolFormUpdateType type) {
         if (Config != null) {
             GlobalState.GeneralUpdate(new EmulatorInterface(
                 APIs, MainForm, Config
