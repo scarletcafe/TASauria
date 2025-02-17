@@ -6,7 +6,7 @@ using Newtonsoft.Json.Linq;
 
 public class ReadFloatInput {
     [JsonProperty(Required = Required.Always)]
-    public int Address { get; set; }
+    public long Address { get; set; }
     public bool Little { get; set; } = false;
     public string? Domain { get; set; }
 }

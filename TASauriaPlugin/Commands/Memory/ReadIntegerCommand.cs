@@ -7,7 +7,7 @@ using Newtonsoft.Json.Linq;
 
 public class ReadIntegerInput {
     [JsonProperty(Required = Required.Always)]
-    public int Address { get; set; }
+    public long Address { get; set; }
     [JsonProperty(Required = Required.Always)]
     public int Size { get; set; }
     public bool Signed { get; set; } = true;

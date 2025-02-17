@@ -92,6 +92,9 @@ public abstract class Command<Input, Output>: ICommand where Input: class {
         } catch (JsonSerializationException) {
             // Missing fields or fields of wrong type
             // We leave convertedInput as null and it gets handled below
+        } catch (JsonReaderException)
+        {
+            // Rare exception, caused by things like ints over max size
         }
 
         if (convertedInput != null) {

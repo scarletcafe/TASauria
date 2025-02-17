@@ -6,7 +6,7 @@ using Newtonsoft.Json.Linq;
 
 public class ReadRangeInput {
     [JsonProperty(Required = Required.Always)]
-    public int Address { get; set; }
+    public long Address { get; set; }
     [JsonProperty(Required = Required.Always)]
     public int Size { get; set; }
     public string? Domain { get; set; }

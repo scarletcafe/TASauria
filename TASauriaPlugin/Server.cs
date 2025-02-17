@@ -38,10 +38,10 @@ public class Server {
                     input.Add(key, true);
                 } else if (value == "false") {
                     input.Add(key, false);
-                } else if (int.TryParse(value, out int intValue)) {
-                    input.Add(key, intValue);
-                } else if (float.TryParse(value, out float floatValue)) {
-                    input.Add(key, floatValue);
+                } else if (long.TryParse(value, out long longValue)) {
+                    input.Add(key, longValue);
+                } else if (double.TryParse(value, out double doubleValue)) {
+                    input.Add(key, doubleValue);
                 } else {
                     input.Add(key, value);
                 }

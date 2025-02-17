@@ -312,59 +312,6 @@ The `paused` field in the response payload corresponds to whether the emulator w
 This is equivalent to the Lua `client.ispaused()`, `client.pause()`, and `client.unpause()`.
 
 
-## Pause A/V
-::: danger SECURITY
-Setting the A/V pause state requires '**Allow A/V control**' to be enabled in the TASauria plugin security settings.
-This permission is usually **DISABLED** by default, and must be enabled by the user to be accessible.
-:::
-```ansi
-[0;34mPOST[0m   [0;30mhttp://127.0.0.1:20251[0m/client/pauseav
-```
-::: code-group
-```typescript [Argument schema]
-{
-    /* Optionally sets the current A/V pause state. */
-    /* If this is true, the A/V will pause. */
-    /* If this is false, the A/V will unpause. */
-    /* If this is null, the A/V pause state will not change (e.g. if you only want to check the pause state) */
-    set?: boolean
-}
-```
-```typescript [Response schema]
-{
-    /* Whether the A/V was paused before this action. */
-    paused: boolean,
-}
-```
-```json [Example arguments]
-{
-    "set": true
-}
-```
-```json [Example response]
-{
-    "paused": false,
-    "status": 200,
-    "messageIdentifier": null
-}
-```
-:::
-
-Returns the current A/V pause state, and optionally sets a new one.
-
-If `set` is not provided, then the A/V pause state is left unchanged.
-You can use this with e.g. HTTP `GET` to only query the pause state.
-
-If `set` IS provided, the A/V is either paused or unpaused respectively.
-
-The `paused` field in the response payload corresponds to whether the A/V was paused BEFORE it was set - e.g. a `"set": true` response may get a `"paused": false` response if the A/V was unpaused up until that point.
-
-You should be warned that pausing/unpausing A/V is somewhat crash-prone when not using one of the raw (e.g. PNG or AVI) output methods.
-Consider doing this another way.
-
-This is equivalent to the Lua `client.pause_av()` and `client.unpause_av()`.
-
-
 ## Reboot core
 ::: warning SECURITY
 This command requires '**Allow client control**' to be enabled in the TASauria plugin security settings.

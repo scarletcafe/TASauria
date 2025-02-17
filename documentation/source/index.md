@@ -1,27 +1,44 @@
 ---
-# https://vitepress.dev/reference/default-theme-home-page
-layout: home
+layout: doc
+aside: false
 
-hero:
-  name: "TASauria Documentation"
-  text: null
-  tagline: "User guide and API reference for TASauria, a plugin and library for remotely controlling the BizHawk emulator."
-  image:
-    src: /favicon.svg
-    alt: TASauria Logo
-  actions:
-    - theme: brand
-      text: Getting started
-      link: /getting-started
-    - theme: alt
-      text: Python API reference
-      link: /python-api/first-steps
-
-features:
-  - title: ⏱️ Async-ready
-    details: The TASauria Python module uses asyncio, allowing you to make efficient and concurrent scripts easily.
-  - title: 🧩 Lua feature parity
-    details: TASauria aims to have parity with the majority of the functionality offered by BizHawk's built-in Lua scripting, making it easy to port scripts.
-  - title: 🌐 Version agnostic
-    details: The TASauria plugin builds targeting multiple BizHawk releases so you can use it even with older emulator versions. The Python library functions on any Python 3.9 and later, making it available in almost every environment.
 ---
+
+<style>
+.root-language-button {
+    border-color: var(--vp-button-brand-border);
+    border-radius: 20px;
+
+    background-color: var(--vp-button-brand-bg);
+    padding: 0 20px;
+
+    color: var(--vp-button-brand-text) !important;
+    line-height: 38px;
+    font-size: 14px;
+    font-weight: 600;
+    text-align: center !important;
+
+    text-decoration: inherit !important;
+    transition: color 0.25s, border-color 0.25s, background-color 0.25s !important;
+}
+
+.root-language-button:hover {
+    border-color: var(--vp-button-brand-hover-border);
+    background-color: var(--vp-button-brand-hover-bg);
+    color: var(--vp-button-brand-hover-text) !important;
+}
+
+.root-language-button:active {
+    border-color: var(--vp-button-brand-active-border);
+    background-color: var(--vp-button-brand-active-bg);
+    color: var(--vp-button-brand-active-text) !important;
+}
+</style>
+
+<div style="display: flex; flex-direction: column; align-items: center; gap: 1em;">
+    <img src="/favicon.svg" width="256em" />
+    <h1>TASauria</h1>
+    <h3>Please select a language</h3>
+    <a class="root-language-button" href="/en/">English</a>
+    <a class="root-language-button" href="/ja/">日本語</a>
+</div>

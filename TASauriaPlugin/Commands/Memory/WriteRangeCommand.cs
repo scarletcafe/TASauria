@@ -10,7 +10,7 @@ using System.Linq;
 
 public class WriteRangeInput {
     [JsonProperty(Required = Required.Always)]
-    public int Address { get; set; }
+    public long Address { get; set; }
     [JsonProperty(Required = Required.Always)]
     public byte[] Data { get; set; } = [];
     public string? Domain { get; set; }

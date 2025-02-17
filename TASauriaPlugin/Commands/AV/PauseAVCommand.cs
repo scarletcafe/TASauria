@@ -1,13 +1,22 @@
-namespace ScarletCafe.TASauriaPlugin.Commands.Client;
+namespace ScarletCafe.TASauriaPlugin.Commands.AV;
 
 using System.Collections.Generic;
 using Newtonsoft.Json.Linq;
 
-public class PauseAVCommand : EmulatorCommand<PauseInput, PauseOutput>
+
+public class PauseAVInput {
+    public bool? Set { get; set; } = null;
+}
+
+public class PauseAVOutput {
+    public bool Paused { get; set; }
+}
+
+public class PauseAVCommand : EmulatorCommand<PauseAVInput, PauseAVOutput>
 {
     public PauseAVCommand():
         base(
-            @"^/client/pauseav$"
+            @"^/av/pause$"
         )
     {}
 
@@ -17,7 +26,7 @@ public class PauseAVCommand : EmulatorCommand<PauseInput, PauseOutput>
 
     public override string SecurityRemarks { get; } = "To set A/V pause state, this command requires 'Allow A/V control' to be enabled in the TASauria plugin security settings.";
 
-    public override PauseOutput RunSync(EmulatorInterface emulator, Dictionary<string, string> arguments, PauseInput payload)
+    public override PauseAVOutput RunSync(EmulatorInterface emulator, Dictionary<string, string> arguments, PauseAVInput payload)
     {
         bool paused = emulator.MainForm.PauseAvi;
 
@@ -27,7 +36,7 @@ public class PauseAVCommand : EmulatorCommand<PauseInput, PauseOutput>
             emulator.APIs.EmuClient.UnpauseAv();
         }
 
-        return new PauseOutput {
+        return new PauseAVOutput {
             Paused = paused
         };
     }
