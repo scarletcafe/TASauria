@@ -3,13 +3,15 @@ namespace ScarletCafe.TASauriaPlugin;
 using BizHawk.Client.Common;
 using BizHawk.Client.EmuHawk;
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Windows.Forms;
 
 
 [ExternalTool("TASauria", Description = "")]
-[ExternalToolEmbeddedIcon("TASauriaPlugin.TASauriaIcon.ico")]
+[ExternalToolEmbeddedIcon("TASauriaPlugin.Resources.tasauria_icon.ico")]
 public sealed partial class ExternalToolForm : ToolFormBase, IExternalToolForm {
     protected override string WindowTitleStatic
         => "TASauria";
@@ -79,6 +81,71 @@ public sealed partial class ExternalToolForm : ToolFormBase, IExternalToolForm {
         serverStopButton.Enabled = serverisRunning;
     }
 
+    // This is kind of gross :(
+    // It's the best way I can think of to do lazy, on-the-fly updating locale in WinForms
+    // without having to write an excessive amount of boilerplate code.
+    // If you can think of a better way, please let me know.
+    private List<Action> LocalizableControlRefreshCallbacks { get; set; } = [];
+
+    private void ScanForLocalizableControls(Control parent) {
+        foreach (Control child in parent.Controls) {
+            if (child is Label label && label.Text.StartsWith("@#")) {
+                string identifier = label.Text[2..];
+                LocalizableControlRefreshCallbacks.Add(() => {
+                    label.Text = GlobalState.GetLocaleString(identifier);
+                });
+            }
+
+            if (child is Button button && button.Text.StartsWith("@#")) {
+                string identifier = button.Text[2..];
+                LocalizableControlRefreshCallbacks.Add(() => {
+                    button.Text = GlobalState.GetLocaleString(identifier);
+                });
+            }
+
+            if (child is CheckBox checkbox && checkbox.Text.StartsWith("@#")) {
+                string identifier = checkbox.Text[2..];
+                LocalizableControlRefreshCallbacks.Add(() => {
+                    checkbox.Text = GlobalState.GetLocaleString(identifier);
+                });
+            }
+
+            if (child is TabPage tabPage && tabPage.Text.StartsWith("@#")) {
+                string identifier = tabPage.Text[2..];
+                LocalizableControlRefreshCallbacks.Add(() => {
+                    tabPage.Text = GlobalState.GetLocaleString(identifier);
+                });
+            }
+
+            if (child.HasChildren)
+                ScanForLocalizableControls(child);
+        }
+    }
+
+    private void DoLocaleUpdates() {
+        if (LocalizableControlRefreshCallbacks.Count == 0) {
+            ScanForLocalizableControls(this);
+        }
+
+        foreach (Action callback in LocalizableControlRefreshCallbacks) {
+            callback();
+        }
+
+        // Store current host dropdown index
+        int currentHost = hostSelectorComboBox.SelectedIndex;
+        // Reset items
+        hostSelectorComboBox.Items.Clear();
+        hostSelectorComboBox.Items.AddRange([
+            GlobalState.GetLocaleString("UIHostLoopbackIPv4"),
+            GlobalState.GetLocaleString("UIHostLoopbackIPv6"),
+            GlobalState.GetLocaleString("UIHostAllIPv4"),
+            GlobalState.GetLocaleString("UIHostAllIPv6"),
+            GlobalState.GetLocaleString("UIHostCustom"),
+        ]);
+        // Restore dropdown index
+        hostSelectorComboBox.SelectedIndex = currentHost;
+    }
+
 #endregion
 
     public ExternalToolForm() {
@@ -86,6 +153,19 @@ public sealed partial class ExternalToolForm : ToolFormBase, IExternalToolForm {
 
         InitializeComponent();  // defined in ExternalToolForm.Designer.cs
 
+        // Load localization menu entries
+        string selectedLanguage = GlobalState.configuration.LanguageSelected;
+        languageComboBox.Items.AddRange([..
+            LocalizationFile.AVAILABLE_LANGUAGES
+            .Select((identifier) => LocalizationFile.AVAILABLE_LANGUAGE_FILES[identifier].MetaLanguageName)
+        ]);
+        int languageIndex = Array.IndexOf(LocalizationFile.AVAILABLE_LANGUAGES, selectedLanguage);
+        languageComboBox.SelectedIndex = languageIndex >= 0 ? languageIndex : 0;
+
+        // Do locale updates
+        DoLocaleUpdates();
+
+        // Restore config settings
         ServerHostSetting = GlobalState.configuration.ServerHost;
         portNumericUpDown.Value = GlobalState.configuration.ServerPort;
         serverStartOnLoad.Checked = GlobalState.configuration.ServerStartAutomatically;
@@ -107,7 +187,8 @@ public sealed partial class ExternalToolForm : ToolFormBase, IExternalToolForm {
 
         saveSettingsButton.Enabled = false;
 
-        using (Stream stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("TASauriaPlugin.TASauriaIcon.ico")) {
+        // Set the window icon
+        using (Stream stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("TASauriaPlugin.Resources.tasauria_icon.ico")) {
             Icon = new System.Drawing.Icon(stream);
         }
 
@@ -121,20 +202,23 @@ public sealed partial class ExternalToolForm : ToolFormBase, IExternalToolForm {
                 APIs, MainForm, Config
             ));
         } else {
-            statusLabel.Text = "Config not initialized, no updates happening...";
+            statusLabel.Text = GlobalState.CurrentLocale.UIStatusNotInitialized;
         }
 
         // After saving, show it in the status label for 1 second
         if (DateTime.UtcNow < GlobalState.ConfigLastSaved.AddSeconds(1)) {
-            statusLabel.Text = "Settings saved.";
+            statusLabel.Text = GlobalState.CurrentLocale.UIStatusSavedSettings;
             return;
         }
 
         if (GlobalState.server != null) {
             Server server = GlobalState.server!;
-            statusLabel.Text = $"Server running on {server.Host}:{server.Port} since {server.Started} ({Commands.Registry.commandsExecuted} commands processed)";
+            statusLabel.Text = string.Format(
+                GlobalState.CurrentLocale.UIStatusServerRunning,
+                server.Host, server.Port, server.Started, Commands.Registry.commandsExecuted
+            );
         } else {
-            statusLabel.Text = "Server stopped.";
+            statusLabel.Text = GlobalState.CurrentLocale.UIStatusServerStopped;
         }
     }
 
@@ -202,8 +286,8 @@ public sealed partial class ExternalToolForm : ToolFormBase, IExternalToolForm {
     {
         if (GlobalState.server != null) {
             DialogResult result = MessageBox.Show(
-                "The TASauria server can only interact with the emulator while this external tool window is open.\nIf you close it, the server will be automatically stopped.\nAre you sure you want to exit TASauria?",
-                "Are you sure you want to exit TASauria?",
+                GlobalState.CurrentLocale.UICloseDescription,
+                GlobalState.CurrentLocale.UICloseTitle,
                 MessageBoxButtons.YesNo
             );
 
@@ -213,6 +297,12 @@ public sealed partial class ExternalToolForm : ToolFormBase, IExternalToolForm {
                 GlobalState.StopServer();
             }
         }
+    }
+
+    private void languageComboBox_SelectedIndexChanged(object sender, EventArgs e)
+    {
+        GlobalState.configuration.LanguageSelected = LocalizationFile.AVAILABLE_LANGUAGES[languageComboBox.SelectedIndex];
+        DoLocaleUpdates();
     }
 
     private void hostSelectorComboBox_SelectedIndexChanged(object sender, EventArgs e)

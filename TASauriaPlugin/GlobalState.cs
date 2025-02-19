@@ -3,11 +3,12 @@ namespace ScarletCafe.TASauriaPlugin;
 using System;
 using System.Collections.Concurrent;
 using System.IO;
+using System.Security.Policy;
 using System.Threading;
 using System.Windows.Forms;
 using BizHawk.Client.Common;
 using BizHawk.Common.PathExtensions;
-
+using WebSocketSharp;
 
 public static class GlobalState {
     public static Configuration configuration;
@@ -58,6 +59,30 @@ public static class GlobalState {
     {
         server?.Stop();
         server = null;
+    }
+
+    public static LocalizationFile CurrentLocale { get {
+        if (!LocalizationFile.AVAILABLE_LANGUAGE_FILES.TryGetValue(configuration.LanguageSelected, out LocalizationFile currentLocale))
+        {
+            currentLocale = LocalizationFile.AVAILABLE_LANGUAGE_FILES["en"];
+        }
+
+        return currentLocale;
+    }}
+
+    public static string GetLocaleString(string identifier) {
+        LocalizationFile currentLocale = CurrentLocale;
+
+        string? value =
+            (string?)currentLocale.GetType()
+            .GetProperty(identifier, System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance)
+            ?.GetValue(currentLocale);
+
+        if (value.IsNullOrEmpty()) {
+            return $"#MISSING_{identifier}";
+        } else {
+            return value!;
+        }
     }
 
     /// <summary>

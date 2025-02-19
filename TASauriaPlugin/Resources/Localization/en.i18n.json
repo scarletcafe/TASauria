@@ -1,0 +1,37 @@
+{
+    "MetaLanguageName": "English",
+
+    "UIServerTab": "Server",
+    "UISecurityTab": "Security",
+
+    "UIServerHost": "Host",
+    "UIServerPort": "Port",
+    "UIServerStart": "Start",
+    "UIServerStop": "Stop",
+    "UIServerStartAuto": "Start server automatically when external tool window opens",
+
+    "UIHostLoopbackIPv4": "127.0.0.1 (This machine only, IPv4)",
+    "UIHostLoopbackIPv6": "[::1] (This machine only, IPv6)",
+    "UIHostAllIPv4": "0.0.0.0 (All interfaces, IPv4)",
+    "UIHostAllIPv6": "[::] (All interfaces, IPv6)",
+    "UIHostCustom": "Custom...",
+
+    "UISecAllowClientControl": "Allow client control (pause, frame advance, reset core, turbo, etc)",
+    "UISecAllowJoypad": "Allow joypad/system input (buttons, control stick, reset button, etc)",
+    "UISecAllowMemoryRead": "Allow reading memory",
+    "UISecAllowMemoryWrite": "Allow writing memory",
+    "UISecAllowSavestate": "Allow saving and loading save states",
+    "UISecAllowROMLoad": "Allow loading and closing ROM",
+    "UISecAllowMovie": "Allow movie management",
+    "UISecAllowAVControl": "Allow A/V control",
+
+    "UISaveAsDefault": "Save current settings as default",
+
+    "UIStatusNotInitialized": "Config not initialized, no updates happening...",
+    "UIStatusSavedSettings": "Settings saved.",
+    "UIStatusServerStopped": "Server stopped.",
+    "UIStatusServerRunning": "Server running on {0}:{1} since {2} ({3} commands processed)",
+
+    "UICloseTitle": "Are you sure you want to exit TASauria?",
+    "UICloseDescription": "The TASauria server can only interact with the emulator while this external tool window is open.\nIf you close it, the server will be automatically stopped.\nAre you sure you want to exit TASauria?"
+}

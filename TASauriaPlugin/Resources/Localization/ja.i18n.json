@@ -1,0 +1,37 @@
+{
+    "MetaLanguageName": "日本語",
+
+    "UIServerTab": "サーバー",
+    "UISecurityTab": "セキュリティ",
+
+    "UIServerHost": "ホスト",
+    "UIServerPort": "ポート番号",
+    "UIServerStart": "サーバーを開始",
+    "UIServerStop": "サーバーを停止",
+    "UIServerStartAuto": "この外部ツールのウィンドウが開いた時に自動にサーバーを開始",
+
+    "UIHostLoopbackIPv4": "127.0.0.1 (このパソコンのみ・IPv4)",
+    "UIHostLoopbackIPv6": "[::1] (このパソコンのみ・IPv6)",
+    "UIHostAllIPv4": "0.0.0.0 (すべてのインターフェース・IPv4)",
+    "UIHostAllIPv6": "[::] (すべてのインターフェース・IPv6)",
+    "UIHostCustom": "カスタム...",
+
+    "UISecAllowClientControl": "クライアント制御を許可 (一時停止・コマ送り・コアの再起動・ターボー・などなど)",
+    "UISecAllowJoypad": "ジョイパッドやシステム入力を許可 (ボタン・スティック・リセットボタン・などなど)",
+    "UISecAllowMemoryRead": "メモリーの読み込みを許可",
+    "UISecAllowMemoryWrite": "メモリーの書き込みを許可",
+    "UISecAllowSavestate": "セーブステートの読み込み・書き込みを許可",
+    "UISecAllowROMLoad": "ROMの読み込み・閉鎖を許可",
+    "UISecAllowMovie": "ムービー管理を許可",
+    "UISecAllowAVControl": "A/V管理を許可",
+
+    "UISaveAsDefault": "現在の設定をデフォルトとして保存",
+
+    "UIStatusNotInitialized": "コンフィグが未初期、更新は行われていません・・・",
+    "UIStatusSavedSettings": "設定は保存されました",
+    "UIStatusServerStopped": "サーバーは停止中",
+    "UIStatusServerRunning": "サーバーは {2} から {0}:{1} で起動中 ({3}個のコマンド処理済み)",
+
+    "UICloseTitle": "本当にTASauriaを終了しますか？",
+    "UICloseDescription": "TASauriaのサーバーは、この外部ツールのウィンドウが開いてる時のみ、エミュレーターの操作を行えます。\n今終了すれば、サーバーは自動に停止されます。\n本当にTASauriaを終了しますか？"
+}
