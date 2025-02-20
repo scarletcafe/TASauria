@@ -4,6 +4,7 @@
         <Nullable>enable</Nullable>
         <TargetFramework>net48</TargetFramework>
         <Configurations>Debug;Release</Configurations>
+        <GenerateResourceUsePreserializedResources>true</GenerateResourceUsePreserializedResources>
     </PropertyGroup>
     <PropertyGroup>
         <DefineConstants Condition="'$(AdditionalBuildConstants)' != ''">$(DefineConstants);$(AdditionalBuildConstants)</DefineConstants>
