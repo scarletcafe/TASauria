@@ -32,6 +32,9 @@
         <Reference Include="BizHawk.Common" HintPath="$(BIZHAWK_HOME)dll/BizHawk.Common.dll" />
         <Reference Include="BizHawk.Emulation.Common" HintPath="$(BIZHAWK_HOME)dll/BizHawk.Emulation.Common.dll" />
         <Reference Include="BizHawk.WinForms.Controls" HintPath="$(BIZHAWK_HOME)dll/BizHawk.WinForms.Controls.dll" />
+
+        <!-- Required to embed resources -->
+        <PackageReference Include="System.Resources.Extensions" Version="9.0.2" />
     </ItemGroup>
     <ItemGroup>
         <EmbeddedResource Include="Resources\tasauria_icon.ico" />
