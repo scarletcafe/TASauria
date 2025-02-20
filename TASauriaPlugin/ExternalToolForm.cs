@@ -90,28 +90,28 @@ public sealed partial class ExternalToolForm : ToolFormBase, IExternalToolForm {
     private void ScanForLocalizableControls(Control parent) {
         foreach (Control child in parent.Controls) {
             if (child is Label label && label.Text.StartsWith("@#")) {
-                string identifier = label.Text[2..];
+                string identifier = label.Text.Substring(2);
                 LocalizableControlRefreshCallbacks.Add(() => {
                     label.Text = GlobalState.GetLocaleString(identifier);
                 });
             }
 
             if (child is Button button && button.Text.StartsWith("@#")) {
-                string identifier = button.Text[2..];
+                string identifier = button.Text.Substring(2);
                 LocalizableControlRefreshCallbacks.Add(() => {
                     button.Text = GlobalState.GetLocaleString(identifier);
                 });
             }
 
             if (child is CheckBox checkbox && checkbox.Text.StartsWith("@#")) {
-                string identifier = checkbox.Text[2..];
+                string identifier = checkbox.Text.Substring(2);
                 LocalizableControlRefreshCallbacks.Add(() => {
                     checkbox.Text = GlobalState.GetLocaleString(identifier);
                 });
             }
 
             if (child is TabPage tabPage && tabPage.Text.StartsWith("@#")) {
-                string identifier = tabPage.Text[2..];
+                string identifier = tabPage.Text.Substring(2);
                 LocalizableControlRefreshCallbacks.Add(() => {
                     tabPage.Text = GlobalState.GetLocaleString(identifier);
                 });
