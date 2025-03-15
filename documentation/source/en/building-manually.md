@@ -41,6 +41,11 @@ Then build using the `dotnet` CLI:
 dotnet build
 ```
 
+If you're building with an older version of BizHawk, you will need Python installed so that the generator script can enable the appropriate compatibility patches:
+```bash
+dotnet build TASauriaPlugin.sln -c "Debug" -p:AdditionalBuildConstants="$(python ../.github/scripts/generate_bizhawk_version_constants.py)"
+```
+
 Building will **automatically** place the resulting DLL in `BizHawk/output/ExternalTools/TASauriaPlugin.dll`, allowing you to immediately load up the emulator to test its functionality.
 
 From here, you can load up BizHawk with the tool activated using the following command:
