@@ -3,4 +3,9 @@
 ## Here we are only ignoring stuff that tends to creep out of the individual silos, like occasional build artifacts.
 
 # Python stuff
+/build
+/dist
+/venv
+/.venv
+/.ruff_cache
 *.egg-info/

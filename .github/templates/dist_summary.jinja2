@@ -1,0 +1,26 @@
+TASauria {{ package.version }}
+
+https://pypi.org/project/tasauria/{{ package.version }}/
+{{ env('GITHUB_SERVER_URL') }}/{{ env('GITHUB_REPOSITORY') }}/tree/{{ env('tag_name') }}
+
+Built by {{ env('GITHUB_SERVER_URL') }}/{{ env('GITHUB_REPOSITORY') }}/actions/runs/{{ env('GITHUB_RUN_ID') }} (triggered by {{ env('GITHUB_ACTOR') }})
+
+[New commits since {{ last_version }}]({{ env('GITHUB_SERVER_URL') }}/{{ env('GITHUB_REPOSITORY') }}/compare/{{ last_version }}...{{ commit_hash }})
+
+You can download the latest plugin releases and Python wheel from this artifact.
+
+Alternatively, you can also download the Python wheel from PyPI:
+
+```bash
+pip install -U tasauria
+```
+
+Install specifically this version (not recommended):
+```bash
+pip install -U "tasauria=={{ package.version }}"
+```
+
+Install via GitHub (not recommended):
+```bash
+pip install -U "git+https://github.com/scarletcafe/TASauria@{{ env('tag_name') }}"
+```
