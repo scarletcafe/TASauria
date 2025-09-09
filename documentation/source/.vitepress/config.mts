@@ -6,12 +6,15 @@ export default defineConfig(withMermaid({
   title: "TASauria Documentation",
   description: "User guide and API reference for TASauria, a plugin and library for remotely controlling the BizHawk emulator.",
   head: [
-    ['link', { rel: 'icon', type: 'image/png', href: '/favicon-96x96.png', sizes: '96x96' }],
-    ['link', { rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' }],
-    ['link', { rel: 'shortcut icon', href: '/favicon.ico' }],
-    ['link', { rel: 'apple-touch-icon', href: '/apple-touch-icon.png', sizes: '180x180' }],
+    ['link', { href: '/apple-touch-icon.png', rel: 'apple-touch-icon', sizes: '180x180', }],
+    ['link', { href: '/favicon-96x96.png',rel: 'icon', type: 'image/png', sizes: '96x96', }],
+    ['link', { href: '/favicon.ico', rel: 'shortcut icon', }],
+    ['link', { href: '/favicon.svg', rel: 'icon', type: 'image/svg+xml', }],
+    ['link', { href: '/site.webmanifest', rel: 'manifest', }],
+    ['link', { href: '/web-app-manifest-192x192.png', rel: 'icon', type: 'image/png', sizes: '512x512', }],
+    ['link', { href: '/web-app-manifest-192x192.png',rel: 'icon', type: 'image/png', sizes: '192x192', }],
+
     ['meta', { name: 'apple-mobile-web-app-title', content: 'TASauria' }],
-    ['link', { rel: 'manifest', href: '/site.webmanifest' }]
   ],
   locales: {
     en: {
