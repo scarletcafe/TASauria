@@ -2,6 +2,7 @@ namespace ScarletCafe.TASauriaPlugin.Commands.Movie;
 
 using System.Collections.Generic;
 using System.IO;
+using BizHawk.Bizware.Graphics;
 using BizHawk.Client.Common;
 using BizHawk.Emulation.Common;
 using Newtonsoft.Json.Linq;
@@ -58,10 +59,17 @@ public class NewCommand : EmulatorCommand<NewInput, NewOutput>
                 movieToRecord.TextSavestate = sw.ToString();
             }
 
+#if BIZHAWK_VERSION_PRE_2_10_1
             movieToRecord.SavestateFramebuffer = [];
+#endif
             if (emulator.MainForm.Emulator.HasVideoProvider())
             {
+#if BIZHAWK_VERSION_PRE_2_10_1
                 movieToRecord.SavestateFramebuffer = (int[])emulator.MainForm.Emulator.AsVideoProvider().GetVideoBuffer().Clone();
+#else
+                var videoProvider = _emulator.AsVideoProvider();
+                movieToRecord.SavestateFramebuffer = new BitmapBuffer(videoProvider.BufferWidth, videoProvider.BufferHeight, videoProvider.GetVideoBuffer());
+#endif
             }
         } else if (payload.StartFromSaveRAM && emulator.MainForm.Emulator.HasSaveRam()) {
             var core = emulator.MainForm.Emulator.AsSaveRam();
