@@ -1,4 +1,4 @@
-name: Build TASauria plugin
+name: Build TASauria BizHawk plugin
 
 on:
   push:

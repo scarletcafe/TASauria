@@ -1,0 +1,34 @@
+name: Build TASauria documentation
+
+on:
+  push:
+  pull_request:
+    types: [ opened, edited ]
+  workflow_dispatch:
+
+jobs:
+  build-docs:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - uses: actions/setup-node@v5
+      with:
+        node-version: 22
+
+    - id: build-documentation
+      name: Get TASauria revision
+      shell: bash
+      run: |
+        cd documentation
+        npm install
+        npm run docs:build
+
+    - name: Upload documentation
+      uses: actions/upload-artifact@v4
+      with:
+        name: TASauria_docs
+        path: documentation/source/.vitepress/dist/*
