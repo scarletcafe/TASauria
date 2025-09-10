@@ -59,18 +59,26 @@ class File(typing.NamedTuple):
 
 ENVIRONMENT = Environment(loader=BaseLoader())
 FILES: typing.List[File] = []
+DISTRIBUTION_FOLDERS = [
+    REPOSITORY_ROOT / 'dist',
+    REPOSITORY_ROOT / 'non_python_dist',
+]
 
-for file in pathlib.Path('dist').iterdir():
-    if file.is_file() and file.name.lower().endswith(('.whl', '.egg', '.tar.gz', '.zip')):
-        with open(file, 'rb') as fp:
-            data = fp.read()
+for distribution_folder in DISTRIBUTION_FOLDERS:
+    if not distribution_folder.is_dir():
+        continue
 
-        FILES.append(File(
-            name=file.name,
-            md5=hashlib.md5(data).hexdigest(),
-            sha1=hashlib.sha1(data).hexdigest(),
-            sha256=hashlib.sha256(data).hexdigest()
-        ))
+    for file in distribution_folder.iterdir():
+        if file.is_file() and file.name.lower().endswith(('.whl', '.egg', '.tar.gz', '.zip')):
+            with open(file, 'rb') as fp:
+                data = fp.read()
+
+            FILES.append(File(
+                name=file.name,
+                md5=hashlib.md5(data).hexdigest(),
+                sha1=hashlib.sha1(data).hexdigest(),
+                sha256=hashlib.sha256(data).hexdigest()
+            ))
 
 process = subprocess.Popen(
     ['git', 'tag', '-l', '--sort=version:refname'],

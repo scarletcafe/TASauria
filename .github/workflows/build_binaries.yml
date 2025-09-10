@@ -260,7 +260,7 @@ jobs:
         with:
           pattern: TASauriaPlugin.*
           merge-multiple: true
-          path: dist
+          path: non_python_dist
 
       - name: Publish wheels as release artifacts on GitHub
         shell: bash
@@ -271,7 +271,10 @@ jobs:
           export tag_name="${GITHUB_REF##*/}"
           python .github/scripts/create_dist_summary.py
           assets=()
-          for asset in ./dist/*.{whl,tar.gz,zip}; do
+          for asset in ./dist/*.{whl,tar.gz}; do
+            assets+=("-a" "$asset")
+          done
+          for asset in ./non_python_dist/*.zip; do
             assets+=("-a" "$asset")
           done
           tag_name="${GITHUB_REF##*/}"
