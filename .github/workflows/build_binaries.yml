@@ -217,7 +217,7 @@ jobs:
         path: dist/*
 
   upload_release:
-    needs: [ build-python-distributions ]
+    needs: [ build-bizhawk-plugin, build-python-distributions ]
     runs-on: ubuntu-latest
     environment: publish
     permissions:
