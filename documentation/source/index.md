@@ -39,6 +39,6 @@ aside: false
     <img src="/favicon.svg" width="256em" />
     <h1>TASauria</h1>
     <h3>Please select a language</h3>
-    <a class="root-language-button" href="/en/">English</a>
-    <a class="root-language-button" href="/ja/">日本語</a>
+    <a class="root-language-button" href="./en/">English</a>
+    <a class="root-language-button" href="./ja/">日本語</a>
 </div>
