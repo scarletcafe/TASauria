@@ -3,6 +3,7 @@ import { withMermaid } from 'vitepress-plugin-mermaid'
 
 // https://vitepress.dev/reference/site-config
 export default defineConfig(withMermaid({
+  base: '/TASauria/',
   title: "TASauria Documentation",
   description: "User guide and API reference for TASauria, a plugin and library for remotely controlling the BizHawk emulator.",
   head: [
