@@ -70,7 +70,7 @@ public class NewCommand : EmulatorCommand<NewInput, NewOutput>
 #if BIZHAWK_VERSION_PRE_2_10_1
                 movieToRecord.SavestateFramebuffer = (int[])emulator.MainForm.Emulator.AsVideoProvider().GetVideoBuffer().Clone();
 #else
-                var videoProvider = emulator.AsVideoProvider();
+                var videoProvider = ((IEmulator)emulator).AsVideoProvider();
                 movieToRecord.SavestateFramebuffer = new BitmapBuffer(videoProvider.BufferWidth, videoProvider.BufferHeight, videoProvider.GetVideoBuffer());
 #endif
             }
