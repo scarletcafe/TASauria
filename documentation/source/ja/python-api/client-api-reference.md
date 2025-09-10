@@ -1,10 +1,10 @@
 
 
-# Client API reference
+# クライアント API リファレンス
 
-## TASauria lifecycle
+## TASauria のライフサイクル
 
-### ⚙️ `TASauria(...)` (constructor)
+### ⚙️ `TASauria(...)` (コンストラクタ)
 
 ::: code-group
 ```python [Function signature]
@@ -15,7 +15,7 @@ TASauria(
 ```
 :::
 
-This is the constructor for the TASauria class.
+これは、`TASauria` クラスのコンストラクタです。
             
 
 ### ⚙️ `.connect(...)`
@@ -45,7 +45,7 @@ emu.close(
 Closes the connection to the TASauria server, after which this client will be unusable.
             
 
-## Meta functionality
+## メタ機能
 
 ### ⚙️ `.ping(...)`
 
@@ -74,7 +74,7 @@ Allows batching of commands.
 This requires lower-level understanding of TASauria to use, consider checking the [performance page](../additional-reading/performance) page for guidance.
             
 
-## Joypad control
+## ジョイパッド操作
 
 ### ⚙️ `.get_joypad(...)`
 
@@ -105,7 +105,7 @@ emu.set_joypad(
 Sets the current joypad state.
             
 
-## Memory reading
+## メモリーの読み込み
 
 ### ⚙️ `.read_u8_be(...)`
 
@@ -493,7 +493,7 @@ This uses batching internally, which means this method is faster than calling `e
 and all of the reads are guaranteed to be from the same frame.
             
 
-## Memory writing
+## メモリーの書き込み
 
 ### ⚙️ `.write_u8_be(...)`
 

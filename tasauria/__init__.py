@@ -24,7 +24,7 @@ class VersionInfo(NamedTuple):
     micro: int
 
 
-version_info: VersionInfo = VersionInfo(major=1, minor=0, micro=2)
+version_info: VersionInfo = VersionInfo(major=1, minor=0, micro=3)
 
 __title__ = 'tasauria'
 __author__ = 'scarletcafe'

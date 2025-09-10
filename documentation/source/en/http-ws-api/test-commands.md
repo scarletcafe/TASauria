@@ -43,7 +43,7 @@ Unlike most other commands, this does not actually sync with the emulator and so
 This command is provided mostly for the purpose of testing that the server is functioning correctly.
 
 The path argument can either be present or not present, i.e. `/test/echo` and `/test/echo/foobar` both trigger the command.
-If the path argument is provided, it's included in the response as `pathMessage`.
+If the path argument is provided, it's included in the response as `pathMessage`. If the path argument is not provided, `pathMessage` will be an empty string.
 
 
 ## Wait
@@ -62,7 +62,7 @@ If the path argument is provided, it's included in the response as `pathMessage`
     /* The time the waiting started as an ISO datetime */
     timeStarted: string,
     /* The time the waiting finished as an ISO datetime */
-    timeStarted: string,
+    timeStopped: string,
 }
 ```
 ```json [Example arguments]

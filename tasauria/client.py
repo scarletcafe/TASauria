@@ -35,6 +35,37 @@ class TASauria:
         url: typing.Optional[typing.Union[yarl.URL, str]] = None,
         adapter_type: typing.Optional[typing.Type[AsyncAdapter]] = None,
     ):
+        """
+        <section>lifecycle</section>
+
+        <description language="en">
+        This is the constructor for the TASauria class.
+        </description>
+        <description language="ja">
+        これは、`TASauria` クラスのコンストラクタです。
+        </description>
+
+        <argument name="url">
+        <description language="en">
+        The URL to connect to. If `adapter_type` is passed, the URL should be of a compatible type with the adapter.
+        Otherwise, an adapter will be selected automatically based on the URL type.
+        </description>
+        <description language="en">
+        接続するURL。 `adapter_type` が渡された場合は、URL はアダプタと互換性のあるタイプである必要があります。
+        そうでない場合、URL のタイプに基づいてアダプタが自動的に選択されます。
+        </description>
+        </argument>
+
+        <argument name="adapter_type">
+        <description language="en">
+        The adapter to use, if you wish to force one.
+        TASauria provides `tasauria.adapters.HTTPAdapter` and `tasauria.adapters.WebSocketAdapter`.
+        You can technically write your own by subclassing `tasauria.adapters.async_.AsyncAdapter`,
+        but the TASauria plugin only listens on HTTP and WebSocket anyway.
+        </description>
+        </argument>
+        """
+
         if url is None:
             url = "ws://127.0.0.1:20251/websocket"
 
@@ -78,12 +109,29 @@ class TASauria:
         return await self.adapter.execute_command(command, **kwargs)
 
     async def connect(self) -> None:
+        """
+        <section>lifecycle</section>
+
+        <description language="en">
+        Attempts to connect to the TASauria server specified by the URL in the classes' constructor.
+        This will not overwrite an existing connection if there is one.
+        </description>
+        """
+
         if self.adapter is None:
             self.adapter = await self.adapter_type.connect(self.url)
 
     async def close(
         self
     ) -> None:
+        """
+        <section>lifecycle</section>
+
+        <description language="en">
+        Closes the connection to the TASauria server, after which this client will be unusable.
+        </description>
+        """
+
         if self.adapter is not None:
             await self.adapter.close()
 
@@ -92,6 +140,14 @@ class TASauria:
     async def ping(
         self
     ) -> bool:
+        """
+        <section>meta</section>
+
+        <description language="en">
+        Sends a ping to the TASauria server. This should always return `True`.
+        </description>
+        """
+
         return await self._execute_command(
             MetaPingCommand
         )
@@ -103,6 +159,15 @@ class TASauria:
             typing.Dict[str, typing.Any]
         ]]
     ) -> typing.List[typing.Any]:
+        """
+        <section>meta</section>
+
+        <description language="en">
+        Allows batching of commands.
+        This requires lower-level understanding of TASauria to use, consider checking the [performance page](../additional-reading/performance) page for guidance.
+        </description>
+        """
+
         return await self._execute_command(
             MetaBatchCommand,
             commands=commands
@@ -112,6 +177,14 @@ class TASauria:
     async def get_frame_status(
         self
     ) -> FrameStatus:
+        """
+        <section>client</section>
+
+        <description language="en">
+        Gets statistics about the current frame, such as the current frame number, lag frames, executed CPU cycles, etc.
+        </description>
+        """
+
         return await self._execute_command(
             ClientFrameStatusCommand
         )
@@ -120,6 +193,15 @@ class TASauria:
         self,
         unpause: bool = False
     ) -> FrameStatus:
+        """
+        <section>client</section>
+
+        <description language="en">
+        Advances the emulator by one frame.
+        If `unpause` is `False` or not provided, this will also pause the emulator.
+        You can pass `unpause = True` to make the emulator unpause after the frame advance.
+        </description>
+        """
         return await self._execute_command(
             ClientFrameAdvanceCommand,
             unpause=unpause
@@ -128,6 +210,13 @@ class TASauria:
     async def get_game_info(
         self
     ) -> GameInfo:
+        """
+        <section>client</section>
+
+        <description language="en">
+        Gets information about the currently playing game.
+        </description>
+        """
         return await self._execute_command(
             ClientGameCommand
         )
@@ -139,6 +228,14 @@ class TASauria:
         with_movie: bool = False,
         immediate: bool = False,
     ) -> BizHawkInput:
+        """
+        <section>joypad</section>
+
+        <description language="en">
+        Gets the current joypad state.
+        </description>
+        """
+
         return await self._execute_command(
             JoypadGetCommand,
             controller=controller,
@@ -151,6 +248,14 @@ class TASauria:
         state: BizHawkInput,
         controller: typing.Optional[int] = None,
     ) -> BizHawkInput:
+        """
+        <section>joypad</section>
+
+        <description language="en">
+        Sets the current joypad state.
+        </description>
+        """
+
         return await self._execute_command(
             JoypadSetCommand,
             state=state,
@@ -163,6 +268,14 @@ class TASauria:
         address: int,
         domain: typing.Optional[str] = None,
     ) -> int:
+        """
+        <section>memory_reading</section>
+
+        <description language="en">
+        Reads a big endian `u8` (unsigned 8 bit integer) from the requested address and domain.
+        </description>
+        """
+
         return await self._execute_command(
             MemoryReadIntegerCommand,
             address=address,
@@ -177,6 +290,14 @@ class TASauria:
         address: int,
         domain: typing.Optional[str] = None,
     ) -> int:
+        """
+        <section>memory_reading</section>
+
+        <description language="en">
+        Reads a little endian `u8` (unsigned 8 bit integer) from the requested address and domain.
+        </description>
+        """
+
         return await self._execute_command(
             MemoryReadIntegerCommand,
             address=address,
@@ -191,6 +312,13 @@ class TASauria:
         address: int,
         domain: typing.Optional[str] = None,
     ) -> int:
+        """
+        <section>memory_reading</section>
+
+        <description language="en">
+        Reads a big endian `i8` (signed 8 bit integer) from the requested address and domain.
+        </description>
+        """
         return await self._execute_command(
             MemoryReadIntegerCommand,
             address=address,
@@ -205,6 +333,14 @@ class TASauria:
         address: int,
         domain: typing.Optional[str] = None,
     ) -> int:
+        """
+        <section>memory_reading</section>
+
+        <description language="en">
+        Reads a little endian `i8` (signed 8 bit integer) from the requested address and domain.
+        </description>
+        """
+
         return await self._execute_command(
             MemoryReadIntegerCommand,
             address=address,
@@ -219,6 +355,14 @@ class TASauria:
         address: int,
         domain: typing.Optional[str] = None,
     ) -> int:
+        """
+        <section>memory_reading</section>
+
+        <description language="en">
+        Reads a big endian `u16` (unsigned 16 bit integer) from the requested address and domain.
+        </description>
+        """
+
         return await self._execute_command(
             MemoryReadIntegerCommand,
             address=address,
@@ -233,6 +377,14 @@ class TASauria:
         address: int,
         domain: typing.Optional[str] = None,
     ) -> int:
+        """
+        <section>memory_reading</section>
+
+        <description language="en">
+        Reads a little endian `u16` (unsigned 16 bit integer) from the requested address and domain.
+        </description>
+        """
+
         return await self._execute_command(
             MemoryReadIntegerCommand,
             address=address,
@@ -247,6 +399,14 @@ class TASauria:
         address: int,
         domain: typing.Optional[str] = None,
     ) -> int:
+        """
+        <section>memory_reading</section>
+
+        <description language="en">
+        Reads a big endian `i16` (signed 16 bit integer) from the requested address and domain.
+        </description>
+        """
+
         return await self._execute_command(
             MemoryReadIntegerCommand,
             address=address,
@@ -261,6 +421,14 @@ class TASauria:
         address: int,
         domain: typing.Optional[str] = None,
     ) -> int:
+        """
+        <section>memory_reading</section>
+
+        <description language="en">
+        Reads a little endian `i16` (signed 16 bit integer) from the requested address and domain.
+        </description>
+        """
+
         return await self._execute_command(
             MemoryReadIntegerCommand,
             address=address,
@@ -275,6 +443,14 @@ class TASauria:
         address: int,
         domain: typing.Optional[str] = None,
     ) -> int:
+        """
+        <section>memory_reading</section>
+
+        <description language="en">
+        Reads a big endian `u24` (unsigned 24 bit integer) from the requested address and domain.
+        </description>
+        """
+
         return await self._execute_command(
             MemoryReadIntegerCommand,
             address=address,
@@ -289,6 +465,14 @@ class TASauria:
         address: int,
         domain: typing.Optional[str] = None,
     ) -> int:
+        """
+        <section>memory_reading</section>
+
+        <description language="en">
+        Reads a little endian `u24` (unsigned 24 bit integer) from the requested address and domain.
+        </description>
+        """
+
         return await self._execute_command(
             MemoryReadIntegerCommand,
             address=address,
@@ -303,6 +487,14 @@ class TASauria:
         address: int,
         domain: typing.Optional[str] = None,
     ) -> int:
+        """
+        <section>memory_reading</section>
+
+        <description language="en">
+        Reads a big endian `i24` (signed 24 bit integer) from the requested address and domain.
+        </description>
+        """
+
         return await self._execute_command(
             MemoryReadIntegerCommand,
             address=address,
@@ -317,6 +509,14 @@ class TASauria:
         address: int,
         domain: typing.Optional[str] = None,
     ) -> int:
+        """
+        <section>memory_reading</section>
+
+        <description language="en">
+        Reads a little endian `i24` (signed 24 bit integer) from the requested address and domain.
+        </description>
+        """
+
         return await self._execute_command(
             MemoryReadIntegerCommand,
             address=address,
@@ -331,6 +531,14 @@ class TASauria:
         address: int,
         domain: typing.Optional[str] = None,
     ) -> int:
+        """
+        <section>memory_reading</section>
+
+        <description language="en">
+        Reads a big endian `u32` (unsigned 32 bit integer) from the requested address and domain.
+        </description>
+        """
+
         return await self._execute_command(
             MemoryReadIntegerCommand,
             address=address,
@@ -345,6 +553,14 @@ class TASauria:
         address: int,
         domain: typing.Optional[str] = None,
     ) -> int:
+        """
+        <section>memory_reading</section>
+
+        <description language="en">
+        Reads a little endian `u32` (unsigned 32 bit integer) from the requested address and domain.
+        </description>
+        """
+
         return await self._execute_command(
             MemoryReadIntegerCommand,
             address=address,
@@ -359,6 +575,14 @@ class TASauria:
         address: int,
         domain: typing.Optional[str] = None,
     ) -> int:
+        """
+        <section>memory_reading</section>
+
+        <description language="en">
+        Reads a big endian `i32` (signed 32 bit integer) from the requested address and domain.
+        </description>
+        """
+
         return await self._execute_command(
             MemoryReadIntegerCommand,
             address=address,
@@ -373,6 +597,14 @@ class TASauria:
         address: int,
         domain: typing.Optional[str] = None,
     ) -> int:
+        """
+        <section>memory_reading</section>
+
+        <description language="en">
+        Reads a little endian `i32` (signed 32 bit integer) from the requested address and domain.
+        </description>
+        """
+
         return await self._execute_command(
             MemoryReadIntegerCommand,
             address=address,
@@ -387,6 +619,14 @@ class TASauria:
         address: int,
         domain: typing.Optional[str] = None,
     ) -> int:
+        """
+        <section>memory_reading</section>
+
+        <description language="en">
+        Reads a big endian `u64` (unsigned 64 bit integer) from the requested address and domain.
+        </description>
+        """
+
         buffer: bytes = await self._execute_command(
             MemoryReadRangeCommand,
             address=address,
@@ -400,6 +640,14 @@ class TASauria:
         address: int,
         domain: typing.Optional[str] = None,
     ) -> int:
+        """
+        <section>memory_reading</section>
+
+        <description language="en">
+        Reads a little endian `u64` (unsigned 64 bit integer) from the requested address and domain.
+        </description>
+        """
+
         buffer: bytes = await self._execute_command(
             MemoryReadRangeCommand,
             address=address,
@@ -413,6 +661,14 @@ class TASauria:
         address: int,
         domain: typing.Optional[str] = None,
     ) -> int:
+        """
+        <section>memory_reading</section>
+
+        <description language="en">
+        Reads a big endian `i64` (signed 64 bit integer) from the requested address and domain.
+        </description>
+        """
+
         buffer: bytes = await self._execute_command(
             MemoryReadRangeCommand,
             address=address,
@@ -426,6 +682,14 @@ class TASauria:
         address: int,
         domain: typing.Optional[str] = None,
     ) -> int:
+        """
+        <section>memory_reading</section>
+
+        <description language="en">
+        Reads a little endian `i64` (signed 64 bit integer) from the requested address and domain.
+        </description>
+        """
+
         buffer: bytes = await self._execute_command(
             MemoryReadRangeCommand,
             address=address,
@@ -439,6 +703,14 @@ class TASauria:
         address: int,
         domain: typing.Optional[str] = None,
     ) -> float:
+        """
+        <section>memory_reading</section>
+
+        <description language="en">
+        Reads a big endian `f32` (32 bit IEEE-754 floating point number) from the requested address and domain.
+        </description>
+        """
+
         return await self._execute_command(
             MemoryReadFloatCommand,
             address=address,
@@ -451,6 +723,14 @@ class TASauria:
         address: int,
         domain: typing.Optional[str] = None,
     ) -> float:
+        """
+        <section>memory_reading</section>
+
+        <description language="en">
+        Reads a little endian `f32` (32 bit IEEE-754 floating point number) from the requested address and domain.
+        </description>
+        """
+
         return await self._execute_command(
             MemoryReadFloatCommand,
             address=address,
@@ -463,6 +743,14 @@ class TASauria:
         address: int,
         domain: typing.Optional[str] = None,
     ) -> float:
+        """
+        <section>memory_reading</section>
+
+        <description language="en">
+        Reads a big endian `f64` (64 bit IEEE-754 floating point number) from the requested address and domain.
+        </description>
+        """
+
         buffer: bytes = await self._execute_command(
             MemoryReadRangeCommand,
             address=address,
@@ -476,6 +764,14 @@ class TASauria:
         address: int,
         domain: typing.Optional[str] = None,
     ) -> float:
+        """
+        <section>memory_reading</section>
+
+        <description language="en">
+        Reads a little endian `f64` (64 bit IEEE-754 floating point number) from the requested address and domain.
+        </description>
+        """
+
         buffer: bytes = await self._execute_command(
             MemoryReadRangeCommand,
             address=address,
@@ -490,6 +786,14 @@ class TASauria:
         size: int,
         domain: typing.Optional[str] = None,
     ) -> bytes:
+        """
+        <section>memory_reading</section>
+
+        <description language="en">
+        Reads a range of memory of the requested size from the requested address and domain.
+        </description>
+        """
+
         return await self._execute_command(
             MemoryReadRangeCommand,
             address=address,
@@ -503,6 +807,17 @@ class TASauria:
         format: str,
         domain: typing.Optional[str] = None,
     ) -> typing.Tuple[typing.Any, ...]:
+        """
+        <section>memory_reading</section>
+
+        <description language="en">
+        Reads and unpacks data from the requested address and domain,
+        using the same format as `struct.unpack` from the Python standard library.
+
+        The size of data to be read is automatically calculated with `struct.calcsize`.
+        </description>
+        """
+
         size = struct.calcsize(format)
         buffer: bytes = await self._execute_command(
             MemoryReadRangeCommand,
@@ -517,6 +832,17 @@ class TASauria:
         structs: typing.Sequence[typing.Tuple[int, str]],
         domain: typing.Optional[str] = None,
     ) -> typing.List[typing.Tuple[typing.Any, ...]]:
+        """
+        <section>memory_reading</section>
+
+        <description language="en">
+        Reads and unpacks data from multiple addresses within the requested domain.
+
+        This uses batching internally, which means this method is faster than calling `emu.read_struct` multiple times,
+        and all of the reads are guaranteed to be from the same frame.
+        </description>
+        """
+
         commands: typing.List[
             typing.Tuple[typing.Type[typing.Any], typing.Dict[str, typing.Any]]
         ] = [
@@ -540,6 +866,14 @@ class TASauria:
         data: int,
         domain: typing.Optional[str] = None,
     ) -> int:
+        """
+        <section>memory_writing</section>
+
+        <description language="en">
+        Writes a big endian `u8` (unsigned 8 bit integer) to the requested address and domain.
+        </description>
+        """
+
         return await self._execute_command(
             MemoryWriteIntegerCommand,
             address=address,

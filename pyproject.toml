@@ -36,11 +36,22 @@ dynamic = ["version", "dependencies"]
 [tool.setuptools]
 packages = [
     "tasauria",
+    "tasauria.adapters",
+    "tasauria.commands",
+    "tasauria.systems",
 ]
 include-package-data = true
 
 [tool.setuptools.dynamic]
 dependencies = { file = "requirements.txt" }
+
+[project.optional-dependencies]
+lint = [
+    "ruff >= 0.13, < 1.0"
+]
+documentation = [
+    "lxml >= 6.0, < 7.0"
+]
 
 [tool.black]
 line-length = 125
