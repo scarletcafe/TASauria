@@ -36,15 +36,12 @@ First, change into the plugin directory:
 cd TASauriaPlugin
 ```
 
-Then build using the `dotnet` CLI:
+Then build using the `dotnet` CLI. You will need both Python and a version of `git` installed so that the appropriate compile flags can be enabled for compatibility:
 ```bash
-dotnet build
+dotnet build TASauriaPlugin.sln -c "Debug" -p:AdditionalBuildConstants="$(python ../.github/scripts/generate_bizhawk_version_constants.py) -p:TargetedBizHawkVersion="$(python ../.github/scripts/fetch_bizhawk_version.py)"
 ```
 
-If you're building with an older version of BizHawk, you will need Python installed so that the generator script can enable the appropriate compatibility patches:
-```bash
-dotnet build TASauriaPlugin.sln -c "Debug" -p:AdditionalBuildConstants="$(python ../.github/scripts/generate_bizhawk_version_constants.py)"
-```
+Building with Visual Studio is *possible*, but because it doesn't set these above flags it is likely to fail unless you check out BizHawk to `master`.
 
 Building will **automatically** place the resulting DLL in `BizHawk/output/ExternalTools/TASauriaPlugin.dll`, allowing you to immediately load up the emulator to test its functionality.
 

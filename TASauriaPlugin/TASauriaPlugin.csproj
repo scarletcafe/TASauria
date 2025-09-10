@@ -7,7 +7,8 @@
         <GenerateResourceUsePreserializedResources>true</GenerateResourceUsePreserializedResources>
     </PropertyGroup>
     <PropertyGroup>
-        <DefineConstants Condition="'$(AdditionalBuildConstants)' != ''">$(DefineConstants);$(AdditionalBuildConstants)</DefineConstants>
+        <DefineConstants Condition="'$(AdditionalBuildConstants)' != ''">
+            $(DefineConstants);$(AdditionalBuildConstants)</DefineConstants>
     </PropertyGroup>
     <PropertyGroup Condition=" '$(BIZHAWK_HOME)' == '' ">
         <BIZHAWK_HOME>$(ProjectDir)../BizHawk/output/</BIZHAWK_HOME>
@@ -17,7 +18,8 @@
     </PropertyGroup>
     <ItemGroup>
         <!-- General reference assemblies -->
-        <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.3" PrivateAssets="all" />
+        <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.3"
+            PrivateAssets="all" />
 
         <!-- Required to provide WebSocket and HTTP server -->
         <PackageReference Include="WebSocketSharp" Version="1.0.3-rc11" />
@@ -27,12 +29,16 @@
 
         <!-- Required by BizHawk -->
         <Reference Include="System.Windows.Forms" />
-        <Reference Include="BizHawk.Bizware.Graphics" HintPath="$(BIZHAWK_HOME)dll/BizHawk.Bizware.Graphics.dll" />
-        <Reference Include="BizHawk.Client.Common" HintPath="$(BIZHAWK_HOME)dll/BizHawk.Client.Common.dll" />
+        <Reference Include="BizHawk.Bizware.Graphics"
+            HintPath="$(BIZHAWK_HOME)dll/BizHawk.Bizware.Graphics.dll" />
+        <Reference Include="BizHawk.Client.Common"
+            HintPath="$(BIZHAWK_HOME)dll/BizHawk.Client.Common.dll" />
         <Reference Include="BizHawk.Client.EmuHawk" HintPath="$(BIZHAWK_HOME)EmuHawk.exe" />
         <Reference Include="BizHawk.Common" HintPath="$(BIZHAWK_HOME)dll/BizHawk.Common.dll" />
-        <Reference Include="BizHawk.Emulation.Common" HintPath="$(BIZHAWK_HOME)dll/BizHawk.Emulation.Common.dll" />
-        <Reference Include="BizHawk.WinForms.Controls" HintPath="$(BIZHAWK_HOME)dll/BizHawk.WinForms.Controls.dll" />
+        <Reference Include="BizHawk.Emulation.Common"
+            HintPath="$(BIZHAWK_HOME)dll/BizHawk.Emulation.Common.dll" />
+        <Reference Include="BizHawk.WinForms.Controls"
+            HintPath="$(BIZHAWK_HOME)dll/BizHawk.WinForms.Controls.dll" />
 
         <!-- Required to embed resources -->
         <PackageReference Include="System.Resources.Extensions" Version="9.0.2" />
@@ -42,21 +48,78 @@
         <EmbeddedResource Include="Resources\Localization\*.i18n.json" />
     </ItemGroup>
     <ItemGroup>
-      <Compile Update="Properties\Resources.Designer.cs">
-        <DesignTime>True</DesignTime>
-        <AutoGen>True</AutoGen>
-        <DependentUpon>Resources.resx</DependentUpon>
-      </Compile>
+        <Compile Update="Properties\Resources.Designer.cs">
+            <DesignTime>True</DesignTime>
+            <AutoGen>True</AutoGen>
+            <DependentUpon>Resources.resx</DependentUpon>
+        </Compile>
     </ItemGroup>
     <ItemGroup>
-      <EmbeddedResource Update="Properties\Resources.resx">
-        <Generator>ResXFileCodeGenerator</Generator>
-        <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-      </EmbeddedResource>
+        <EmbeddedResource Update="Properties\Resources.resx">
+            <Generator>ResXFileCodeGenerator</Generator>
+            <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+        </EmbeddedResource>
     </ItemGroup>
+
+    <Target Name="PreBuild" BeforeTargets="BeforeBuild">
+        <Exec
+            Command="git rev-list --count HEAD"
+            ConsoleToMSBuild="True"
+            IgnoreExitCode="False"
+        >
+            <Output PropertyName="GeneratedGitRevisionCount" TaskParameter="ConsoleOutput" />
+        </Exec>
+        <Exec
+            Command="git rev-parse --short HEAD"
+            ConsoleToMSBuild="True"
+            IgnoreExitCode="False"
+        >
+            <Output PropertyName="GeneratedGitRevisionHash" TaskParameter="ConsoleOutput" />
+        </Exec>
+        <Exec
+            Command="git describe --always --dirty"
+            ConsoleToMSBuild="True"
+            IgnoreExitCode="False"
+        >
+            <Output PropertyName="GeneratedGitRevisionDescription" TaskParameter="ConsoleOutput" />
+        </Exec>
+    </Target>
+    <Target Name="Bundling" AfterTargets="PreBuild">
+        <PropertyGroup>
+            <CustomAssemblyInfoFile>$(IntermediateOutputPath)CustomAssemblyInfo.cs</CustomAssemblyInfoFile>
+        </PropertyGroup>
+        <ItemGroup>
+            <Compile Include="$(CustomAssemblyInfoFile)" />
+        </ItemGroup>
+        <ItemGroup>
+            <AssemblyAttributes Include="AssemblyMetadata">
+                <_Parameter1>TASauriaGeneratedGitRevisionCount</_Parameter1>
+                <_Parameter2>$(GeneratedGitRevisionCount)</_Parameter2>
+            </AssemblyAttributes>
+            <AssemblyAttributes Include="AssemblyMetadata">
+                <_Parameter1>TASauriaGeneratedGitRevisionHash</_Parameter1>
+                <_Parameter2>$(GeneratedGitRevisionHash)</_Parameter2>
+            </AssemblyAttributes>
+            <AssemblyAttributes Include="AssemblyMetadata">
+                <_Parameter1>TASauriaGeneratedGitRevisionDescription</_Parameter1>
+                <_Parameter2>$(GeneratedGitRevisionDescription)</_Parameter2>
+            </AssemblyAttributes>
+            <AssemblyAttributes Include="AssemblyMetadata">
+                <_Parameter1>TASauriaVersion</_Parameter1>
+                <_Parameter2>$(TASauriaVersion)</_Parameter2>
+            </AssemblyAttributes>
+            <AssemblyAttributes Include="AssemblyMetadata">
+                <_Parameter1>TASauriaTargetedBizHawkVersion</_Parameter1>
+                <_Parameter2>$(TargetedBizHawkVersion)</_Parameter2>
+            </AssemblyAttributes>
+        </ItemGroup>
+        <WriteCodeFragment Language="C#" OutputFile="$(CustomAssemblyInfoFile)" AssemblyAttributes="@(AssemblyAttributes)" />
+    </Target>
     <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-        <Copy SourceFiles="$(OutputPath)$(MSBuildProjectName).dll" DestinationFolder="$(BIZHAWK_DATA_HOME)ExternalTools" />
-        <Copy SourceFiles="$(OutputPath)websocket-sharp.dll" DestinationFolder="$(BIZHAWK_DATA_HOME)ExternalTools" />
+        <Copy SourceFiles="$(OutputPath)$(MSBuildProjectName).dll"
+            DestinationFolder="$(BIZHAWK_DATA_HOME)ExternalTools" />
+        <Copy SourceFiles="$(OutputPath)websocket-sharp.dll"
+            DestinationFolder="$(BIZHAWK_DATA_HOME)ExternalTools" />
     </Target>
     <Target Name="PostClean" AfterTargets="Clean">
         <Delete Files="$(BIZHAWK_DATA_HOME)ExternalTools/$(MSBuildProjectName).dll" />

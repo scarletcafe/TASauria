@@ -153,6 +153,39 @@ public sealed partial class ExternalToolForm : ToolFormBase, IExternalToolForm {
 
         InitializeComponent();  // defined in ExternalToolForm.Designer.cs
 
+        // Load versions
+        var assemblyMetadata = Assembly.GetExecutingAssembly().GetCustomAttributes<AssemblyMetadataAttribute>();
+
+        var tasauriaVersion = assemblyMetadata.FirstOrDefault(v => v.Key == "TASauriaVersion")?.Value;
+        var tasauriaBizHawkVersion = assemblyMetadata.FirstOrDefault(v => v.Key == "TASauriaTargetedBizHawkVersion")?.Value;
+
+        var gitRevCount = assemblyMetadata.FirstOrDefault(v => v.Key == "TASauriaGeneratedGitRevisionCount")?.Value;
+        var gitHash = assemblyMetadata.FirstOrDefault(v => v.Key == "TASauriaGeneratedGitRevisionHash")?.Value;
+        var gitDescription = assemblyMetadata.FirstOrDefault(v => v.Key == "TASauriaGeneratedGitRevisionDescription")?.Value;
+
+        if (!string.IsNullOrEmpty(tasauriaVersion))
+        {
+            logoVersionTASauria.Text = $"version {tasauriaVersion}";
+        }
+        else if (!string.IsNullOrEmpty(gitRevCount) && !string.IsNullOrEmpty(gitDescription))
+        {
+            logoVersionTASauria.Text = $"version rev{gitRevCount}#{gitDescription}";
+        }
+        else if (!string.IsNullOrEmpty(gitHash))
+        {
+            logoVersionTASauria.Text = $"version #${gitHash}";
+        }
+
+        if (!string.IsNullOrEmpty(tasauriaBizHawkVersion))
+        {
+            logoVersionBizHawk.Text = $"for BizHawk {tasauriaBizHawkVersion}";
+        }
+
+        if (!string.IsNullOrEmpty(gitHash))
+        {
+            versionLinkToOpen = "https://github.com/scarletcafe/TASauria/tree/" + gitHash;
+        }
+
         // Load localization menu entries
         string selectedLanguage = GlobalState.configuration.LanguageSelected;
         languageComboBox.Items.AddRange([..
@@ -399,6 +432,15 @@ public sealed partial class ExternalToolForm : ToolFormBase, IExternalToolForm {
         saveSettingsButton.Enabled = true;
     }
 
-#endregion
+    private string? versionLinkToOpen = null;
 
+    private void logoVersionTASauria_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+    {
+        if (!string.IsNullOrEmpty(versionLinkToOpen))
+        {
+            System.Diagnostics.Process.Start(versionLinkToOpen);
+        }
+    }
+
+    #endregion
 }
