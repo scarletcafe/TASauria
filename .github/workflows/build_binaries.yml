@@ -123,11 +123,12 @@ jobs:
         shell: pwsh
         env:
           TASAURIA_TARGET: ${{ matrix.target.TASAURIA_TARGET }}
+          TASAURIA_VERSION: ${{ steps.tasauria-checkout.outputs.TASAURIA_VERSION }}
           BIZHAWK_VERSION: ${{ steps.bizhawk-checkout.outputs.BIZHAWK_VERSION }}
         run: |
           cd TASauriaPlugin
           $ADDITIONAL_BUILD_CONSTANTS="$(python ../.github/scripts/generate_bizhawk_version_constants.py)"
-          dotnet build TASauriaPlugin.sln -c "${env:TASAURIA_TARGET}" -p:AdditionalBuildConstants="${ADDITIONAL_BUILD_CONSTANTS}" -p:TargetedBizHawkVersion="${env:BIZHAWK_VERSION}"
+          dotnet build TASauriaPlugin.sln -c "${env:TASAURIA_TARGET}" -p:AdditionalBuildConstants="${ADDITIONAL_BUILD_CONSTANTS}" -p:TASauriaVersion="${env:TASAURIA_VERSION}" -p:TargetedBizHawkVersion="${env:BIZHAWK_VERSION}"
           cd ..
 
       - name: Bundle artifacts together
@@ -167,6 +168,23 @@ jobs:
       with:
         python-version: ${{ matrix.python.version }}
 
+    - id: tasauria-checkout
+      name: Get TASauria revision
+      shell: bash
+      env:
+        IS_TAGGED_VERSION: ${{ (github.event_name == 'push' && startsWith(github.event.ref, 'refs/tags/')) && '1' || '' }}
+      run: |
+        export TASAURIA_REV="$(git rev-list --count HEAD).$(git rev-parse --short HEAD)"
+        export TASAURIA_TAG="${GITHUB_REF##*/}"
+        echo "TASAURIA_REV=${TASAURIA_REV}" >> $GITHUB_OUTPUT
+        echo "TASAURIA_TAG=${TASAURIA_TAG}" >> $GITHUB_OUTPUT
+
+        if [ -z "${IS_TAGGED_VERSION}" ]; then
+          echo "TASAURIA_VERSION=rev${TASAURIA_REV}" >> $GITHUB_OUTPUT
+        else
+          echo "TASAURIA_VERSION=${TASAURIA_TAG}" >> $GITHUB_OUTPUT
+        fi
+
     - name: Install dependencies
       shell: bash
       run: |
@@ -195,7 +213,7 @@ jobs:
     - name: Upload artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: tasauria_python_${{ matrix.python.version }}
+        name: tasauria_${{ steps.tasauria-checkout.outputs.TASAURIA_VERSION }}_python_${{ matrix.python.version }}
         path: dist/*
 
   upload_release:
@@ -233,7 +251,7 @@ jobs:
       - name: Download Python artifacts
         uses: actions/download-artifact@v4
         with:
-          pattern: tasauria_python_3.13
+          pattern: tasauria_*_python_3.13
           merge-multiple: true
           path: dist
 
