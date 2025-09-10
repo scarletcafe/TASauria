@@ -61,7 +61,7 @@ ENVIRONMENT = Environment(loader=BaseLoader())
 FILES: typing.List[File] = []
 
 for file in pathlib.Path('dist').iterdir():
-    if file.is_file() and file.name.lower().endswith(('.whl', '.egg', '.tar.gz')):
+    if file.is_file() and file.name.lower().endswith(('.whl', '.egg', '.tar.gz', '.zip')):
         with open(file, 'rb') as fp:
             data = fp.read()
 

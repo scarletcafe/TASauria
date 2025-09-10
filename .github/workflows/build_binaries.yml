@@ -1,4 +1,4 @@
-name: Build TASauria BizHawk plugin
+name: Build TASauria binaries
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  build-plugin:
+  build-bizhawk-plugin:
     runs-on: windows-latest
     strategy:
       fail-fast: false
@@ -47,9 +47,19 @@ jobs:
       - id: tasauria-checkout
         name: Get TASauria revision
         shell: bash
+        env:
+          IS_TAGGED_VERSION: ${{ (github.event_name == 'push' && startsWith(github.event.ref, 'refs/tags/')) && '1' || '' }}
         run: |
           export TASAURIA_REV="$(git rev-list --count HEAD).$(git rev-parse --short HEAD)"
+          export TASAURIA_TAG="${GITHUB_REF##*/}"
           echo "TASAURIA_REV=${TASAURIA_REV}" >> $GITHUB_OUTPUT
+          echo "TASAURIA_TAG=${TASAURIA_TAG}" >> $GITHUB_OUTPUT
+
+          if [ -z "${IS_TAGGED_VERSION}" ]; then
+            echo "TASAURIA_VERSION=rev${TASAURIA_REV}" >> $GITHUB_OUTPUT
+          else
+            echo "TASAURIA_VERSION=${TASAURIA_TAG}" >> $GITHUB_OUTPUT
+          fi
 
       - id: bizhawk-checkout
         name: Checkout the appropriate BizHawk ref
@@ -123,14 +133,132 @@ jobs:
       - name: Bundle artifacts together
         shell: pwsh
         env:
-          TASAURIA_REV: ${{ steps.tasauria-checkout.outputs.TASAURIA_REV }}
+          TASAURIA_VERSION: ${{ steps.tasauria-checkout.outputs.TASAURIA_VERSION }}
           BIZHAWK_VERSION: ${{ steps.bizhawk-checkout.outputs.BIZHAWK_VERSION }}
         run: |
           New-Item -ItemType Directory -Force -Path dist
-          Compress-Archive -Path BizHawk/output/ExternalTools/* -DestinationPath dist/TASauriaPlugin.rev${env:TASAURIA_REV}_BizHawk.${env:BIZHAWK_VERSION}.zip
+          Compress-Archive -Path BizHawk/output/ExternalTools/* -DestinationPath dist/TASauriaPlugin.${env:TASAURIA_VERSION}_BizHawk.${env:BIZHAWK_VERSION}.zip
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: TASauriaPlugin.rev${{ steps.tasauria-checkout.outputs.TASAURIA_REV }}_BizHawk.${{ steps.bizhawk-checkout.outputs.BIZHAWK_VERSION }}
-          path: dist/TASauriaPlugin.rev${{ steps.tasauria-checkout.outputs.TASAURIA_REV }}_BizHawk.${{ steps.bizhawk-checkout.outputs.BIZHAWK_VERSION }}.zip
+          name: TASauriaPlugin.${{ steps.tasauria-checkout.outputs.TASAURIA_VERSION }}_BizHawk.${{ steps.bizhawk-checkout.outputs.BIZHAWK_VERSION }}
+          path: dist/TASauriaPlugin.${{ steps.tasauria-checkout.outputs.TASAURIA_VERSION }}_BizHawk.${{ steps.bizhawk-checkout.outputs.BIZHAWK_VERSION }}.zip
+
+  build-python-distributions:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python:
+          - {version: '3.9'}
+          - {version: '3.10'}
+          - {version: '3.11'}
+          - {version: '3.12'}
+          - {version: '3.13'}
+    name: "Build TASauria Python package for CPython ${{ matrix.python.version }}"
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Set up Python ${{ matrix.python.version }}
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ matrix.python.version }}
+
+    - name: Install dependencies
+      shell: bash
+      run: |
+        python -m pip install --upgrade pip setuptools wheel
+
+        pip install -U -r requirements.txt
+
+        pip install -U ruff
+
+    - name: Lint repository
+      shell: bash
+      run: |
+        ruff check ./tasauria
+
+    - name: Create distributions and install wheel
+      shell: bash
+      run: |
+        export tag_name="${GITHUB_REF##*/}"
+
+        # Substitute README assets with direct GitHub links
+        sed -i'.original' -e "s/src=\".github\/assets/src=\"https:\/\/raw.githubusercontent.com\/scarletcafe\/TASauria\/$(git rev-parse HEAD)\/.github\/assets/g" README.md
+        rm -f README.md.original
+
+        python ./setup.py sdist bdist_wheel
+
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: tasauria_python_${{ matrix.python.version }}
+        path: dist/*
+
+  upload_release:
+    needs: [ build-python-distributions ]
+    runs-on: ubuntu-latest
+    environment: publish
+    permissions:
+      # Required to create release
+      contents: write
+      # Required for OIDC
+      id-token: write
+    if: github.event_name == 'push' && startsWith(github.event.ref, 'refs/tags/')
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          submodules: true
+
+      - name: Set up Python 3.13
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'  # Watch as I let this get handled as a float again
+
+      - name: Install dependencies
+        shell: bash
+        run: |
+          sudo apt-get update && sudo apt-get install -y hub
+          python -m pip install --upgrade pip setuptools wheel
+          export tag_name="${GITHUB_REF##*/}"
+          pip install -U "."
+          pip install -U jinja2
+
+      - name: Download Python artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: tasauria_python_3.13
+          merge-multiple: true
+          path: dist
+
+      - name: Download plugin artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: TASauriaPlugin.*
+          merge-multiple: true
+          path: dist
+
+      - name: Publish wheels as release artifacts on GitHub
+        shell: bash
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -x
+          export tag_name="${GITHUB_REF##*/}"
+          python .github/scripts/create_dist_summary.py
+          assets=()
+          for asset in ./dist/*.{whl,tar.gz,zip}; do
+            assets+=("-a" "$asset")
+          done
+          tag_name="${GITHUB_REF##*/}"
+          hub release create "${assets[@]}" -F .github/outputs/DIST_SUMMARY.md "$tag_name"
+          rm .github/outputs/*.md
+
+      - name: Publish packages to PyPI
+        uses: pypa/gh-action-pypi-publish@v1.13.0

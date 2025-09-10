@@ -24,3 +24,18 @@ Install via GitHub (not recommended):
 ```bash
 pip install -U "git+https://github.com/scarletcafe/TASauria@{{ env('tag_name') }}"
 ```
+
+<details>
+<summary>Artifact hashes</summary>
+{% for file in files %}
+### {{file.name}}
+
+MD5: `{{file.md5}}`
+
+SHA1: `{{file.sha1}}`
+
+SHA256: `{{file.sha256}}`
+
+{% endfor %}
+
+</details>
