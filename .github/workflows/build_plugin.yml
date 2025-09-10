@@ -113,14 +113,24 @@ jobs:
         shell: pwsh
         env:
           TASAURIA_TARGET: ${{ matrix.target.TASAURIA_TARGET }}
+          BIZHAWK_VERSION: ${{ steps.bizhawk-checkout.outputs.BIZHAWK_VERSION }}
         run: |
           cd TASauriaPlugin
           $ADDITIONAL_BUILD_CONSTANTS="$(python ../.github/scripts/generate_bizhawk_version_constants.py)"
-          dotnet build TASauriaPlugin.sln -c "${env:TASAURIA_TARGET}" -p:AdditionalBuildConstants="${ADDITIONAL_BUILD_CONSTANTS}"
+          dotnet build TASauriaPlugin.sln -c "${env:TASAURIA_TARGET}" -p:AdditionalBuildConstants="${ADDITIONAL_BUILD_CONSTANTS}" -p:TargetedBizHawkVersion="${env:BIZHAWK_VERSION}"
           cd ..
+
+      - name: Bundle artifacts together
+        shell: pwsh
+        env:
+          TASAURIA_REV: ${{ steps.tasauria-checkout.outputs.TASAURIA_REV }}
+          BIZHAWK_VERSION: ${{ steps.bizhawk-checkout.outputs.BIZHAWK_VERSION }}
+        run: |
+          New-Item -ItemType Directory -Force -Path dist
+          Compress-Archive -Path BizHawk/output/ExternalTools/* -DestinationPath dist/TASauriaPlugin.rev${env:TASAURIA_REV}_BizHawk.${env:BIZHAWK_VERSION}.zip
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
           name: TASauriaPlugin.rev${{ steps.tasauria-checkout.outputs.TASAURIA_REV }}_BizHawk.${{ steps.bizhawk-checkout.outputs.BIZHAWK_VERSION }}
-          path: BizHawk/output/ExternalTools/*
+          path: dist/TASauriaPlugin.rev${{ steps.tasauria-checkout.outputs.TASAURIA_REV }}_BizHawk.${{ steps.bizhawk-checkout.outputs.BIZHAWK_VERSION }}.zip
