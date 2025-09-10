@@ -116,13 +116,17 @@
         <WriteCodeFragment Language="C#" OutputFile="$(CustomAssemblyInfoFile)" AssemblyAttributes="@(AssemblyAttributes)" />
     </Target>
     <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-        <Copy SourceFiles="$(OutputPath)$(MSBuildProjectName).dll"
-            DestinationFolder="$(BIZHAWK_DATA_HOME)ExternalTools" />
-        <Copy SourceFiles="$(OutputPath)websocket-sharp.dll"
-            DestinationFolder="$(BIZHAWK_DATA_HOME)ExternalTools" />
+        <Copy
+            SourceFiles="$(OutputPath)$(MSBuildProjectName).dll"
+            DestinationFiles="$(BIZHAWK_DATA_HOME)ExternalTools/$(MSBuildProjectName).dll"
+        />
+        <Copy
+            SourceFiles="$(OutputPath)websocket-sharp.dll"
+            DestinationFiles="$(BIZHAWK_DATA_HOME)ExternalTools/TASauriaDependency_WebSocketSharp.dll"
+        />
     </Target>
     <Target Name="PostClean" AfterTargets="Clean">
         <Delete Files="$(BIZHAWK_DATA_HOME)ExternalTools/$(MSBuildProjectName).dll" />
-        <Delete Files="$(BIZHAWK_DATA_HOME)ExternalTools/websocket-sharp.dll" />
+        <Delete Files="$(BIZHAWK_DATA_HOME)ExternalTools/TASauriaDependency_WebSocketSharp.dll" />
     </Target>
 </Project>
