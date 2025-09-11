@@ -20,9 +20,6 @@ jobs:
           - { HEAD: "2.8",    DOTNET_VERSION: "8",       OLD_VERSION_BUILD: true,  CACHEABLE: true,  INCLUDE_COMMIT: false }
           - { HEAD: "2.7",    DOTNET_VERSION: "5.0.100", OLD_VERSION_BUILD: true,  CACHEABLE: true,  INCLUDE_COMMIT: false }
           - { HEAD: "2.6.3",  DOTNET_VERSION: "5.0.100", OLD_VERSION_BUILD: true,  CACHEABLE: true,  INCLUDE_COMMIT: false }
-          - { HEAD: "2.6.2",  DOTNET_VERSION: "5.0.100", OLD_VERSION_BUILD: true,  CACHEABLE: true,  INCLUDE_COMMIT: false }
-          - { HEAD: "2.6.1",  DOTNET_VERSION: "5.0.100", OLD_VERSION_BUILD: true,  CACHEABLE: true,  INCLUDE_COMMIT: false }
-          - { HEAD: "2.6",    DOTNET_VERSION: "5.0.100", OLD_VERSION_BUILD: true,  CACHEABLE: true,  INCLUDE_COMMIT: false }
         target:
           - { BIZHAWK_TARGET: "Release", TASAURIA_TARGET: "Release" }
     name: "Build TASauria plugin for BizHawk ${{ matrix.bizhawk.HEAD }}"
