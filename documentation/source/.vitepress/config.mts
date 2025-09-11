@@ -107,8 +107,8 @@ export default defineConfig(withMermaid({
           {
             text: 'Python APIの使い方',
             items: [
-              { text: 'First steps', link: '/python-api/first-steps' },
-              { text: 'クライアントAPIリファレンス', link: '/python-api/client-api-reference' },
+              { text: 'First steps', link: '/ja/python-api/first-steps' },
+              { text: 'クライアントAPIリファレンス', link: '/ja/python-api/client-api-reference' },
             ]
           },
           {
@@ -120,22 +120,22 @@ export default defineConfig(withMermaid({
           {
             text: 'HTTP・WSのAPIの使い方',
             items: [
-              { text: '基本情報', link: '/http-ws-api/general' },
-              { text: 'クライアントコマンド', link: '/http-ws-api/client-commands' },
-              { text: '入力コマンド', link: '/http-ws-api/joypad-commands' },
-              { text: 'メモリーコマンド', link: '/http-ws-api/memory-commands' },
-              { text: 'メタコマンド', link: '/http-ws-api/meta-commands' },
-              { text: 'ムービーコマンド', link: '/http-ws-api/movie-commands' },
-              { text: 'セーブステートコマンド', link: '/http-ws-api/savestate-commands' },
-              { text: 'テスト用コマンド', link: '/http-ws-api/test-commands' },
+              { text: '基本情報', link: '/ja/http-ws-api/general' },
+              { text: 'クライアントコマンド', link: '/ja/http-ws-api/client-commands' },
+              { text: '入力コマンド', link: '/ja/http-ws-api/joypad-commands' },
+              { text: 'メモリーコマンド', link: '/ja/http-ws-api/memory-commands' },
+              { text: 'メタコマンド', link: '/ja/http-ws-api/meta-commands' },
+              { text: 'ムービーコマンド', link: '/ja/http-ws-api/movie-commands' },
+              { text: 'セーブステートコマンド', link: '/ja/http-ws-api/savestate-commands' },
+              { text: 'テスト用コマンド', link: '/ja/http-ws-api/test-commands' },
             ]
           },
           {
             text: 'Additional reading',
             items: [
-              { text: 'LuaからPythonへの代替法', link: '/additional-reading/lua-equivalents' },
-              { text: 'パフォーマンス', link: '/additional-reading/performance' },
-              { text: '代替', link: '/additional-reading/alternatives' },
+              { text: 'LuaからPythonへの代替法', link: '/ja/additional-reading/lua-equivalents' },
+              { text: 'パフォーマンス', link: '/ja/additional-reading/performance' },
+              { text: '代替', link: '/ja/additional-reading/alternatives' },
             ]
           }
         ],
