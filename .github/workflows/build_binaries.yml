@@ -14,6 +14,7 @@ jobs:
       matrix:
         bizhawk:
           - { HEAD: "master", DOTNET_VERSION: "8",       OLD_VERSION_BUILD: false, CACHEABLE: false, INCLUDE_COMMIT: true }
+          - { HEAD: "2.11",   DOTNET_VERSION: "8",       OLD_VERSION_BUILD: false, CACHEABLE: true,  INCLUDE_COMMIT: false }
           - { HEAD: "2.10",   DOTNET_VERSION: "8",       OLD_VERSION_BUILD: false, CACHEABLE: true,  INCLUDE_COMMIT: false }
           - { HEAD: "2.9.1",  DOTNET_VERSION: "8",       OLD_VERSION_BUILD: false, CACHEABLE: true,  INCLUDE_COMMIT: false }
           - { HEAD: "2.9",    DOTNET_VERSION: "8",       OLD_VERSION_BUILD: true,  CACHEABLE: true,  INCLUDE_COMMIT: false }
