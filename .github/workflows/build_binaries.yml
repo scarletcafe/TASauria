@@ -155,6 +155,7 @@ jobs:
           - {version: '3.11'}
           - {version: '3.12'}
           - {version: '3.13'}
+          - {version: '3.14'}
     name: "Build TASauria Python package for CPython ${{ matrix.python.version }}"
     steps:
     - uses: actions/checkout@v4
