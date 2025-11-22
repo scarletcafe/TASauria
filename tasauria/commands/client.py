@@ -56,7 +56,7 @@ class ClientFrameStatusCommand(Command[NoArguments, NoArguments, ClientFrameStat
 
 
 class ClientFrameAdvanceInput(typing.TypedDict):
-    unpause: bool
+    unpause: typing.Optional[bool]
 
 
 class ClientFrameAdvanceCommand(Command[ClientFrameAdvanceInput, ClientFrameAdvanceInput, ClientFrameStatusServerOutput, FrameStatus]):
@@ -140,4 +140,51 @@ class ClientGameCommand(Command[NoArguments, NoArguments, ClientGameServerOutput
             database_status=payload["databaseStatus"],
             database_status_bad=payload["databaseStatusBad"],
             game_options=payload["gameOptions"],
+        )
+
+
+class ClientVersionServerOutput(typing.TypedDict):
+    stableVersion: str
+    releaseDate: str
+    gitBranch: str
+    gitHash: str
+    gitRevision: str
+    isDevelopmentVersion: bool
+    customBuildString: typing.Optional[str]
+
+
+@dataclasses.dataclass
+class VersionInfo:
+    stable_version: str
+    release_date: str
+    git_branch: str
+    git_hash: str
+    git_revision: str
+    is_development_version: bool
+    custom_build_string: typing.Optional[str]
+
+
+class ClientVersionCommand(Command[NoArguments, NoArguments, ClientVersionServerOutput, VersionInfo]):
+    @staticmethod
+    def marshal_input(
+        **kwargs: typing.Any,
+    ) -> typing.Tuple[str, NoArguments]:
+        return (
+            "/client/version",
+            {}
+        )
+
+    @staticmethod
+    def unmarshal_output(
+        payload: ClientVersionServerOutput,
+        **kwargs: typing.Any
+    ) -> VersionInfo:
+        return VersionInfo(
+            stable_version=payload["stableVersion"],
+            release_date=payload["releaseDate"],
+            git_branch=payload["gitBranch"],
+            git_hash=payload["gitHash"],
+            git_revision=payload["gitRevision"],
+            is_development_version=payload["isDevelopmentVersion"],
+            custom_build_string=payload["customBuildString"],
         )

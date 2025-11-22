@@ -1,2 +1,5 @@
 aiohttp >= 3.11, < 4
+
+# For __main__
 click >= 8.1, < 9
+ipython

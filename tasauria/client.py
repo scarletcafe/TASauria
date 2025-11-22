@@ -19,7 +19,7 @@ import yarl
 
 from tasauria.adapters.async_ import AsyncAdapter, HTTPAdapter, WebSocketAdapter
 from tasauria.commands import AnyCommand, Command, PythonCommandInput, ServerCommandInput, ServerCommandOutput, PythonCommandOutput
-from tasauria.commands.client import ClientFrameStatusCommand, ClientFrameAdvanceCommand, ClientGameCommand, FrameStatus, GameInfo
+from tasauria.commands.client import ClientFrameStatusCommand, ClientFrameAdvanceCommand, ClientGameCommand, ClientVersionCommand, FrameStatus, GameInfo, VersionInfo
 from tasauria.commands.joypad import JoypadGetCommand, JoypadSetCommand
 from tasauria.commands.memory import MemoryReadFloatCommand, MemoryReadIntegerCommand, MemoryReadRangeCommand, MemoryWriteFloatCommand, MemoryWriteIntegerCommand, MemoryWriteRangeCommand
 from tasauria.commands.meta import MetaBatchCommand, MetaPingCommand
@@ -219,6 +219,20 @@ class TASauria:
         """
         return await self._execute_command(
             ClientGameCommand
+        )
+
+    async def get_version_info(
+        self
+    ) -> VersionInfo:
+        """
+        <section>client</section>
+
+        <description language="en">
+        Gets information about the client version.
+        </description>
+        """
+        return await self._execute_command(
+            ClientVersionCommand
         )
 
     # -- Joypad --
