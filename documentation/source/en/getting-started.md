@@ -37,7 +37,7 @@ The folder structure should look something like this:
 You can then start `EmuHawk`.
 If the plugin is functioning correctly, you will be able to find the `TASauria` entry in the `Tools` > `External Tool` menu.
 
-TASauria begins running by default even without the window open. However, you can use the window to adjust settings, such as what host and port it listens for clients on.
+You can adjust various settings from the window that appears.
 
 Once you have confirmed that the plugin is functioning, you can move onto the next step.
 

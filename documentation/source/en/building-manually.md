@@ -19,6 +19,13 @@ To get started, clone the TASauria repository.
 git clone --recurse-submodules https://github.com/scarletcafe/tasauria
 ```
 
+If you have already cloned but forgotten to use the submodules flag, you can pull the submodules like so:
+
+```bash
+git submodule init
+git submodule update --recursive
+```
+
 ## Managing and building BizHawk
 
 The TASauria repository has BizHawk cloned into the repository root as a submodule. This allows the targeted BizHawk version to be easily updated or changed, and ensures that both the location of BizHawk's built libraries and the `EmuHawk` executable are in consistent locations for MSBuild and Visual Studio.
